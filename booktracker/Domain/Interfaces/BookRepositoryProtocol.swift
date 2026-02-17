@@ -7,13 +7,6 @@
 
 import Foundation
 
-enum RepositoryError: Error, Equatable {
-    case notFound
-    case saveFailed(reason: String)
-    case fetchFailed(reason: String)
-    case deleteFailed(reason: String)
-}
-
 struct BookFilter {
     var searchItem: String?
     var status: BookStatus?

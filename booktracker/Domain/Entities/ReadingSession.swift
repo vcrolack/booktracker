@@ -25,7 +25,15 @@ struct ReadingSession: Identifiable, Codable, Equatable {
         return endTime.timeIntervalSince(startTime)
     }
     
-    init(id: UUID = UUID(), bookId: UUID, startTime: Date, endTime: Date, startPage: Int? = nil, endPage: Int) {
+    init(id: UUID = UUID(), bookId: UUID, startTime: Date, endTime: Date, startPage: Int? = nil, endPage: Int) throws {
+        guard  endTime >= startTime else {
+            throw ReadingSessionDomainError.invalidDateRange
+        }
+        
+        guard endPage >= (startPage ?? 0) else {
+            throw ReadingSessionDomainError.invalidPageProgression
+        }
+        
             self.id = id
             self.bookId = bookId
             self.startTime = startTime

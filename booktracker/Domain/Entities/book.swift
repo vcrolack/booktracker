@@ -27,6 +27,7 @@ enum BookDomainError: Error, Equatable {
     case invalidRatingValue
     case emptyTitleOrAuthor
     case invalidPageCount
+    case invalidCurrentPage(currentPage: Int, totalPages: Int)
 }
 
 struct Book: Identifiable, Equatable, Codable {
@@ -35,6 +36,7 @@ struct Book: Identifiable, Equatable, Codable {
     var author: String
     var overview: String?
     var pages: Int
+    var currentPage: Int
     var editorial: String?
     var isbn: String?
     var ownership: Ownership
@@ -55,9 +57,9 @@ struct Book: Identifiable, Equatable, Codable {
     let createdAt: Date
     private(set) var updatedAt: Date
     
-    init(id: UUID = UUID(), title: String, author: String, pages: Int, ownership: Ownership, status: BookStatus = .wishlist) throws {
+    init(id: UUID = UUID(), title: String, author: String, pages: Int, currentPage: Int? = nil, ownership: Ownership, status: BookStatus = .wishlist) throws {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        let trimmedAuthor = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedAuthor = author.trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard !trimmedTitle.isEmpty, !trimmedAuthor.isEmpty else {
             throw BookDomainError.emptyTitleOrAuthor
@@ -67,10 +69,16 @@ struct Book: Identifiable, Equatable, Codable {
             throw BookDomainError.invalidPageCount
         }
         
+        let initialPage = currentPage ?? 0
+        guard initialPage >= 0 && initialPage <= pages else {
+            throw BookDomainError.invalidCurrentPage(currentPage: initialPage, totalPages: pages)
+        }
+        
         self.id = id
-        self.title = title
-        self.author = author
+        self.title = trimmedTitle
+        self.author = trimmedAuthor
         self.pages = pages
+        self.currentPage = initialPage
         self.ownership = ownership
         self.status = status
         self.createdAt = Date()
@@ -101,6 +109,7 @@ struct Book: Identifiable, Equatable, Codable {
         
         self.status = .finalized
         self.endDate = date
+        self.currentPage = self.pages
         self.userReview = review
         self.updatedAt = date
     }
@@ -120,6 +129,7 @@ struct Book: Identifiable, Equatable, Codable {
         title: String? = nil,
         author: String? = nil,
         pages: Int? = nil,
+        currentPage: Int? = nil,
         editorial: String? = nil,
         isbn: String? = nil,
         ownership: Ownership? = nil,
@@ -141,6 +151,13 @@ struct Book: Identifiable, Equatable, Codable {
         if let newPages = pages {
             guard newPages > 0 else { throw BookDomainError.invalidPageCount }
             self.pages = newPages
+        }
+        
+        if let newCurrentPage = currentPage {
+            guard newCurrentPage >= 0 && newCurrentPage <= self.pages else {
+                throw BookDomainError.invalidCurrentPage(currentPage: newCurrentPage, totalPages: self.pages)
+            }
+            self.currentPage = newCurrentPage
         }
         
         if let newEditorial = editorial { self.editorial = newEditorial }
