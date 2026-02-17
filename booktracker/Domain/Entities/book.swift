@@ -25,6 +25,8 @@ enum BookDomainError: Error, Equatable {
     case invalidStateTransition(from: BookStatus, to: BookStatus)
     case cannotReviewUnfinishedBook
     case invalidRatingValue
+    case emptyTitleOrAuthor
+    case invalidPageCount
 }
 
 struct Book: Identifiable, Equatable, Codable {
@@ -53,7 +55,18 @@ struct Book: Identifiable, Equatable, Codable {
     let createdAt: Date
     private(set) var updatedAt: Date
     
-    init(id: UUID = UUID(), title: String, author: String, pages: Int, ownership: Ownership, status: BookStatus = .wishlist) {
+    init(id: UUID = UUID(), title: String, author: String, pages: Int, ownership: Ownership, status: BookStatus = .wishlist) throws {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedAuthor = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !trimmedTitle.isEmpty, !trimmedAuthor.isEmpty else {
+            throw BookDomainError.emptyTitleOrAuthor
+        }
+        
+        guard pages > 0 else {
+            throw BookDomainError.invalidPageCount
+        }
+        
         self.id = id
         self.title = title
         self.author = author
@@ -101,6 +114,42 @@ struct Book: Identifiable, Equatable, Codable {
         self.abandonReason = reason
         self.endDate = date
         self.updatedAt = date
+    }
+    
+    mutating func updateMetadata(
+        title: String? = nil,
+        author: String? = nil,
+        pages: Int? = nil,
+        editorial: String? = nil,
+        isbn: String? = nil,
+        ownership: Ownership? = nil,
+        coverUrl: String? = nil,
+        genre: String? = nil
+    ) throws {
+        if let newTitle = title {
+            let trimmed = newTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { throw BookDomainError.emptyTitleOrAuthor }
+            self.title = trimmed
+        }
+        
+        if let newAuthor = author {
+            let trimmed = newAuthor.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { throw BookDomainError.emptyTitleOrAuthor }
+            self.author = trimmed
+        }
+        
+        if let newPages = pages {
+            guard newPages > 0 else { throw BookDomainError.invalidPageCount }
+            self.pages = newPages
+        }
+        
+        if let newEditorial = editorial { self.editorial = newEditorial }
+        if let newIsbn = isbn { self.isbn = newIsbn }
+        if let newOwnership = ownership { self.ownership = newOwnership }
+        if let newCoverUrl = coverUrl { self.coverUrl = newCoverUrl }
+        if let newGenre = genre { self.genre = newGenre }
+        
+        self.updatedAt = Date()
     }
     
 }
