@@ -15,10 +15,12 @@ final class DeleteBookUseCase: DeleteBookUseCaseProtocol {
     private let repository: BookRepositoryProtocol
     
     private let deleteAllSessionsUseCase: DeleteAllReadingSessionsUseCaseProtocol
+    private let removeBookFromAllCollectionsUseCase: RemoveBookFromAllCollectionsUseCaseProtocol
     
-    init(repository: BookRepositoryProtocol, deleteAllSessionsUseCase: DeleteAllReadingSessionsUseCaseProtocol) {
+    init(repository: BookRepositoryProtocol, deleteAllSessionsUseCase: DeleteAllReadingSessionsUseCaseProtocol, removeBookFromAllCollectionsUseCase: RemoveBookFromAllCollectionsUseCaseProtocol) {
         self.repository = repository
         self.deleteAllSessionsUseCase = deleteAllSessionsUseCase
+        self.removeBookFromAllCollectionsUseCase = removeBookFromAllCollectionsUseCase
     }
     
     func execute(bookId: UUID) async throws {
@@ -27,6 +29,7 @@ final class DeleteBookUseCase: DeleteBookUseCaseProtocol {
         }
         
         try await deleteAllSessionsUseCase.execute(bookId: bookId)
+        try await removeBookFromAllCollectionsUseCase.execute(bookId: bookId)
         
         try await repository.delete(bookId: bookId)
     }
