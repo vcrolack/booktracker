@@ -22,3 +22,4 @@ final class DeleteAllReadingSessionsUseCase: DeleteAllReadingSessionsUseCaseProt
         try await repository.deleteAll(for: bookId)
     }
 }
+
