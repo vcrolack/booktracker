@@ -19,8 +19,6 @@ final class FetchBooksUseCase: FetchBooksUseCaseProtocol {
     }
     
     func execute(filter: BookFilter? = nil) async throws -> [Book] {
-        let books = try await repository.fetchBooks(matching: filter)
-        
-        return books
+        return try await repository.fetchBooks(matching: filter)
     }
 }
