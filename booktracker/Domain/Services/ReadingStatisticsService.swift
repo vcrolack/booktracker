@@ -31,7 +31,7 @@ struct ReadingStatisticsService: ReadingStatisticsServiceProtocol {
         
         let totalPages = calculateTotalPages(sessions)
         let avgSpeed = calculateAverageSpeed(sessions, totalPages: totalPages)
-        let streak = calculateCurrentSteak(sessions)
+        let streak = calculateCurrentStreak(sessions)
         
         return ReadingStats(
             totalPagesRead: totalPages,
@@ -61,7 +61,7 @@ struct ReadingStatisticsService: ReadingStatisticsServiceProtocol {
         return Double(totalPages) / totalHours
     }
     
-    private func calculateCurrentSteak(_ sessions: [ReadingSession]) -> Int {
+    private func calculateCurrentStreak(_ sessions: [ReadingSession]) -> Int {
         let sortedSessions = sessions.sorted { $0.endTime > $1.endTime }
         
         let uniqueDays = Set(sortedSessions.map { calendar.startOfDay(for: $0.endTime) })

@@ -8,7 +8,7 @@
 import Foundation
 
 protocol FinishReadingBookUseCaseProtocol {
-    func execute(bookId: UUID) async throws
+    func execute(command: FinishReadingBookCommand) async throws
 }
 
 final class FinishReadingBookUseCase: FinishReadingBookUseCaseProtocol {
@@ -18,12 +18,12 @@ final class FinishReadingBookUseCase: FinishReadingBookUseCaseProtocol {
         self.repository = repository
     }
     
-    func execute(bookId: UUID) async throws {
-        guard var book = try await repository.fetchBook(by: bookId) else {
+    func execute(command: FinishReadingBookCommand) async throws {
+        guard var book = try await repository.fetchBook(by: command.bookId) else {
             throw RepositoryError.notFound
         }
         
-        try book.finishReading(at: Date())
+        try book.finishReading(at: Date(), rating: command.rating, review: command.review)
         
         try await repository.save(book: book)
     }

@@ -33,7 +33,7 @@ struct BookCollection: Identifiable, Equatable, Codable {
         
         
         self.id = id
-        self.name = name
+        self.name = trimmedName
         self.description = description
         self.cover = cover
         self.bookIds = bookIds

@@ -30,7 +30,7 @@ final class DeleteReadingSessionUseCase: DeleteReadingSessionUseCaseProtocol {
         
         try await repository.delete(sessionId: readingSessionId)
         
-        let remainingSessions = try await repository.fetchSessions(for: bookId)
+        let remainingSessions = try await repository.fetchSessions(matching: ReadingSessionFilter(bookId: bookId))
         
         let recalculatedCurrentPage = remainingSessions.map { $0.endPage }.max() ?? 0
         
