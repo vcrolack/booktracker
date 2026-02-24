@@ -23,7 +23,7 @@ final class CreateReadingGoalUseCase: CreateReadingGoalUseCaseProtocol {
     }
     
     func execute(command: CreateReadingGoalCommand) async throws -> UUID {
-        guard let existingGoal = try await repository.fetchReadingGoal(for: ReadingGoalSearchField(year: command.year)) else {
+        guard let _ = try await repository.fetchReadingGoal(for: ReadingGoalSearchField(year: command.year)) else {
             throw CreateReadingGoalError.goalAlreadyExistsForYear
         }
         

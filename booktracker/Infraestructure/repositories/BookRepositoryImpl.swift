@@ -23,7 +23,7 @@ final class BookRepositoryImpl: BookRepositoryProtocol {
     }
     
     func fetchBooks(matching filter: BookFilter?) async throws -> [Book] {
-       return try localDataSource.fetchBooks()
+       return try localDataSource.fetchBooks(matching: filter)
     }
     
     func delete(bookId: UUID) async throws {

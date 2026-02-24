@@ -37,7 +37,7 @@ enum BookMapper {
         let parsedOwnership = Ownership(rawValue: sdModel.ownershipRawValue) ?? .notOwner
         let parsedStatus = BookStatus(rawValue: sdModel.statusRawValue) ?? .wishlist
         
-        var book = Book(
+        let book = Book(
             reconstituting: sdModel.id,
             title: sdModel.title,
             author: sdModel.author,

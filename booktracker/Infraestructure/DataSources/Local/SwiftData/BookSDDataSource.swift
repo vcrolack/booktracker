@@ -50,57 +50,62 @@ final class BookSDDataSource: BookLocalDataSourceProtocol {
         }
     }
     
-    func fetchBooks(matching filter: BookFilter? = nil) throws -> [Book] {
-        do {
-            var sortDescriptors: [SortDescriptor<BookSD>] = []
-            
-            let activeSort = filter?.sortBy ?? .createdAtAscending
-            
-            switch activeSort {
-            case .titleAscending:
-                sortDescriptors.append(SortDescriptor(\.title, order: .forward))
-            case .createdAtAscending:
-                sortDescriptors.append(SortDescriptor(\.createdAt, order: .forward))
-            case .createdAtDescending:
-                sortDescriptors.append(SortDescriptor(\.createdAt, order: .reverse))
-            case .ratingDescending:
-                sortDescriptors.append(SortDescriptor(\.userRating, order: .reverse))
-            }
-            
-            var descriptor = FetchDescriptor<BookSD>(sortBy: sortDescriptors)
-            
-            if let activeFilter = filter {
-                let targetStatus = activeFilter.status?.rawValue
-                let filterByStatus = targetStatus != nil
+    // MARK: - Fetch All (Con Filtro y Ordenamiento Híbrido)
+        func fetchBooks(matching filter: BookFilter? = nil) throws -> [Book] {
+            do {
+                // 1. 🚦 RESOLVER EL ORDENAMIENTO (Igual que antes)
+                var sortDescriptors: [SortDescriptor<BookSD>] = []
+                let activeSort = filter?.sortBy ?? .createdAtAscending
                 
-                let targetOwnership = activeFilter.ownership?.rawValue
-                let filterByOwnership = targetOwnership != nil
-                
-                let searchItem = activeFilter.searchItem ?? ""
-                let filterBySearchItem = !searchItem.isEmpty
-                
-                let targetAuthor = activeFilter.author ?? ""
-                let filterByAuthor = !targetAuthor.isEmpty
-                
-                let targetGenre: String? = activeFilter.genre
-                let filterByGenre = (targetGenre != nil && targetGenre != "")
-                
-                descriptor.predicate = #Predicate<BookSD> { bookSD in
-                    (filterByStatus == false || bookSD.statusRawValue == targetStatus) &&
-                    (filterByOwnership == false || bookSD.ownershipRawValue == targetOwnership) &&
-                    (filterBySearchItem == false || bookSD.title.contains(searchItem)) &&
-                    (filterByAuthor == false || bookSD.author.contains(targetAuthor)) &&
-                    (filterByGenre == false || bookSD.genre == targetGenre)
+                switch activeSort {
+                case .titleAscending:
+                    sortDescriptors.append(SortDescriptor(\.title, order: .forward))
+                case .createdAtAscending:
+                    sortDescriptors.append(SortDescriptor(\.createdAt, order: .forward))
+                case .createdAtDescending:
+                    sortDescriptors.append(SortDescriptor(\.createdAt, order: .reverse))
+                case .ratingDescending:
+                    sortDescriptors.append(SortDescriptor(\.userRating, order: .reverse))
                 }
+                
+                var descriptor = FetchDescriptor<BookSD>(sortBy: sortDescriptors)
+                
+                // 2. 🔍 FILTRO PESADO EN SQLITE (#Predicate simple para que el compilador no sufra)
+                if let searchItem = filter?.searchItem, !searchItem.isEmpty {
+                    descriptor.predicate = #Predicate<BookSD> { book in
+                        // Solo le dejamos a SQLite la búsqueda de texto, que es lo más costoso
+                        book.title.contains(searchItem) || book.author.contains(searchItem)
+                    }
+                }
+                
+                // 3. 🚀 Ejecutar la consulta base en la Base de Datos
+                // Lo hacemos 'var' para poder aplicar los filtros restantes en memoria
+                var booksSD = try context.fetch(descriptor)
+                
+                // 4. ⚡️ FILTROS RÁPIDOS EN MEMORIA
+                // Una vez que tenemos los datos, aplicamos los filtros exactos usando Swift puro.
+                if let activeFilter = filter {
+                    
+                    if let status = activeFilter.status {
+                        booksSD = booksSD.filter { $0.statusRawValue == status.rawValue }
+                    }
+                    
+                    if let ownership = activeFilter.ownership {
+                        booksSD = booksSD.filter { $0.ownershipRawValue == ownership.rawValue }
+                    }
+                    
+                    if let genre = activeFilter.genre, !genre.isEmpty {
+                        booksSD = booksSD.filter { $0.genre == genre }
+                    }
+                }
+                
+                // 5. 📦 Traducir a Entidades de Dominio
+                return booksSD.map { BookMapper.toDomain(from: $0) }
+                
+            } catch {
+                throw DataSourceError.fetchFailed(error.localizedDescription)
             }
-            
-            let booksSD = try context.fetch(descriptor)
-            
-            return booksSD.map { BookMapper.toDomain(from: $0) }
-        } catch {
-            throw DataSourceError.fetchFailed(error.localizedDescription)
         }
-    }
     
     func deleteBook(by id: UUID) throws {
         do {

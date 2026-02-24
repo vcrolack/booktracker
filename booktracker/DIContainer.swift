@@ -57,4 +57,9 @@ final class DIContainer {
             )
         }
         */
+    
+    @MainActor
+    func makeBookListViewModel() -> BookListViewModel {
+        return BookListViewModel(repository: makeBookRepository())
+    }
 }
