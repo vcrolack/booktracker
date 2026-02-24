@@ -85,6 +85,50 @@ struct Book: Identifiable, Equatable, Codable {
         self.updatedAt = Date()
     }
     
+    init(
+        reconstituting id: UUID,
+        title: String,
+        author: String,
+        overview: String?,
+        pages: Int,
+        currentPage: Int,
+        editorial: String?,
+        isbn: String?,
+        ownership: Ownership,
+        status: BookStatus,
+        coverUrl: String?,
+        genre: String?,
+        globalRating: String?,
+        userRating: Double?,
+        userReview: String?,
+        startDate: Date?,
+        endDate: Date?,
+        abandonReason: String?,
+        createdAt: Date,
+        updatedAt: Date,
+    ) {
+        self.id = id
+        self.title = title
+        self.author = author
+        self.overview = overview
+        self.pages = pages
+        self.currentPage = currentPage
+        self.editorial = editorial
+        self.isbn = isbn
+        self.ownership = ownership
+        self.status = status
+        self.coverUrl = coverUrl
+        self.genre = genre
+        self.globalRating = globalRating
+        self.userRating = userRating
+        self.userReview = userReview
+        self.startDate = startDate
+        self.endDate = endDate
+        self.abandonReason = abandonReason
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+    }
+    
     mutating func startReading(at date: Date = Date()) throws {
         guard status == .toRead || status == .wishlist else {
             throw BookDomainError.invalidStateTransition(from: status, to: .reading)
