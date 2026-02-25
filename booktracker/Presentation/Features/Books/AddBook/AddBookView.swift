@@ -35,6 +35,9 @@ struct AddBookView: View {
                         }
                     }
                     
+                    TextField("ISBN", text: $viewModel.isbn)
+                        .keyboardType(.numberPad)
+                    
                     TextField("URL de portada", text: $viewModel.coverUrl)
                         .keyboardType(.URL)
                         .textInputAutocapitalization(.never)

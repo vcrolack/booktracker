@@ -13,4 +13,6 @@ struct CreateBookCommand {
     let pages: Int
     let ownership: Ownership
     let isbn: String?
+    let coverUrl: String?
+    let status: BookStatus
 }

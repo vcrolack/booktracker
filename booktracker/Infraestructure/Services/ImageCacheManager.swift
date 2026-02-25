@@ -37,13 +37,14 @@ actor ImageCacheManager {
         
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
+            
             guard let downloadedImage = UIImage(data: data) else { return nil }
             
             try? data.write(to: fileUrl)
-            
+
             return downloadedImage
         } catch {
-            print("Failed to fetch image from \(url)")
+            print("❌ ImageCacheManager: Error fatal de red -> \(error.localizedDescription)")
             return nil
         }
     }

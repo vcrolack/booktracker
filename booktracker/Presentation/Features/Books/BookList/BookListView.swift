@@ -10,7 +10,7 @@ import SwiftUI
 struct BookListView: View {
     @State var viewModel: BookListViewModel
     @State private var searchText: String = ""
-    @State private var selectedFilter: BookStatus? = .reading
+    @State private var selectedFilter: BookStatus? = nil
     @State private var showingAddBook: Bool = false
     
     private var filteredBooks: [Book] {
@@ -102,7 +102,7 @@ struct BookListView: View {
                 BTEmptyStateView(
                     title: "No hay libros",
                     iconName: "book.fill",
-                    description: "¡Prueba agregando o buscando otros estados!"
+                    description: "¡Prueba agregando libros!"
                 )
             } else {
                 bookList

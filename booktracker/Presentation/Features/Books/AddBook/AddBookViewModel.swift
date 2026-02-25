@@ -45,6 +45,7 @@ class AddBookViewModel {
         }
         
         let totalPages = Int(pages) ?? 0
+        let cleanedUrl = coverUrl.trimmingCharacters(in: .whitespacesAndNewlines)
         
         do {
             let newBook = CreateBookCommand(
@@ -52,7 +53,9 @@ class AddBookViewModel {
                 author: author,
                 pages: totalPages,
                 ownership: ownership,
-                isbn: isbn
+                isbn: isbn,
+                coverUrl: cleanedUrl,
+                status: status
             )
             
             let _ = try await createBookUseCase.execute(command: newBook)

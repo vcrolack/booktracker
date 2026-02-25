@@ -71,7 +71,8 @@ final class BookListViewModel {
                     pages: 271,
                     currentPage: 0,
                     ownership: .owner,
-                    status: .toRead
+                    status: .toRead,
+                    coverUrl: "https://ia800505.us.archive.org/view_archive.php?archive=/35/items/l_covers_0014/l_covers_0014_15.zip&file=0014155660-L.jpg"
                 )
                 
                 // Un relato corto
