@@ -19,17 +19,20 @@ class BookDetailViewModel {
     private let finishReadingBookUseCase: FinishReadingBookUseCaseProtocol
     private let startReadingBookUseCase: StartReadingBookUseCaseProtocol
     private let abandonBookUseCase: AbandonBookUseCaseProtocol
+    private let acquireBookForReading: AcquireBookForReadingUseCaseProtocol
     
     init(
         book: Book,
         finishReadingBookUseCase: FinishReadingBookUseCaseProtocol,
         startReadingBookUseCase: StartReadingBookUseCaseProtocol,
-        abandonBookUseCase: AbandonBookUseCaseProtocol
+        abandonBookUseCase: AbandonBookUseCaseProtocol,
+        acquireBookForReading: AcquireBookForReadingUseCaseProtocol
     ) {
         self.book = book
         self.finishReadingBookUseCase = finishReadingBookUseCase
         self.startReadingBookUseCase = startReadingBookUseCase
         self.abandonBookUseCase = abandonBookUseCase
+        self.acquireBookForReading = acquireBookForReading
     }
     
     // MARK: - Actions
@@ -47,7 +50,7 @@ class BookDetailViewModel {
         isLoading = false
     }
     
-    func finishReading() async throws {
+    func finishReading() async {
         isLoading = true
         errorMessage = nil
         do {
@@ -59,7 +62,7 @@ class BookDetailViewModel {
         isLoading = false
     }
     
-    func abandon() async throws {
+    func abandon() async {
         isLoading = true
         errorMessage = nil
         
@@ -67,6 +70,19 @@ class BookDetailViewModel {
             let reason = "Yes, I'm leaving..."
             try await abandonBookUseCase.execute(bookId: book.id, reason: "Yes, I'm leaving...")
             try book.abandon(reason: reason, at: Date())
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isLoading = false
+    }
+    
+    func acquireBookForReading() async {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            try await acquireBookForReading.execute(bookId: book.id, newOwnership: .owner)
+            try book.acquireForReading(newOwnership: .owner)
         } catch {
             errorMessage = error.localizedDescription
         }

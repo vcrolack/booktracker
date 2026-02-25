@@ -86,7 +86,9 @@ struct BookDetailView: View {
             switch viewModel.book.status {
             case .wishlist:
                 Button(action: {
-                    print("Hola")
+                    Task {
+                        await viewModel.acquireBookForReading()
+                    }
                 }) {
                     actionButtonLabel(title: "Para leer", icon: "book.fill", color: .gray)
                 }
@@ -101,7 +103,7 @@ struct BookDetailView: View {
             case .reading:
                 Button(action: {
                     Task {
-                        try await viewModel.finishReading()
+                        await viewModel.finishReading()
                     }
                     
                 }) {
@@ -110,7 +112,7 @@ struct BookDetailView: View {
                                 
                 Button(action: {
                     Task {
-                        try await viewModel.abandon()
+                        await viewModel.abandon()
                     }
                     }) {
                     actionButtonLabel(title: "Abandonar", icon: "xmark.octagon.fill", color: .red, isSecondary: true)

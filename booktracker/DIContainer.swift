@@ -62,6 +62,10 @@ final class DIContainer {
         return AbandonBookUseCase(repository: makeBookRepository())
     }
     
+    func makeAcquireBookForReadingUseCase() -> AcquireBookForReadingUseCaseProtocol {
+        return AcquireBookForReadingUseCase(repository: makeBookRepository())
+    }
+    
     // TODO: need ReadingSession impl
    // func makeDeleteBookUseCase() -> DeleteBookUseCaseProtocol {
    //     return DeleteBookUseCase(repository: makeBookRepository())
@@ -96,6 +100,7 @@ final class DIContainer {
             finishReadingBookUseCase: makeFinishReadingBookUseCase(),
             startReadingBookUseCase: makeStartReadingBookUseCase(),
             abandonBookUseCase: makeAbandonBookUseCase(),
+            acquireBookForReading: makeAcquireBookForReadingUseCase(),
         )
     }
 }

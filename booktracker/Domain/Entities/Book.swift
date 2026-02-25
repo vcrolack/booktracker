@@ -141,7 +141,7 @@ struct Book: Identifiable, Equatable, Codable {
     }
     
     mutating func startReading(at date: Date = Date()) throws {
-        guard status == .toRead || status == .wishlist else {
+        guard status == .toRead else {
             throw BookDomainError.invalidStateTransition(from: status, to: .reading)
         }
         
@@ -224,4 +224,13 @@ struct Book: Identifiable, Equatable, Codable {
         self.updatedAt = Date()
     }
     
+    mutating func acquireForReading(newOwnership: Ownership) throws {
+        guard status == .wishlist else {
+            throw BookDomainError.invalidStateTransition(from: status, to: .reading)
+        }
+        
+        self.status = .toRead
+        self.ownership = newOwnership
+        self.updatedAt = Date()
+    }
 }
