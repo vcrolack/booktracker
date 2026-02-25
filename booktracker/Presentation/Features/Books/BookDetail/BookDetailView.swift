@@ -23,61 +23,12 @@ struct BookDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(UIColor.systemGroupedBackground))
         .alert("Abandonar libro", isPresented: $viewModel.showingAbandonAlert) {
-            TextField("Razón (Opcional)", text: $viewModel.tempAbandonReason)
-            
-            Button("Cancelar", role: .cancel) {
-                viewModel.tempAbandonReason = ""
-            }
-            
-            Button("Confirmar", role: .destructive) {
-                Task {
-                    await viewModel.confirmAbandone()
-                }
-            }
+            bookAbandonedAlert
         } message: {
             Text("¿Por qué dejas de leer este libro? Puedes dejar una nota para tu yo del futuro.")
         }
         .sheet(isPresented: $viewModel.showingFinishSheet) {
-            NavigationStack {
-                Form {
-                    Section(header: Text("Calificación")) {
-                        Picker("Estrellas", selection: $viewModel.tempRating) {
-                            ForEach(1...5, id: \.self) { rating in
-                                Text(String(repeating: "⭐️", count: rating)).tag(rating)
-                            }
-                        }
-                        .pickerStyle(.navigationLink)
-                    }
-                    
-                    Section(
-                        header: Text("Reseña"),
-                        footer: Text("Opcional: ¿Qué te pareció el libro?")
-                    ) {
-                        TextEditor(text: $viewModel.tempReview)
-                            .frame(minWidth: 100)
-                    }
-                }
-                .navigationTitle("¡Felicidades!")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancelar") {
-                            viewModel.showingFinishSheet = false
-                            viewModel.tempReview = ""
-                        }
-                    }
-                    
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Guardar") {
-                            Task {
-                                await viewModel.confirmFinishReading()
-                                viewModel.showingFinishSheet = false
-                            }
-                        }
-                        .bold()
-                    }
-                }
-            }
+            bookFinishedSheet
         }
         .presentationDetents([.medium, .large])
     }
@@ -88,7 +39,7 @@ struct BookDetailView: View {
             BTCoverView(urlString: viewModel.book.coverUrl, width: 160, height: 240)
                 .frame(width: 160, height: 240)
                 .shadow(radius: 10)
-        
+            
             VStack(spacing: 8) {
                 Text(viewModel.book.title)
                     .font(.title)
@@ -164,10 +115,10 @@ struct BookDetailView: View {
                 }) {
                     actionButtonLabel(title: "Terminar lectura", icon: "checkmark.circle.fill", color: .green)
                 }
-                                
+                
                 Button(action: {
                     viewModel.showingAbandonAlert = true
-                    }) {
+                }) {
                     actionButtonLabel(title: "Abandonar", icon: "xmark.octagon.fill", color: .red, isSecondary: true)
                 }
                 
@@ -200,6 +151,65 @@ struct BookDetailView: View {
                 if let genre = viewModel.book.genre {
                     metadataRow(title: "Género", value: genre)
                 }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var bookFinishedSheet: some View {
+        NavigationStack {
+            Form {
+                Section(header: Text("Calificación")) {
+                    Picker("Estrellas", selection: $viewModel.tempRating) {
+                        ForEach(1...5, id: \.self) { rating in
+                            Text(String(repeating: "⭐️", count: rating)).tag(rating)
+                        }
+                    }
+                    .pickerStyle(.navigationLink)
+                }
+                
+                Section(
+                    header: Text("Reseña"),
+                    footer: Text("Opcional: ¿Qué te pareció el libro?")
+                ) {
+                    TextEditor(text: $viewModel.tempReview)
+                        .frame(minWidth: 100)
+                }
+            }
+            .navigationTitle("¡Felicidades!")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancelar") {
+                        viewModel.showingFinishSheet = false
+                        viewModel.tempReview = ""
+                    }
+                }
+                
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Guardar") {
+                        Task {
+                            await viewModel.confirmFinishReading()
+                            viewModel.showingFinishSheet = false
+                        }
+                    }
+                    .bold()
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var bookAbandonedAlert: some View {
+        TextField("Razón (Opcional)", text: $viewModel.tempAbandonReason)
+        
+        Button("Cancelar", role: .cancel) {
+            viewModel.tempAbandonReason = ""
+        }
+        
+        Button("Confirmar", role: .destructive) {
+            Task {
+                await viewModel.confirmAbandone()
             }
         }
     }
