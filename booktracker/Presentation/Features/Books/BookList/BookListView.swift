@@ -113,24 +113,29 @@ struct BookListView: View {
     private var bookList: some View {
         List {
             ForEach(filteredBooks) { book in
-                BTCardView {
-                    HStack(alignment: .top, spacing: 12) {
-                        BTCoverView(urlString: book.coverUrl)
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(book.title).font(.headline)
-                            Text(book.author).font(.subheadline).foregroundColor(.secondary)
+                NavigationLink {
+                    BookDetailView(viewModel: DIContainer.shared.makeBookDetailViewModel(book: book))
+                } label: {
+                    BTCardView {
+                        HStack(alignment: .top, spacing: 12) {
+                            BTCoverView(urlString: book.coverUrl)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(book.title).font(.headline)
+                                Text(book.author).font(.subheadline).foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            BTBadgeView(
+                                text: book.status.uiLabel,
+                                color: book.status.uiColor,
+                                iconName: book.status.uiIcon
+                            )
                         }
-                        
-                        Spacer()
-                        
-                        BTBadgeView(
-                            text: book.status.uiLabel,
-                            color: book.status.uiColor,
-                            iconName: book.status.uiIcon
-                        )
                     }
                 }
+                .buttonStyle(.plain)
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
             }

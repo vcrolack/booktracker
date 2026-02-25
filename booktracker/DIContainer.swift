@@ -49,6 +49,23 @@ final class DIContainer {
     func makeCreateBookUseCase() -> CreateBookUseCaseProtocol {
         return CreateBookUseCase(repository: makeBookRepository())
     }
+    
+    func makeFinishReadingBookUseCase() -> FinishReadingBookUseCaseProtocol {
+        return FinishReadingBookUseCase(repository: makeBookRepository())
+    }
+    
+    func makeStartReadingBookUseCase() -> StartReadingBookUseCaseProtocol {
+        return StartReadingBookUseCase(repository: makeBookRepository())
+    }
+    
+    func makeAbandonBookUseCase() -> AbandonBookUseCaseProtocol {
+        return AbandonBookUseCase(repository: makeBookRepository())
+    }
+    
+    // TODO: need ReadingSession impl
+   // func makeDeleteBookUseCase() -> DeleteBookUseCaseProtocol {
+   //     return DeleteBookUseCase(repository: makeBookRepository())
+   // }
         
         // MARK: - 📱 ViewModels (La Presentación)
         
@@ -70,5 +87,15 @@ final class DIContainer {
     @MainActor
     func makeAddBookViewModel() -> AddBookViewModel {
         return AddBookViewModel(createBookUseCase: makeCreateBookUseCase())
+    }
+    
+    @MainActor
+    func makeBookDetailViewModel(book: Book) -> BookDetailViewModel {
+        return BookDetailViewModel(
+            book: book,
+            finishReadingBookUseCase: makeFinishReadingBookUseCase(),
+            startReadingBookUseCase: makeStartReadingBookUseCase(),
+            abandonBookUseCase: makeAbandonBookUseCase(),
+        )
     }
 }

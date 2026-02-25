@@ -57,7 +57,17 @@ struct Book: Identifiable, Equatable, Codable {
     let createdAt: Date
     private(set) var updatedAt: Date
     
-    init(id: UUID = UUID(), title: String, author: String, pages: Int, currentPage: Int? = nil, ownership: Ownership, status: BookStatus = .wishlist, coverUrl: String? = nil, isbn: String? = nil) throws {
+    init(
+        id: UUID = UUID(),
+        title: String,
+        author: String,
+        pages: Int,
+        currentPage: Int? = nil,
+        ownership: Ownership,
+        status: BookStatus = .wishlist,
+        coverUrl: String? = nil,
+        isbn: String? = nil
+    ) throws {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedAuthor = author.trimmingCharacters(in: .whitespacesAndNewlines)
         
