@@ -15,6 +15,12 @@ class BookDetailViewModel {
     
     var isLoading: Bool = false
     var errorMessage: String? = nil
+    var showingFinishSheet: Bool = false
+    var showingAbandonAlert: Bool = false
+    
+    var tempRating: Int = 5
+    var tempReview: String = ""
+    var tempAbandonReason: String = ""
     
     private let finishReadingBookUseCase: FinishReadingBookUseCaseProtocol
     private let startReadingBookUseCase: StartReadingBookUseCaseProtocol
@@ -83,6 +89,44 @@ class BookDetailViewModel {
         do {
             try await acquireBookForReading.execute(bookId: book.id, newOwnership: .owner)
             try book.acquireForReading(newOwnership: .owner)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isLoading = false
+    }
+    
+    func confirmFinishReading() async {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            let doubleRating = Double(tempRating)
+            let reviewToSave = tempReview.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : tempReview
+            
+            try await finishReadingBookUseCase.execute(
+                command: FinishReadingBookCommand(bookId: book.id, rating: doubleRating, review: reviewToSave)
+            )
+            try book.finishReading(at: Date(), rating: doubleRating, review: reviewToSave)
+            
+            tempReview = ""
+            tempRating = 5
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isLoading = false
+    }
+    
+    func confirmAbandone() async {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            let reasonToSave = tempAbandonReason.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : tempAbandonReason
+            
+            try await abandonBookUseCase.execute(bookId: book.id, reason: reasonToSave)
+            try book.abandon(reason: reasonToSave, at: Date())
+            
+            tempAbandonReason = ""
         } catch {
             errorMessage = error.localizedDescription
         }
