@@ -11,6 +11,7 @@ struct BookListView: View {
     @State var viewModel: BookListViewModel
     @State private var searchText: String = ""
     @State private var selectedFilter: BookStatus? = .reading
+    @State private var showingAddBook: Bool = false
     
     private var filteredBooks: [Book] {
         if let filter = selectedFilter {
@@ -38,11 +39,19 @@ struct BookListView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        Task { await viewModel.addDummyBooks() }
+                        showingAddBook = true
                     } label: {
                         Image(systemName: "plus.circle.fill").font(.title2)
                     }
                 }
+            }
+            .sheet(isPresented: $showingAddBook) {
+                Task {
+                    await viewModel.fetchBooks()
+                }
+            } content: {
+                AddBookView(viewModel: DIContainer.shared.makeAddBookViewModel())
+                    .presentationDragIndicator(.visible)
             }
         }
     }

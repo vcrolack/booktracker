@@ -45,6 +45,10 @@ final class DIContainer {
             return CreateBookUseCase(repository: makeBookRepository())
         }
         */
+    
+    func makeCreateBookUseCase() -> CreateBookUseCaseProtocol {
+        return CreateBookUseCase(repository: makeBookRepository())
+    }
         
         // MARK: - 📱 ViewModels (La Presentación)
         
@@ -61,5 +65,10 @@ final class DIContainer {
     @MainActor
     func makeBookListViewModel() -> BookListViewModel {
         return BookListViewModel(repository: makeBookRepository())
+    }
+    
+    @MainActor
+    func makeAddBookViewModel() -> AddBookViewModel {
+        return AddBookViewModel(createBookUseCase: makeCreateBookUseCase())
     }
 }
