@@ -50,7 +50,7 @@ struct BookListView: View {
                     await viewModel.fetchBooks()
                 }
             } content: {
-                AddBookView(viewModel: DIContainer.shared.makeAddBookViewModel())
+                BookFormView(viewModel: DIContainer.shared.makeBookFormViewModel())
                     .presentationDragIndicator(.visible)
             }
         }

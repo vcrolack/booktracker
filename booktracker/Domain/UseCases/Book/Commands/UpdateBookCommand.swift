@@ -15,6 +15,7 @@ struct UpdateBookCommand {
     var editorial: String?
     var isbn: String?
     var ownership: Ownership?
-    var coverURL: String?
+    var coverUrl: String?
     var genre: String?
+    var overview: String?
 }

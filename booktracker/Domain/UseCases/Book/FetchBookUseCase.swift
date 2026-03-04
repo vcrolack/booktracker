@@ -8,7 +8,7 @@
 import Foundation
 
 protocol FetchBookUseCaseProtocol {
-    func execute(bookId: UUID) async throws -> Book
+    func execute(bookId: UUID) async throws -> Book?
 }
 
 final class FetchBookUseCase: FetchBookUseCaseProtocol {
@@ -18,7 +18,7 @@ final class FetchBookUseCase: FetchBookUseCaseProtocol {
         self.repository = repository
     }
     
-    func execute(bookId: UUID) async throws -> Book {
+    func execute(bookId: UUID) async throws -> Book? {
         guard let book = try await repository.fetchBook(by: bookId) else {
             throw RepositoryError.notFound
         }

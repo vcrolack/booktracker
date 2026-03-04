@@ -17,6 +17,7 @@ class BookDetailViewModel {
     var errorMessage: String? = nil
     var showingFinishSheet: Bool = false
     var showingAbandonAlert: Bool = false
+    var showingEditSheet: Bool = false
     
     var tempRating: Int = 5
     var tempReview: String = ""
@@ -26,19 +27,22 @@ class BookDetailViewModel {
     private let startReadingBookUseCase: StartReadingBookUseCaseProtocol
     private let abandonBookUseCase: AbandonBookUseCaseProtocol
     private let acquireBookForReading: AcquireBookForReadingUseCaseProtocol
+    private let fetchBookUseCase: FetchBookUseCaseProtocol
     
     init(
         book: Book,
         finishReadingBookUseCase: FinishReadingBookUseCaseProtocol,
         startReadingBookUseCase: StartReadingBookUseCaseProtocol,
         abandonBookUseCase: AbandonBookUseCaseProtocol,
-        acquireBookForReading: AcquireBookForReadingUseCaseProtocol
+        acquireBookForReading: AcquireBookForReadingUseCaseProtocol,
+        fetchBookUseCase: FetchBookUseCaseProtocol,
     ) {
         self.book = book
         self.finishReadingBookUseCase = finishReadingBookUseCase
         self.startReadingBookUseCase = startReadingBookUseCase
         self.abandonBookUseCase = abandonBookUseCase
         self.acquireBookForReading = acquireBookForReading
+        self.fetchBookUseCase = fetchBookUseCase
     }
     
     // MARK: - Actions
@@ -131,6 +135,16 @@ class BookDetailViewModel {
             errorMessage = error.localizedDescription
         }
         isLoading = false
+    }
+    
+    func refreshBook() async {
+        do {
+            if let updatedBook = try await fetchBookUseCase.execute(bookId: book.id) {
+                self.book = updatedBook
+            }
+        } catch {
+            print("Error al refrescar el libro: \(error.localizedDescription)")
+        }
     }
     
     func deleteBook() {

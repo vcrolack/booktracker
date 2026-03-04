@@ -66,7 +66,10 @@ struct Book: Identifiable, Equatable, Codable {
         ownership: Ownership,
         status: BookStatus = .wishlist,
         coverUrl: String? = nil,
-        isbn: String? = nil
+        isbn: String? = nil,
+        editorial: String? = nil,
+        genre: String? = nil,
+        overview: String? = nil,
     ) throws {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedAuthor = author.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -94,6 +97,10 @@ struct Book: Identifiable, Equatable, Codable {
         self.coverUrl = coverUrl
         self.createdAt = Date()
         self.updatedAt = Date()
+        self.isbn = isbn
+        self.editorial = editorial
+        self.genre = genre
+        self.overview = overview
     }
     
     init(
@@ -189,7 +196,8 @@ struct Book: Identifiable, Equatable, Codable {
         isbn: String? = nil,
         ownership: Ownership? = nil,
         coverUrl: String? = nil,
-        genre: String? = nil
+        genre: String? = nil,
+        overview: String? = nil,
     ) throws {
         if let newTitle = title {
             let trimmed = newTitle.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -220,6 +228,7 @@ struct Book: Identifiable, Equatable, Codable {
         if let newOwnership = ownership { self.ownership = newOwnership }
         if let newCoverUrl = coverUrl { self.coverUrl = newCoverUrl }
         if let newGenre = genre { self.genre = newGenre }
+        if let newOverview = overview { self.overview = newOverview }
         
         self.updatedAt = Date()
     }

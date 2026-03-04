@@ -12,7 +12,12 @@ struct CreateBookCommand {
     let author: String
     let pages: Int
     let ownership: Ownership
+    let status: BookStatus
+    
     let isbn: String?
     let coverUrl: String?
-    let status: BookStatus
+    let editorial: String?
+    let genre: String?
+    let overview: String?
+    let currentPage: Int?
 }

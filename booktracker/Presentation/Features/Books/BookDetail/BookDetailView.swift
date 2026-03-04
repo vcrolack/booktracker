@@ -16,12 +16,20 @@ struct BookDetailView: View {
                 headerSection
                 progressSection
                 actionsSection
+                milestonesSection
                 metadataSection
             }
             .padding(.vertical)
         }
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(UIColor.systemGroupedBackground))
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button("Editar") {
+                    viewModel.showingEditSheet = true
+                }
+            }
+        }
         .alert("Abandonar libro", isPresented: $viewModel.showingAbandonAlert) {
             bookAbandonedAlert
         } message: {
@@ -29,6 +37,13 @@ struct BookDetailView: View {
         }
         .sheet(isPresented: $viewModel.showingFinishSheet) {
             bookFinishedSheet
+        }
+        .sheet(isPresented: $viewModel.showingEditSheet, onDismiss: {
+            Task {
+                await viewModel.refreshBook()
+            }
+        }) {
+            BookFormView(viewModel: DIContainer.shared.makeBookFormViewModel(book: viewModel.book))
         }
         .presentationDetents([.medium, .large])
     }
@@ -62,7 +77,10 @@ struct BookDetailView: View {
     
     @ViewBuilder
     private var progressSection: some View {
-        if viewModel.book.pages > 0 {
+        switch viewModel.book.status {
+        case .wishlist, .toRead:
+            EmptyView()
+        case .reading, .finalized, .abandoned:
             VStack(spacing: 8) {
                 HStack {
                     Text("Progreso")
@@ -151,6 +169,50 @@ struct BookDetailView: View {
                 if let genre = viewModel.book.genre {
                     metadataRow(title: "Género", value: genre)
                 }
+                
+                
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var milestonesSection: some View {
+        //viewModel.book.startDate != nil || viewModel.book.userRating != nil || viewModel.book.abandonReason != nil
+        if true {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Mi lectura")
+                    .font(.headline)
+                    .padding(.horizontal)
+                
+                VStack(spacing: 0) {
+                    if let startDate = viewModel.book.startDate {
+                        metadataRow(title: "Iniciado el", value: startDate.formatted(date: .abbreviated, time: .omitted))
+                    }
+                    
+                    if let endDate = viewModel.book.endDate {
+                        if viewModel.book.startDate != nil { Divider().padding(.leading) }
+                        let title = viewModel.book.status == .abandoned ? "Abandonado el" : "Finalizado el"
+                        metadataRow(title: title, value: endDate.formatted(date: .abbreviated, time: .omitted))
+                    }
+                    
+                    if let userRating = viewModel.book.userRating {
+                        if viewModel.book.startDate != nil || viewModel.book.endDate != nil { Divider().padding(.leading) }
+                        metadataRow(title: "Calificación", value: String(repeating: "⭐️", count: Int(userRating)))
+                    }
+                    
+                    if let abandonReason = viewModel.book.abandonReason, !abandonReason.isEmpty {
+                        Divider().padding(.leading)
+                        metadataTextRow(title: "Razón de abandono", text: abandonReason)
+                    }
+                    
+                    if let review = viewModel.book.userReview, !review.isEmpty {
+                        Divider().padding(.leading)
+                        metadataTextRow(title: "Reseña", text: review)
+                    }
+                }
+                .background(Color(UIColor.systemBackground))
+                .cornerRadius(12)
+                .padding(.horizontal)
             }
         }
     }
@@ -234,6 +296,17 @@ struct BookDetailView: View {
         }
         .padding()
     }
+    
+    private func metadataTextRow(title: String, text: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title).foregroundColor(.secondary)
+            Text(text)
+                .fontWeight(.medium)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
 }
 
 #Preview {
@@ -242,7 +315,7 @@ struct BookDetailView: View {
             title: "Percy Jackson",
             author: "Rick Riordan",
             pages: 321,
-            currentPage: 100,
+            currentPage: 0,
             ownership: .owner,
             status: .reading,
             coverUrl: "https://images.cdn2.buscalibre.com/fit-in/360x360/89/0d/890d2153424a5a2c45496e4c3de98161.jpg",

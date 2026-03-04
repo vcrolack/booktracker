@@ -29,8 +29,9 @@ final class UpdateBookDetailsUseCase: UpdateBookDetailsUseCaseProtocol {
                                 editorial: command.editorial,
                                 isbn: command.isbn,
                                 ownership: command.ownership,
-                                coverUrl: command.coverURL,
-                                genre: command.genre
+                                coverUrl: command.coverUrl,
+                                genre: command.genre,
+                                overview: command.overview
         )
         
         try await repository.save(book: book)

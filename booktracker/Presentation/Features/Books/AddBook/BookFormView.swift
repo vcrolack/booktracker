@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct AddBookView: View {
+struct BookFormView: View {
     @Environment(\.dismiss) private var dismiss
     
-    @State var viewModel: AddBookViewModel
+    @State var viewModel: BookFormViewModel
     
     var body: some View {
         NavigationStack {
@@ -19,9 +19,11 @@ struct AddBookView: View {
                 Section(header: Text("Información del libro")) {
                     TextField("Título", text: $viewModel.title)
                         .textInputAutocapitalization(.words)
+                        .autocorrectionDisabled()
                     
                     TextField("Autor", text: $viewModel.author)
                         .textInputAutocapitalization(.words)
+                        .autocorrectionDisabled()
                     
                     TextField("Cantidad de páginas", text: $viewModel.pages)
                         .keyboardType(.numberPad)
@@ -35,7 +37,23 @@ struct AddBookView: View {
                         }
                     }
                     
+                    Picker("Propiedad", selection: $viewModel.ownership) {
+                        ForEach(Ownership.allCases, id: \.self) { ownership in
+                            Text(ownership.rawValue).tag(ownership)
+                        }
+                    }
+                    
                     TextField("ISBN", text: $viewModel.isbn)
+                        .keyboardType(.numberPad)
+                    
+                    TextField("Editorial", text: $viewModel.editorial)
+                        .textInputAutocapitalization(.words)
+                        .autocorrectionDisabled()
+                    
+                    TextField("Género", text: $viewModel.genre)
+                        .textInputAutocapitalization(.sentences)
+                    
+                    TextField("Página actual", text: $viewModel.currentPage)
                         .keyboardType(.numberPad)
                     
                     TextField("URL de portada", text: $viewModel.coverUrl)
@@ -44,7 +62,12 @@ struct AddBookView: View {
                         .autocorrectionDisabled()
                 }
                 
-                // Sección 3: Manejo de errores
+                Section(header: Text("Sinopsis"), footer: Text("Opcional: Agrega de qué va el libro.")) {
+                    TextEditor(text: $viewModel.overview)
+                        .frame(minWidth: 100)
+                }
+                
+                // Sección 4: Manejo de errores
                 if let errorMessage = viewModel.errorMessage {
                     Section {
                         HStack {
@@ -56,7 +79,7 @@ struct AddBookView: View {
                     }
                 }
             }
-            .navigationTitle("Nuevo libro")
+            .navigationTitle(viewModel.isEditing ? "Editar libro" : "Agregar libro")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -66,7 +89,7 @@ struct AddBookView: View {
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Agregar") {
+                    Button(viewModel.isEditing ? "Guardar" : "Agregar") {
                         Task {
                             let success = await viewModel.saveBook()
                             if success {
@@ -91,10 +114,21 @@ struct AddBookView: View {
                     }
                 }
             }
+            .alert("Error al guardar", isPresented: Binding<Bool>(
+                get: { viewModel.errorMessage != nil},
+                set: { if !$0 {viewModel.errorMessage = nil } }
+                )
+            ) {
+                Button("Entendido", role: .cancel) {}
+            } message: {
+                if let error = viewModel.errorMessage {
+                    Text(error)
+                }
+            }
         }
     }
 }
 
 #Preview {
-    AddBookView(viewModel: DIContainer.shared.makeAddBookViewModel())
+    BookFormView(viewModel: DIContainer.shared.makeBookFormViewModel())
 }

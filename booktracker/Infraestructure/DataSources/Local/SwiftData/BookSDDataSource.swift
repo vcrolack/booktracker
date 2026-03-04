@@ -22,11 +22,45 @@ final class BookSDDataSource: BookLocalDataSourceProtocol {
         self.context = context
     }
     
-    func save (book: Book) throws {
+    func save(book: Book) throws {
         do {
-            let bookSD = BookMapper.toDataModel(from: book)
-            context.insert(bookSD)
+            let bookId = book.id
+            
+            // 1. 🔍 Buscamos si el libro ya existe en la base de datos
+            var descriptor = FetchDescriptor<BookSD>(predicate: #Predicate { $0.id == bookId })
+            descriptor.fetchLimit = 1
+            
+            if let existingBookSD = try context.fetch(descriptor).first {
+                // 🔄 2A. MODO EDICIÓN: Mutamos el objeto que SwiftData ya está rastreando
+                existingBookSD.title = book.title
+                existingBookSD.author = book.author
+                existingBookSD.overview = book.overview
+                existingBookSD.pages = book.pages
+                existingBookSD.currentPage = book.currentPage
+                existingBookSD.editorial = book.editorial
+                existingBookSD.isbn = book.isbn
+                existingBookSD.statusRawValue = book.status.rawValue
+                existingBookSD.ownershipRawValue = book.ownership.rawValue
+                existingBookSD.coverUrl = book.coverUrl
+                existingBookSD.genre = book.genre
+                existingBookSD.globalRating = book.globalRating
+                existingBookSD.userRating = book.userRating
+                existingBookSD.userReview = book.userReview
+                existingBookSD.startDate = book.startDate
+                existingBookSD.endDate = book.endDate
+                existingBookSD.abandonReason = book.abandonReason
+                existingBookSD.updatedAt = book.updatedAt
+                // 💡 Nota: No actualizamos 'createdAt' para no perder la fecha original
+                
+            } else {
+                // ✨ 2B. MODO CREACIÓN: Es un libro totalmente nuevo, lo insertamos
+                let newBookSD = BookMapper.toDataModel(from: book)
+                context.insert(newBookSD)
+            }
+            
+            // 3. 💾 Guardamos los cambios de contexto (SwiftData sabrá si hacer INSERT o UPDATE)
             try context.save()
+            
         } catch {
             throw DataSourceError.saveFailed(error.localizedDescription)
         }
