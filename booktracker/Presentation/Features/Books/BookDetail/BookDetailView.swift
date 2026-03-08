@@ -158,6 +158,9 @@ struct BookDetailView: View {
                 metadataRow(title: "Propiedad", value: viewModel.book.ownership.rawValue.capitalized)
                 Divider().padding(.leading)
                 
+                metadataRow(title: "Páginas", value: "\(viewModel.book.pages)")
+                Divider().padding(.leading)
+                
                 if let isbn = viewModel.book.isbn {
                     metadataRow(title: "ISBN", value: isbn)
                 }
@@ -168,6 +171,10 @@ struct BookDetailView: View {
                 
                 if let genre = viewModel.book.genre {
                     metadataRow(title: "Género", value: genre)
+                }
+                
+                if let overview = viewModel.book.overview {
+                    ExpandableSynopsisWidget(text: overview)
                 }
                 
                 

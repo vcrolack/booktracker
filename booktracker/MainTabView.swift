@@ -39,7 +39,7 @@ struct MainTabView: View {
             
             Tab(value: .search, role: .search) {
                 NavigationStack {
-                    Text("Resultados de búsqueda")
+                    SearchView(viewModel: DIContainer.shared.makeSearchViewModel())
                 }
                 .searchable(text: $searchText, prompt: "Buscar libros")
             }

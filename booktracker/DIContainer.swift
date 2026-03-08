@@ -130,4 +130,13 @@ final class DIContainer {
     func makeHomeViewModel() -> HomeViewModel {
         return HomeViewModel(fetchBooksUseCase: makeFetchBooksUseCase())
     }
+    
+    @MainActor
+    func makeSearchViewModel() -> SearchViewModel {
+        return SearchViewModel(
+            searchUseCase: makeSearchExternalBooksUseCase(),
+            createBookUseCase: makeCreateBookUseCase(),
+            fetchBooksUseCase: makeFetchBooksUseCase(),
+        )
+    }
 }
