@@ -74,6 +74,10 @@ final class DIContainer {
         return FetchBookUseCase(repository: makeBookRepository())
     }
     
+    func makeFetchBooksUseCase() -> FetchBooksUseCaseProtocol {
+        return FetchBooksUseCase(repository: makeBookRepository())
+    }
+    
     // TODO: need ReadingSession impl
    // func makeDeleteBookUseCase() -> DeleteBookUseCaseProtocol {
    //     return DeleteBookUseCase(repository: makeBookRepository())
@@ -111,5 +115,10 @@ final class DIContainer {
             acquireBookForReading: makeAcquireBookForReadingUseCase(),
             fetchBookUseCase: makeFetchBookUseCase(),
         )
+    }
+    
+    @MainActor
+    func makeHomeViewModel() -> HomeViewModel {
+        return HomeViewModel(fetchBooksUseCase: makeFetchBooksUseCase())
     }
 }

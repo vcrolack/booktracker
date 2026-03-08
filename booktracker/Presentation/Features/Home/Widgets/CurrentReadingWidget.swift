@@ -1,0 +1,93 @@
+//
+//  CurrentReadingWidget.swift
+//  booktracker
+//
+//  Created by Victor rolack on 06-03-26.
+//
+
+import SwiftUI
+
+struct CurrentReadingWidget: View {
+    let book: Book
+    
+    private var progressPercentage: Double {
+        guard book.pages > 0 else { return 0 }
+        return Double(book.currentPage) / Double(book.pages)
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .top, spacing: 16) {
+                BTCoverView(urlString: book.coverUrl, width: 80, height: 120)
+                    .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(book.title)
+                        .font(.headline)
+                        .lineLimit(2)
+                    
+                    Text(book.author)
+                        .font(.subheadline)
+                        .lineLimit(2)
+                    
+                    Spacer(minLength: 0)
+                    
+                    VStack(spacing: 6) {
+                        HStack {
+                            Text("\(book.currentPage) / \(book.pages) pág.")
+                                .font(.caption2)
+                                .fontWeight(.medium)
+                            Spacer()
+                            Text("\(Int(progressPercentage * 100))%")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        ProgressView(value: progressPercentage)
+                            .tint(.blue)
+                    }
+                }
+            }.frame(height: 120)
+            
+            Button(action: {
+                print("Abrir modal de ReadingSession para: \(book.title)")
+            }) {
+                HStack {
+                    Image(systemName: "bookmark.fill")
+                    Text("Registrar lectura")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.blue.opacity(0.1))
+                .foregroundColor(.blue)
+                .cornerRadius(10)
+            }
+        }
+        .padding(16)
+        .background(Color(UIColor.systemBackground))
+        .cornerRadius(16)
+        .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+    }
+}
+
+#Preview {
+    let mockBook = try! Book(
+        id: UUID(),
+        title: "Neuromante",
+        author: "William Gibson",
+        pages: 350,
+        currentPage: 120,
+        ownership: .owner,
+        status: .reading,
+        coverUrl: "https://images.cdn2.buscalibre.com/fit-in/360x360/89/0d/890d2153424a5a2c45496e4c3de98161.jpg",
+        isbn: "9788445074024"
+    )
+    
+    return ZStack {
+        Color(UIColor.systemGroupedBackground).ignoresSafeArea()
+        
+        CurrentReadingWidget(book: mockBook)
+            .padding()
+    }
+}
