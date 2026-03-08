@@ -78,10 +78,19 @@ final class DIContainer {
         return FetchBooksUseCase(repository: makeBookRepository())
     }
     
+    func makeSearchExternalBooksUseCase() -> SearchExternalBooksUseCaseProtocol {
+        return SearchExternalBooksUseCase(provider: makeExternalBookProvider())
+    }
+    
     // TODO: need ReadingSession impl
    // func makeDeleteBookUseCase() -> DeleteBookUseCaseProtocol {
    //     return DeleteBookUseCase(repository: makeBookRepository())
    // }
+    
+    // MARK: - 🌐 Providers (Capa de Datos Externa)
+    func makeExternalBookProvider() -> ExternalBookProviderProtocol {
+        return GoogleBooksProvider()
+    }
         
         // MARK: - 📱 ViewModels (La Presentación)
         
