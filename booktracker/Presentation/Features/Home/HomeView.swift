@@ -102,7 +102,9 @@ struct HomeView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 16) {
                     ForEach(viewModel.upNextBooks) { book in
-                        UpNextBookCell(book: book)
+                        NavigationLink(destination: BookDetailView(viewModel: DIContainer.shared.makeBookDetailViewModel(book: book))) {
+                            UpNextBookCell(book: book)
+                        }
                     }
                 }
                 .padding(.horizontal)
@@ -120,7 +122,9 @@ struct HomeView: View {
             
             VStack(spacing: 12) {
                 ForEach(viewModel.recentlyFinishedBooks) { book in
-                    FinishedBookCell(book: book)
+                    NavigationLink(destination: BookDetailView(viewModel: DIContainer.shared.makeBookDetailViewModel(book: book))) {
+                        FinishedBookCell(book: book)
+                    }
                 }
             }
             .padding(.horizontal)
