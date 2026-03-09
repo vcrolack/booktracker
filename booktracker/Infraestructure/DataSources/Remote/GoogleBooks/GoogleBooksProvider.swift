@@ -16,16 +16,41 @@ class GoogleBooksProvider: ExternalBookProviderProtocol {
     }
     
     func searchBooks(query: String) async throws -> [Book] {
-        guard let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let url = URL(string: "\(baseUrl)?q=\(encodedQuery)&maxResults=40") else{
+        guard var components = URLComponents(string: baseUrl) else {
+            throw ExternalProviderError.invalidUrl
+        }
+        
+        guard let apiKey = Bundle.main.object(forInfoDictionaryKey: "GoogleBooksAPIKey") as? String,
+              !apiKey.isEmpty else {
+            print("[GOOGLE BOOKS PROVIDER] CRITICAL ERROR: API Key not provided")
+            throw ExternalProviderError.invalidUrl
+        }
+        
+        components.queryItems = [
+            URLQueryItem(name: "q", value: query),
+            URLQueryItem(name: "maxResults", value: "40"),
+            URLQueryItem(name: "key", value: apiKey)
+        ]
+
+        guard let url = components.url else {
             throw ExternalProviderError.invalidUrl
         }
         
         do {
             let (data, response) = try await session.data(from: url)
             
-            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-                throw ExternalProviderError.networkError(NSError(domain: "Invalid HTTP response", code: 0))
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw ExternalProviderError.networkError(NSError(domain: "No es una respuesta HTTP", code: 0))
+            }
+            
+            guard (200...299).contains(httpResponse.statusCode) else {
+                let googleErrorBody = String(data: data, encoding: .utf8) ?? "Cuerpo vacío"
+                print("🚨 ALERTA ROJA DE LA API 🚨")
+                print("URL intentada: \(url.absoluteString)")
+                print("Status Code: \(httpResponse.statusCode)")
+                print("Mensaje de Google:\n\(googleErrorBody)")
+                
+                throw ExternalProviderError.networkError(NSError(domain: "HTTP Error", code: httpResponse.statusCode))
             }
             
             let decoder = JSONDecoder()

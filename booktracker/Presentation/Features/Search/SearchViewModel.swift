@@ -67,14 +67,14 @@ class SearchViewModel {
                 self.books = results
                 self.isLoading = false
             } catch is CancellationError {
-                print("Search cancelled by user (typing too fast")
+                print("Search cancelled by user (typing too fast)")
             } catch {
                 if Task.isCancelled { return }
                 
                 self.isLoading = false
                 self.errorMessage = "No pudimos encontrar libros. Intenta otra vez."
                 self.books = []
-                print("[SEARCH VIEW MODEL] Error in search: \(error.localizedDescription)")
+                print("[SEARCH VIEW MODEL] Error in search: \(error)")
             }
         }
     }

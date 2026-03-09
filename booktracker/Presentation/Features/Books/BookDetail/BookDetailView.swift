@@ -184,8 +184,7 @@ struct BookDetailView: View {
     
     @ViewBuilder
     private var milestonesSection: some View {
-        //viewModel.book.startDate != nil || viewModel.book.userRating != nil || viewModel.book.abandonReason != nil
-        if true {
+        if viewModel.book.startDate != nil || viewModel.book.userRating != nil || viewModel.book.abandonReason != nil {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Mi lectura")
                     .font(.headline)
