@@ -39,7 +39,7 @@ struct BookFormView: View {
                     
                     Picker("Propiedad", selection: $viewModel.ownership) {
                         ForEach(Ownership.allCases, id: \.self) { ownership in
-                            Text(ownership.rawValue).tag(ownership)
+                            Text(ownership.uiLabel).tag(ownership)
                         }
                     }
                     

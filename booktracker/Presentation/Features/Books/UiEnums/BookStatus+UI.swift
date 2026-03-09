@@ -29,6 +29,12 @@ extension BookStatus {
     }
     
     var uiLabel: String {
-        return self.rawValue
+        switch self {
+        case .wishlist: return "Deseados"
+        case .toRead: return "Por leer"
+        case .reading: return "Leyendo"
+        case .finalized: return "Leído"
+        case .abandoned: return "Abandonado"
+        }
     }
 }

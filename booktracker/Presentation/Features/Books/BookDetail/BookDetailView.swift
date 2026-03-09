@@ -155,7 +155,7 @@ struct BookDetailView: View {
                 .padding(.horizontal)
             
             VStack(spacing: 0) {
-                metadataRow(title: "Propiedad", value: viewModel.book.ownership.rawValue.capitalized)
+                metadataRow(title: "Propiedad", value: viewModel.book.ownership.uiLabel.capitalized)
                 Divider().padding(.leading)
                 
                 metadataRow(title: "Páginas", value: "\(viewModel.book.pages)")
