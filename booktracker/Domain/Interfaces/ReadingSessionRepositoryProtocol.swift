@@ -18,6 +18,9 @@ struct ReadingSessionFilter {
         case startTimeAscending
         case startTimeDescending
         case endPageDescending
+        case endPageAscending
+        case endTimeDescending
+        case endTimeAscending
     }
 }
 

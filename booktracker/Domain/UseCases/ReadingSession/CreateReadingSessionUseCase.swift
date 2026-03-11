@@ -28,12 +28,8 @@ final class CreateReadingSessionUseCase: CreateReadingSessionUseCaseProtocol {
         let newSession = try ReadingSession(
             bookId: command.bookId,
             startTime: command.startTime,
-            endTime: command.endTime,
             startPage: command.startPage,
-            endPage: command.endPage
         )
-        
-        try book.updateMetadata(currentPage: command.endPage)
         
         try await bookRepository.save(book: book)
         try await readingSessionRepository.save(session: newSession)
