@@ -73,6 +73,8 @@ struct BookDetailView: View {
                 )
             }
         }
+        .frame(maxWidth: .infinity)
+        .padding(.bottom, 30)
     }
     
     @ViewBuilder

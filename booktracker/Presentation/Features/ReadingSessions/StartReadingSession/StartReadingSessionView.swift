@@ -32,11 +32,9 @@ struct StartReadingSessionView: View {
                 }
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    // Botón Izquierdo: Terminar (solo visible si estamos trackeando y el timer está pausado o corriendo)
                     ToolbarItem(placement: .topBarTrailing) {
                         if currentStep == .tracking {
                             Button("Terminar") {
-                                // Pausamos el timer de fondo antes de pasar a la pantalla final
                                 if viewModel.isReading {
                                     viewModel.toggleSession()
                                 }
@@ -44,15 +42,12 @@ struct StartReadingSessionView: View {
                                     currentStep = .finishing
                                 }
                             }
-                            // Opcional: Deshabilitar si no ha pasado ni 1 segundo
                             .disabled(viewModel.elapsedSeconds == 0)
                         }
                     }
                     
-                    // Botón Derecho: Cerrar
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
-                            // Si está corriendo, podrías mostrar un Alert de confirmación antes de cerrar
                             dismiss()
                         } label: {
                             Image(systemName: "xmark.circle.fill")
@@ -79,25 +74,29 @@ struct StartReadingSessionView: View {
     }
     
     private var trackingView: some View {
-        VStack(spacing: 40) {
-            BTCoverView(urlString: viewModel.book.coverUrl, width: 150, height: 220)
-                .shadow(radius: 5)
-            
-            BTTimerView(elapsedSeconds: viewModel.elapsedSeconds)
-            
-            BTLiquidButton(
-                systemName: viewModel.isReading ? "pause.fill" : "play.fill",
-                color: viewModel.isReading ? .orange : .green
-            ) {
-                viewModel.toggleSession()
+            ZStack {
+                BTAmbientBackgroundView(urlString: viewModel.book.coverUrl)
+                    .ignoresSafeArea()
+                
+                VStack(spacing: 40) {
+                    BTCoverView(urlString: viewModel.book.coverUrl ?? "", width: 150, height: 220)
+                        .shadow(color: .black.opacity(0.3), radius: 15, y: 8)
+                    
+                    BTTimerView(elapsedSeconds: viewModel.elapsedSeconds)
+                    
+                    BTLiquidButton(
+                        systemName: viewModel.isReading ? "pause.fill" : "play.fill",
+                        color: viewModel.isReading ? .orange : .green
+                    ) {
+                        viewModel.toggleSession()
+                    }
+                    .padding(.bottom, 60)
+                    
+                    Spacer()
+                }
+                .padding(.top, 40)
             }
-            // Pequeño ajuste para centrarlo visualmente
-            .padding(.bottom, 60)
-            
-            Spacer()
         }
-        .padding(.top, 40)
-    }
     
     private var finishingView: some View {
         VStack(spacing: 30) {
