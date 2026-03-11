@@ -10,6 +10,7 @@ import SwiftUI
 struct HomeView: View {
     @State var viewModel: HomeViewModel
     @State private var showingAddBook: Bool = false
+    @State private var selectedBookForSession: Book? = nil
     
     var body: some View {
         NavigationStack {
@@ -30,10 +31,20 @@ struct HomeView: View {
                 .sheet(isPresented: $showingAddBook) {
                     BookFormView(viewModel: DIContainer.shared.makeBookFormViewModel())
                 }
+                .sheet(item: $selectedBookForSession) { book in
+                    StartReadingSessionView(viewModel: DIContainer.shared.makeStartReadingSessionViewModel(book: book, finishSessionUseCase: DIContainer.shared.makeFinishReadingSessionUseCase(), createSessionUseCase: DIContainer.shared.makeCreateReadingSessionUseCase()))
+                }
             }
             .background(Color(UIColor.systemBackground))
             .task {
                 await viewModel.loadDashboard()
+            }
+            .onChange(of: selectedBookForSession) { oldValue, newValue in
+                if oldValue != nil && newValue == nil {
+                    Task {
+                        await viewModel.loadDashboard()
+                    }
+                }
             }
         }
     }
@@ -80,7 +91,9 @@ struct HomeView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 16) {
                         ForEach(viewModel.currentReadingBooks) { book in
-                            CurrentReadingWidget(book: book)
+                            CurrentReadingWidget(book: book) {
+                                selectedBookForSession = book
+                            }
                                 .containerRelativeFrame(.horizontal) { length, _ in
                                     length - 48
                                 }

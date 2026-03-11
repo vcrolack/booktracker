@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CurrentReadingWidget: View {
     let book: Book
+    let onStartReading: () -> Void
     
     private var progressPercentage: Double {
         guard book.pages > 0 else { return 0 }
@@ -50,7 +51,7 @@ struct CurrentReadingWidget: View {
             }.frame(height: 120)
             
             Button(action: {
-                print("Abrir modal de ReadingSession para: \(book.title)")
+                onStartReading()
             }) {
                 HStack {
                     Image(systemName: "bookmark.fill")
@@ -84,10 +85,10 @@ struct CurrentReadingWidget: View {
         isbn: "9788445074024"
     )
     
-    return ZStack {
+    ZStack {
         Color(UIColor.systemGroupedBackground).ignoresSafeArea()
         
-        CurrentReadingWidget(book: mockBook)
+        CurrentReadingWidget(book: mockBook, onStartReading: {})
             .padding()
     }
 }

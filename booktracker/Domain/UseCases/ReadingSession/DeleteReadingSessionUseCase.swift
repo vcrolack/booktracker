@@ -32,7 +32,7 @@ final class DeleteReadingSessionUseCase: DeleteReadingSessionUseCaseProtocol {
         
         let remainingSessions = try await repository.fetchSessions(matching: ReadingSessionFilter(bookId: bookId))
         
-        let recalculatedCurrentPage = remainingSessions.map { $0.endPage }.max() ?? 0
+        let recalculatedCurrentPage = remainingSessions.compactMap { $0.endPage }.max() ?? 0
         
         try await updateBookProgressUseCase.execute(bookId: bookId, newProgress: recalculatedCurrentPage)
         

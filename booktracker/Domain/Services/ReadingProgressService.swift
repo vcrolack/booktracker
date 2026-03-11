@@ -45,11 +45,13 @@ struct ReadingProgressService: ReadingProgressServiceProtocol {
         
         // 2. Minutes per day calculate (today)
         let todaySessions = sessions.filter { session in
-            calendar.isDate(session.endTime, inSameDayAs: currentDate)
+            guard let endTime = session.endTime else { return false }
+            return calendar.isDate(endTime, inSameDayAs: currentDate)
         }
         
         let totalSecondsToday = todaySessions.reduce(0.0) { total, session in
-            total + session.endTime.timeIntervalSince(session.startTime)
+            guard let endTime = session.endTime else { return total }
+            return total + endTime.timeIntervalSince(session.startTime)
         }
         let minutesReadToday = Int(totalSecondsToday / 60.0)
         

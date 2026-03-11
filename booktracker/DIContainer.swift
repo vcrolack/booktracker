@@ -18,6 +18,7 @@ final class DIContainer {
         do {
             let schema = Schema([
                 BookSD.self,
+                ReadingSessionSD.self,
             ])
             
             let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
@@ -32,8 +33,16 @@ final class DIContainer {
         return BookSDDataSource(context: modelContainer.mainContext)
     }
     
+    private func makeReadingSessionDataSource() -> ReadingSessionLocalDataSourceProtocol {
+        return ReadingSessionSDDataSource(context: modelContainer.mainContext)
+    }
+    
     func makeBookRepository() -> BookRepositoryProtocol {
         return BookRepositoryImpl(localDataSource: makeBookDataSource())
+    }
+    
+    func makeReadingSessionRepository() -> ReadingSessionRepositoryProtocol {
+        return ReadingSessionRepositoryImpl(localDataSource: makeReadingSessionDataSource())
     }
     
     // MARK: - 🚀 Use Cases (La Lógica de Negocio)
@@ -46,6 +55,7 @@ final class DIContainer {
         }
         */
     
+    // MARK: - BOOKS USE CASES
     func makeCreateBookUseCase() -> CreateBookUseCaseProtocol {
         return CreateBookUseCase(repository: makeBookRepository())
     }
@@ -78,8 +88,21 @@ final class DIContainer {
         return FetchBooksUseCase(repository: makeBookRepository())
     }
     
+    func makeUpdateBookProgressUseCase() -> UpdateBookProgressUseCaseProtocol {
+        return UpdateBookProgressUseCase(repository: makeBookRepository())
+    }
+    
     func makeSearchExternalBooksUseCase() -> SearchExternalBooksUseCaseProtocol {
         return SearchExternalBooksUseCase(provider: makeExternalBookProvider())
+    }
+    
+    // MARK: READING SESSIONS USE CASES
+    func makeCreateReadingSessionUseCase() -> CreateReadingSessionUseCaseProtocol {
+        return CreateReadingSessionUseCase(repository: makeReadingSessionRepository(), bookRepository: makeBookRepository())
+    }
+    
+    func makeFinishReadingSessionUseCase() -> FinishReadingSessionUseCaseProtocol {
+        return FinishReadingSessionUseCase(repository: makeReadingSessionRepository(), updatedBookProgressUseCase: makeUpdateBookProgressUseCase())
     }
     
     // TODO: need ReadingSession impl
@@ -138,5 +161,14 @@ final class DIContainer {
             createBookUseCase: makeCreateBookUseCase(),
             fetchBooksUseCase: makeFetchBooksUseCase(),
         )
+    }
+    
+    @MainActor
+    func makeStartReadingSessionViewModel(
+        book: Book,
+        finishSessionUseCase: FinishReadingSessionUseCaseProtocol,
+        createSessionUseCase: CreateReadingSessionUseCaseProtocol
+    ) -> StartReadingSessionViewModel {
+        return StartReadingSessionViewModel(book: book, finishSessionUseCase: finishSessionUseCase, createSessionUseCase: createSessionUseCase)
     }
 }

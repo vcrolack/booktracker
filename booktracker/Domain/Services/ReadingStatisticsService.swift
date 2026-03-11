@@ -41,8 +41,9 @@ struct ReadingStatisticsService: ReadingStatisticsServiceProtocol {
     }
     
     private func calculateTotalPages(_ sessions: [ReadingSession]) -> Int {
-        return sessions.reduce(0) {total, session in
-            let pagesRead = session.endPage - (session.startPage ?? 0)
+        return sessions.reduce(0) { total, session in
+            guard let endPage = session.endPage else { return total }
+            let pagesRead = endPage - (session.startPage ?? 0)
             return total + max(0, pagesRead)
         }
     }
@@ -51,7 +52,8 @@ struct ReadingStatisticsService: ReadingStatisticsServiceProtocol {
         guard totalPages > 0 else { return 0.0 }
         
         let totalSeconds = sessions.reduce(0.0) { total, session in
-            let duration = session.endTime.timeIntervalSince(session.startTime)
+            guard let endTime = session.endTime else { return total }
+            let duration = endTime.timeIntervalSince(session.startTime)
             return total + duration
         }
         
@@ -62,9 +64,12 @@ struct ReadingStatisticsService: ReadingStatisticsServiceProtocol {
     }
     
     private func calculateCurrentStreak(_ sessions: [ReadingSession]) -> Int {
-        let sortedSessions = sessions.sorted { $0.endTime > $1.endTime }
+        let completedSessions = sessions.compactMap { session -> Date? in
+            session.endTime
+        }
+        let sortedEndTimes = completedSessions.sorted(by: >)
         
-        let uniqueDays = Set(sortedSessions.map { calendar.startOfDay(for: $0.endTime) })
+        let uniqueDays = Set(sortedEndTimes.map { calendar.startOfDay(for: $0) })
         let sortedDays = Array(uniqueDays).sorted(by: >)
         
         guard let lastReadDay = sortedDays.first else { return 0 }
