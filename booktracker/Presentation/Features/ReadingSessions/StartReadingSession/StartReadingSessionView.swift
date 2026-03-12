@@ -48,7 +48,14 @@ struct StartReadingSessionView: View {
                     
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
-                            dismiss()
+                            if viewModel.elapsedSeconds > 0 {
+                                if viewModel.isReading {
+                                    viewModel.toggleSession()
+                                }
+                                viewModel.cancelSaveSession = true
+                            } else {
+                                dismiss()
+                            }
                         } label: {
                             Image(systemName: "xmark.circle.fill")
                                 .foregroundColor(.gray)
@@ -56,6 +63,14 @@ struct StartReadingSessionView: View {
                     }
                 }
                 .interactiveDismissDisabled(viewModel.isReading || currentStep == .finishing)
+                .alert("¿Seguro que quieres cancelar?", isPresented: $viewModel.cancelSaveSession) {
+                    Button("Confirmar", role: .destructive) {
+                        dismiss()
+                    }
+                    Button("Volver", role: .cancel) { }
+                } message: {
+                    Text("Si cierras, esta sesión no será guardada.")
+                }
                 .alert("Error", isPresented: showingError) {
                     Button("OK") {
                         viewModel.errorMessage = nil
@@ -145,7 +160,9 @@ struct StartReadingSessionView: View {
                 Task {
                     do {
                         try await viewModel.finishSession()
-                        dismiss()
+                        if viewModel.errorMessage == nil {
+                            dismiss()
+                        }
                     } catch {
                         // El error ya se guarda en viewModel.errorMessage
                     }

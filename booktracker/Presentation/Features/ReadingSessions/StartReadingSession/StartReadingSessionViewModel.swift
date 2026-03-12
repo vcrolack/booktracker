@@ -17,6 +17,7 @@ final class StartReadingSessionViewModel {
     var currentSessionId: UUID?
     
     var isReading: Bool = false
+    var cancelSaveSession: Bool = false
     var sessionStartTime: Date?
     var elapsedSeconds: TimeInterval = 0
     var isLoading: Bool = false
