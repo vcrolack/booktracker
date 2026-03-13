@@ -32,7 +32,14 @@ struct HomeView: View {
                     BookFormView(viewModel: DIContainer.shared.makeBookFormViewModel())
                 }
                 .sheet(item: $selectedBookForSession) { book in
-                    StartReadingSessionView(viewModel: DIContainer.shared.makeStartReadingSessionViewModel(book: book, finishSessionUseCase: DIContainer.shared.makeFinishReadingSessionUseCase(), createSessionUseCase: DIContainer.shared.makeCreateReadingSessionUseCase()))
+                    StartReadingSessionView(
+                        viewModel: DIContainer.shared.makeStartReadingSessionViewModel(
+                            book: book,
+                            finishSessionUseCase: DIContainer.shared.makeFinishReadingSessionUseCase(),
+                            createSessionUseCase: DIContainer.shared.makeCreateReadingSessionUseCase(),
+                            deleteSessionUseCase: DIContainer.shared.makeDeleteReadingSessionUseCase()
+                        )
+                    )
                 }
             }
             .background(Color(UIColor.systemBackground))

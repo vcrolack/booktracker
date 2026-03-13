@@ -145,6 +145,14 @@ struct BookDetailView: View {
             case .finalized, .abandoned:
                 EmptyView()
             }
+            
+            if [.reading, .finalized, .abandoned].contains(viewModel.book.status) {
+                NavigationLink {
+                    BookSessionsView(viewModel: DIContainer.shared.makeBookSessionsViewModel(bookId: viewModel.book.id))
+                } label: {
+                    actionButtonLabel(title: "Historial de lectura", icon: "clock.arrow.circlepath", color: .indigo, isSecondary: true)
+                }
+            }
         }
         .padding(.horizontal)
     }

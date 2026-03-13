@@ -23,20 +23,26 @@ final class StartReadingSessionViewModel {
     var isLoading: Bool = false
     var errorMessage: String? = nil
     
+    private var currentSprintStartTime: Date?
+    private var accumulatedTime: TimeInterval = 0
+    
     @ObservationIgnored private var timerTask: Task<Void, Never>?
     
     private let finishSessionUseCase: FinishReadingSessionUseCaseProtocol
     private let createSessionUseCase: CreateReadingSessionUseCaseProtocol
+    private let deleteSessionUseCase: DeleteReadingSessionUseCaseProtocol
     
     init(
         book: Book,
         finishSessionUseCase: FinishReadingSessionUseCaseProtocol,
-        createSessionUseCase: CreateReadingSessionUseCaseProtocol
+        createSessionUseCase: CreateReadingSessionUseCaseProtocol,
+        deleteSessionUseCase: DeleteReadingSessionUseCaseProtocol
     ) {
         self.book = book
         self.endPage = book.currentPage
         self.finishSessionUseCase = finishSessionUseCase
         self.createSessionUseCase = createSessionUseCase
+        self.deleteSessionUseCase = deleteSessionUseCase
     }
     
     func toggleSession() {
@@ -58,6 +64,16 @@ final class StartReadingSessionViewModel {
         }
         
         isLoading = false
+    }
+    
+    func cancelSession() async {
+        if self.currentSessionId != nil {
+            do {
+                try await deleteSessionUseCase.execute(readingSessionId: currentSessionId!)
+            } catch {
+                print("[START READING SESSION VIEW MODEL] error to delete orphan session")
+            }
+        }
     }
     
     private func startTimer() async {
@@ -84,13 +100,25 @@ final class StartReadingSessionViewModel {
             }
         }
         
+        currentSprintStartTime = Date()
+        startTimerLoop()
+
+    }
+    
+    private func pauseTimer() {
+        isReading = false
+        timerTask?.cancel()
+        timerTask = nil
+    }
+    
+    private func startTimerLoop() {
         timerTask?.cancel()
         timerTask = Task {
             while !Task.isCancelled {
                 do {
                     try await Task.sleep(for: .seconds(1))
-                    if !Task.isCancelled, let start = sessionStartTime {
-                        self.elapsedSeconds = Date().timeIntervalSince(start)
+                    if !Task.isCancelled, let sprintStart = self.currentSprintStartTime {
+                        self.elapsedSeconds = self.accumulatedTime + Date().timeIntervalSince(sprintStart)
                     }
                 } catch {
                     break
@@ -100,9 +128,14 @@ final class StartReadingSessionViewModel {
         }
     }
     
-    private func pauseTimer() {
-        isReading = false
+    func appDidEnterBackground() {
         timerTask?.cancel()
         timerTask = nil
+    }
+    
+    func appWillEnterForeground() {
+        if isReading {
+            startTimerLoop()
+        }
     }
 }

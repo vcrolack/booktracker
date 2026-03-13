@@ -14,6 +14,7 @@ enum ReadingSessionStep {
 
 struct StartReadingSessionView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
     @State private var viewModel: StartReadingSessionViewModel
     @State private var currentStep: ReadingSessionStep = .tracking
     
@@ -62,10 +63,23 @@ struct StartReadingSessionView: View {
                         }
                     }
                 }
+                .onChange(of: scenePhase) { oldPhase, newPhase in
+                    switch newPhase {
+                    case .background, .inactive:
+                        viewModel.appDidEnterBackground()
+                    case .active:
+                        viewModel.appWillEnterForeground()
+                    @unknown default:
+                        break
+                    }
+                }
                 .interactiveDismissDisabled(viewModel.isReading || currentStep == .finishing)
                 .alert("¿Seguro que quieres cancelar?", isPresented: $viewModel.cancelSaveSession) {
                     Button("Confirmar", role: .destructive) {
-                        dismiss()
+                        Task {
+                            await viewModel.cancelSession()
+                            dismiss()
+                        }
                     }
                     Button("Volver", role: .cancel) { }
                 } message: {
@@ -208,7 +222,8 @@ struct StartReadingSessionView: View {
         viewModel: DIContainer.shared.makeStartReadingSessionViewModel(
             book: mockBook,
             finishSessionUseCase: DIContainer.shared.makeFinishReadingSessionUseCase(),
-            createSessionUseCase: DIContainer.shared.makeCreateReadingSessionUseCase()
+            createSessionUseCase: DIContainer.shared.makeCreateReadingSessionUseCase(),
+            deleteSessionUseCase: DIContainer.shared.makeDeleteReadingSessionUseCase()
         )
     )
 }

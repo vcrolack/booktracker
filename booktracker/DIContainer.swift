@@ -105,6 +105,14 @@ final class DIContainer {
         return FinishReadingSessionUseCase(repository: makeReadingSessionRepository(), updatedBookProgressUseCase: makeUpdateBookProgressUseCase())
     }
     
+    func makeFetchReadingSessionsUseCase() -> FetchReadingSessionsUseCaseProtocol {
+        return FetchReadingSessionsUseCase(repository: makeReadingSessionRepository())
+    }
+    
+    func makeDeleteReadingSessionUseCase() -> DeleteReadingSessionUseCaseProtocol {
+        return DeleteReadingSessionUseCase(repository: makeReadingSessionRepository(), updateBookProgressUseCase: makeUpdateBookProgressUseCase())
+    }
+    
     // TODO: need ReadingSession impl
    // func makeDeleteBookUseCase() -> DeleteBookUseCaseProtocol {
    //     return DeleteBookUseCase(repository: makeBookRepository())
@@ -134,7 +142,11 @@ final class DIContainer {
     
     @MainActor
     func makeBookFormViewModel(book: Book? = nil) -> BookFormViewModel {
-        return BookFormViewModel(book: book, createBookUseCase: makeCreateBookUseCase(), updateBookDetailsUseCase: makeUpdateBookDetailsUseCase())
+        return BookFormViewModel(
+            book: book,
+            createBookUseCase: makeCreateBookUseCase(),
+            updateBookDetailsUseCase: makeUpdateBookDetailsUseCase()
+        )
     }
     
     @MainActor
@@ -167,8 +179,23 @@ final class DIContainer {
     func makeStartReadingSessionViewModel(
         book: Book,
         finishSessionUseCase: FinishReadingSessionUseCaseProtocol,
-        createSessionUseCase: CreateReadingSessionUseCaseProtocol
+        createSessionUseCase: CreateReadingSessionUseCaseProtocol,
+        deleteSessionUseCase: DeleteReadingSessionUseCaseProtocol
     ) -> StartReadingSessionViewModel {
-        return StartReadingSessionViewModel(book: book, finishSessionUseCase: finishSessionUseCase, createSessionUseCase: createSessionUseCase)
+        return StartReadingSessionViewModel(
+            book: book,
+            finishSessionUseCase: finishSessionUseCase,
+            createSessionUseCase: createSessionUseCase,
+            deleteSessionUseCase: deleteSessionUseCase
+        )
+    }
+    
+    @MainActor
+    func makeBookSessionsViewModel(bookId: UUID) -> BookSessionsViewModel {
+        return BookSessionsViewModel(
+            bookId: bookId,
+            fetchSessionsUseCase: makeFetchReadingSessionsUseCase(),
+            readingStatisticsService: ReadingStatisticsService()
+        )
     }
 }
