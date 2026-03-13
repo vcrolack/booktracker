@@ -73,7 +73,6 @@ struct StartReadingSessionView: View {
                         break
                     }
                 }
-                .interactiveDismissDisabled(viewModel.isReading || currentStep == .finishing)
                 .alert("¿Seguro que quieres cancelar?", isPresented: $viewModel.cancelSaveSession) {
                     Button("Confirmar", role: .destructive) {
                         Task {
@@ -92,6 +91,9 @@ struct StartReadingSessionView: View {
                 } message: {
                     Text(viewModel.errorMessage ?? "")
                 }
+            }
+            .onAppear {
+                viewModel.onAppear()
             }
         }
 

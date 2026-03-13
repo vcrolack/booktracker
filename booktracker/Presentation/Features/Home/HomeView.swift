@@ -11,23 +11,49 @@ struct HomeView: View {
     @State var viewModel: HomeViewModel
     @State private var showingAddBook: Bool = false
     @State private var selectedBookForSession: Book? = nil
+    @State private var showingActiveSessionSheet: Bool = false
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 32) {
-                    headerSection
-                    currentReadingSection
-                    
-                    if !viewModel.upNextBooks.isEmpty {
-                        upNextSection
+                ScrollView {
+                    VStack(spacing: 32) {
+                        headerSection
+                        currentReadingSection
+                        
+                        if !viewModel.upNextBooks.isEmpty {
+                            upNextSection
+                        }
+                        
+                        if !viewModel.recentlyFinishedBooks.isEmpty {
+                            recentlyFinishedSection
+                        }
                     }
-                    
-                    if !viewModel.recentlyFinishedBooks.isEmpty {
-                        recentlyFinishedSection
+                    .padding(.bottom, 80)
+                    .padding(.vertical)
+                }
+                .background(Color(UIColor.systemBackground))
+                .safeAreaInset(edge: .bottom) {
+                    if let session = viewModel.activeSession, let book = viewModel.activeBook {
+                        BTActiveSessionBannerView(book: book, session: session) {
+                            showingActiveSessionSheet = true
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, 16)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: viewModel.activeSession != nil)
                     }
                 }
-                .padding(.vertical)
+                .task {
+                    await viewModel.loadDashboard()
+                    await viewModel.checkForActiveSession(in: viewModel.currentReadingBooks)
+                }
+                .onChange(of: selectedBookForSession) { oldValue, newValue in
+                    if oldValue != nil && newValue == nil {
+                        Task {
+                            await viewModel.loadDashboard()
+                        }
+                    }
+                }
                 .sheet(isPresented: $showingAddBook) {
                     BookFormView(viewModel: DIContainer.shared.makeBookFormViewModel())
                 }
@@ -41,18 +67,19 @@ struct HomeView: View {
                         )
                     )
                 }
-            }
-            .background(Color(UIColor.systemBackground))
-            .task {
-                await viewModel.loadDashboard()
-            }
-            .onChange(of: selectedBookForSession) { oldValue, newValue in
-                if oldValue != nil && newValue == nil {
-                    Task {
-                        await viewModel.loadDashboard()
+                .sheet(isPresented: $showingActiveSessionSheet) {
+                    if let session = viewModel.activeSession, let book = viewModel.activeBook {
+                        StartReadingSessionView(
+                            viewModel: DIContainer.shared.makeStartReadingSessionViewModel(
+                                book: book,
+                                activeSession: session, // ¡Inyectamos la sesión viva!
+                                finishSessionUseCase: DIContainer.shared.makeFinishReadingSessionUseCase(),
+                                createSessionUseCase: DIContainer.shared.makeCreateReadingSessionUseCase(),
+                                deleteSessionUseCase: DIContainer.shared.makeDeleteReadingSessionUseCase()
+                            )
+                        )
                     }
                 }
-            }
         }
     }
     
@@ -223,7 +250,7 @@ struct MockGetAllBooksUseCase: FetchBooksUseCaseProtocol {
 
 #Preview {
     // 2. Instanciamos el ViewModel (las variables sí están permitidas)
-    let mockViewModel = HomeViewModel(fetchBooksUseCase: MockGetAllBooksUseCase())
+    let mockViewModel = HomeViewModel(fetchBooksUseCase: MockGetAllBooksUseCase(), getActiveSessionUseCase: DIContainer.shared.makeGetActiveReadingSessionUseCase())
     
     // 3. Simplemente llamamos a la vista, sin la palabra "return"
     HomeView(viewModel: mockViewModel)

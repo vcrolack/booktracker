@@ -8,9 +8,9 @@
 import Foundation
 
 struct ReadingSessionFilter {
-    var bookId: UUID?
-    var fromDate: Date?
-    var toDate: Date?
+    var bookId: UUID? = nil
+    var fromDate: Date? = nil
+    var toDate: Date? = nil
     
     var sortBy: SortOption? = .startTimeDescending
     var isActive: Bool? = nil

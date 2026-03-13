@@ -34,6 +34,7 @@ final class StartReadingSessionViewModel {
     
     init(
         book: Book,
+        activeSession: ReadingSession? = nil,
         finishSessionUseCase: FinishReadingSessionUseCaseProtocol,
         createSessionUseCase: CreateReadingSessionUseCaseProtocol,
         deleteSessionUseCase: DeleteReadingSessionUseCaseProtocol
@@ -43,6 +44,21 @@ final class StartReadingSessionViewModel {
         self.finishSessionUseCase = finishSessionUseCase
         self.createSessionUseCase = createSessionUseCase
         self.deleteSessionUseCase = deleteSessionUseCase
+        
+        if let session = activeSession {
+            self.currentSessionId = session.id
+            self.sessionStartTime = session.startTime
+            self.isReading = true
+            self.accumulatedTime = Date().timeIntervalSince(session.startTime)
+            self.elapsedSeconds = self.accumulatedTime
+        }
+    }
+    
+    func onAppear() {
+        if isReading && timerTask == nil {
+            currentSprintStartTime = Date()
+            startTimerLoop()
+        }
     }
     
     func toggleSession() {
@@ -135,6 +151,7 @@ final class StartReadingSessionViewModel {
     
     func appWillEnterForeground() {
         if isReading {
+            currentSprintStartTime = Date()
             startTimerLoop()
         }
     }

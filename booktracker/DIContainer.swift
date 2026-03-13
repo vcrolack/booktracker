@@ -167,7 +167,7 @@ final class DIContainer {
     
     @MainActor
     func makeHomeViewModel() -> HomeViewModel {
-        return HomeViewModel(fetchBooksUseCase: makeFetchBooksUseCase())
+        return HomeViewModel(fetchBooksUseCase: makeFetchBooksUseCase(), getActiveSessionUseCase: makeGetActiveReadingSessionUseCase())
     }
     
     @MainActor
@@ -182,12 +182,14 @@ final class DIContainer {
     @MainActor
     func makeStartReadingSessionViewModel(
         book: Book,
+        activeSession: ReadingSession? = nil,
         finishSessionUseCase: FinishReadingSessionUseCaseProtocol,
         createSessionUseCase: CreateReadingSessionUseCaseProtocol,
         deleteSessionUseCase: DeleteReadingSessionUseCaseProtocol
     ) -> StartReadingSessionViewModel {
         return StartReadingSessionViewModel(
             book: book,
+            activeSession: activeSession,
             finishSessionUseCase: finishSessionUseCase,
             createSessionUseCase: createSessionUseCase,
             deleteSessionUseCase: deleteSessionUseCase
