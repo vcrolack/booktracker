@@ -13,6 +13,7 @@ struct ReadingSessionFilter {
     var toDate: Date?
     
     var sortBy: SortOption? = .startTimeDescending
+    var isActive: Bool? = nil
     
     enum SortOption {
         case startTimeAscending

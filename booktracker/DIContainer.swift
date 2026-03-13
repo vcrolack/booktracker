@@ -113,6 +113,10 @@ final class DIContainer {
         return DeleteReadingSessionUseCase(repository: makeReadingSessionRepository(), updateBookProgressUseCase: makeUpdateBookProgressUseCase())
     }
     
+    func makeGetActiveReadingSessionUseCase() -> GetActiveReadingSessionUseCaseProtocol {
+        return GetActiveReadingSessionUseCase(repository: makeReadingSessionRepository())
+    }
+    
     // TODO: need ReadingSession impl
    // func makeDeleteBookUseCase() -> DeleteBookUseCaseProtocol {
    //     return DeleteBookUseCase(repository: makeBookRepository())

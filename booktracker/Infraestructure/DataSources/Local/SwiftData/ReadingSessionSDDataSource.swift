@@ -88,8 +88,23 @@ final class ReadingSessionSDDataSource: ReadingSessionLocalDataSourceProtocol {
             
             var descriptor = FetchDescriptor<ReadingSessionSD>(sortBy: sortDescriptors)
             
-            if let byBook = filter?.bookId {
-                descriptor.predicate = #Predicate { $0.bookId == byBook }
+            var bookId = filter?.bookId
+            var isActive = filter?.isActive
+            
+            if let bookId = bookId, let active = isActive {
+                if active {
+                    descriptor.predicate = #Predicate { $0.bookId == bookId && $0.endTime == nil }
+                } else {
+                    descriptor.predicate = #Predicate { $0.bookId == bookId && $0.endTime != nil }
+                }
+            } else if let bookId = bookId {
+                descriptor.predicate = #Predicate { $0.bookId == bookId }
+            } else if let active = isActive {
+                if active {
+                    descriptor.predicate = #Predicate { $0.endTime == nil }
+                } else {
+                    descriptor.predicate = #Predicate { $0.endTime != nil }
+                }
             }
             
             let fetchedModels = try context.fetch(descriptor)
