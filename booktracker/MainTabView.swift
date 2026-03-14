@@ -16,8 +16,17 @@ struct MainTabView: View {
         case search
     }
     
+    @Environment(GlobalSessionManager.self) private var sessionManager
+    
     @State private var selectedTab: AppTab = .home
     @State private var searchText: String = ""
+    
+    private var isSheetPresented: Binding<Bool> {
+        Binding(
+            get: { sessionManager.isSessionSheetPresented },
+            set: { sessionManager.isSessionSheetPresented = $0 }
+        )
+    }
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -45,6 +54,34 @@ struct MainTabView: View {
             }
         }
         .tint(.blue)
+        .tabViewBottomAccessory(isEnabled: sessionManager.isSessionActive) {
+            if let session = sessionManager.activeSession, let book = sessionManager.activeBook {
+                BTActiveSessionBannerView(book: book, session: session) {
+                    sessionManager.isSessionSheetPresented = true
+                }
+            }
+        }
+        .task {
+            await sessionManager.checkActiveSession()
+        }
+        .sheet(isPresented: Bindable(sessionManager).isSessionSheetPresented) {
+            if let session = sessionManager.activeSession, let book = sessionManager.activeBook {
+                StartReadingSessionView(
+                    viewModel: DIContainer.shared.makeStartReadingSessionViewModel(
+                        book: book,
+                        activeSession: session,
+                        finishSessionUseCase: DIContainer.shared.makeFinishReadingSessionUseCase(),
+                        createSessionUseCase: DIContainer.shared.makeCreateReadingSessionUseCase(),
+                        deleteSessionUseCase: DIContainer.shared.makeDeleteReadingSessionUseCase()
+                    )
+                )
+            }
+        }
+        .onChange(of: sessionManager.isSessionSheetPresented) { oldValue, newValue in
+            Task {
+                await sessionManager.checkActiveSession()
+            }
+        }
     }
 }
 

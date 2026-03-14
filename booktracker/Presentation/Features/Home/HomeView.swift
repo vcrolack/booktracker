@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(GlobalSessionManager.self) private var sessionManager
     @State var viewModel: HomeViewModel
     @State private var showingAddBook: Bool = false
     @State private var selectedBookForSession: Book? = nil
@@ -32,25 +33,14 @@ struct HomeView: View {
                     .padding(.vertical)
                 }
                 .background(Color(UIColor.systemBackground))
-                .safeAreaInset(edge: .bottom) {
-                    if let session = viewModel.activeSession, let book = viewModel.activeBook {
-                        BTActiveSessionBannerView(book: book, session: session) {
-                            showingActiveSessionSheet = true
-                        }
-                        .padding(.horizontal)
-                        .padding(.bottom, 16)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: viewModel.activeSession != nil)
-                    }
-                }
                 .task {
                     await viewModel.loadDashboard()
-                    await viewModel.checkForActiveSession(in: viewModel.currentReadingBooks)
                 }
                 .onChange(of: selectedBookForSession) { oldValue, newValue in
                     if oldValue != nil && newValue == nil {
                         Task {
                             await viewModel.loadDashboard()
+                            await sessionManager.checkActiveSession()
                         }
                     }
                 }
@@ -68,7 +58,7 @@ struct HomeView: View {
                     )
                 }
                 .sheet(isPresented: $showingActiveSessionSheet) {
-                    if let session = viewModel.activeSession, let book = viewModel.activeBook {
+                    if let session = sessionManager.activeSession, let book = sessionManager.activeBook {
                         StartReadingSessionView(
                             viewModel: DIContainer.shared.makeStartReadingSessionViewModel(
                                 book: book,

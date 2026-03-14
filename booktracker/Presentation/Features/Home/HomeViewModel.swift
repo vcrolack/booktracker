@@ -12,9 +12,7 @@ import Observation
 @Observable
 class HomeViewModel {
     private var allBooks: [Book] = []
-    
-    var activeSession: ReadingSession?
-    var activeBook: Book?
+
     var showingActiveSessionSheet: Bool = false
 
     var currentReadingBooks: [Book] {
@@ -57,21 +55,4 @@ class HomeViewModel {
             print("Error cargando dashboard: \(error.localizedDescription)")
         }
     }
-
-    func checkForActiveSession(in availableBooks: [Book]) async {
-        do {
-            if let session = try await getActiveSessionUseCase.execute() {
-                if let book = availableBooks.first(where: { $0.id == session.bookId}) {
-                    self.activeSession = session
-                    self.activeBook = book
-                }
-            } else {
-                self.activeSession = nil
-                self.activeBook = nil
-            }
-        } catch {
-            print("[HOME VIEW MODEL] Unexpected error fetching sessions: \(error.localizedDescription)")
-        }
-    }
-    
 }

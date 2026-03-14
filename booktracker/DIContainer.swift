@@ -45,6 +45,12 @@ final class DIContainer {
         return ReadingSessionRepositoryImpl(localDataSource: makeReadingSessionDataSource())
     }
     
+    // MARK: - 🌍 Global State
+    @MainActor
+    lazy var globalSessionManager: GlobalSessionManager = {
+        return GlobalSessionManager(getActiveSessionUseCase: makeGetActiveReadingSessionUseCase(), fetchBookUseCase: makeFetchBookUseCase())
+    }()
+    
     // MARK: - 🚀 Use Cases (La Lógica de Negocio)
         
         // Aquí es donde instanciarás tus Casos de Uso pasándoles el Repositorio.
