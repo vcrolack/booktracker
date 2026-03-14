@@ -10,8 +10,13 @@ import SwiftUI
 struct BookListView: View {
     @State var viewModel: BookListViewModel
     @State private var searchText: String = ""
-    @State private var selectedFilter: BookStatus? = nil
+    @State private var selectedFilter: BookStatus?
     @State private var showingAddBook: Bool = false
+    
+    init(viewModel: BookListViewModel, initialFilter: BookStatus? = nil) {
+        self._viewModel = State(initialValue: viewModel)
+        self._selectedFilter = State(initialValue: initialFilter)
+    }
     
     private var filteredBooks: [Book] {
         if let filter = selectedFilter {

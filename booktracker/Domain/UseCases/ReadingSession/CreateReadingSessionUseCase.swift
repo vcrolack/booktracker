@@ -21,7 +21,7 @@ final class CreateReadingSessionUseCase: CreateReadingSessionUseCaseProtocol {
     }
     
     func execute(command: CreateReadingSessionCommand) async throws -> UUID {
-        guard var book = try await bookRepository.fetchBook(by: command.bookId) else {
+        guard let book = try await bookRepository.fetchBook(by: command.bookId) else {
             throw RepositoryError.notFound
         }
         

@@ -35,7 +35,10 @@ struct MainTabView: View {
             }
             
             Tab("Libros", systemImage: "books.vertical.fill", value: .books) {
-                BookListView(viewModel: DIContainer.shared.makeBookListViewModel())
+                BookListView(
+                    viewModel: DIContainer.shared.makeBookListViewModel(),
+                    initialFilter: nil
+                )
             }
             
             Tab("Estadísticas", systemImage: "chart.bar.xaxis", value: .statistics) {

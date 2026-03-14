@@ -104,11 +104,11 @@ struct HomeView: View {
     @ViewBuilder
     private var currentReadingSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Leyendo ahora")
-                .font(.title3)
-                .fontWeight(.bold)
-                .padding(.horizontal)
-            
+            BTSectionHeaderView(title: "Leyendo ahora", destination: BookListView(
+                viewModel: DIContainer.shared.makeBookListViewModel(),
+                initialFilter: .reading
+                )
+            )
             if viewModel.currentReadingBooks.isEmpty {
                 emptyReadingState
             } else {
@@ -131,10 +131,11 @@ struct HomeView: View {
     @ViewBuilder
     private var upNextSection: some View {
         VStack (alignment: .leading, spacing: 16) {
-            Text("Próximas lecturas")
-                .font(.title3)
-                .fontWeight(.bold)
-                .padding(.horizontal)
+            BTSectionHeaderView(title: "Próximas lecturas", destination: BookListView(
+                viewModel: DIContainer.shared.makeBookListViewModel(),
+                initialFilter: .toRead
+                )
+            )
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 16) {
@@ -152,10 +153,11 @@ struct HomeView: View {
     @ViewBuilder
     private var recentlyFinishedSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Últimos terminados")
-                .font(.title3)
-                .fontWeight(.bold)
-                .padding(.horizontal)
+            BTSectionHeaderView(title: "Últimos terminados", destination: BookListView(
+                viewModel: DIContainer.shared.makeBookListViewModel(),
+                initialFilter: .finalized
+                )
+            )
             
             VStack(spacing: 12) {
                 ForEach(viewModel.recentlyFinishedBooks) { book in

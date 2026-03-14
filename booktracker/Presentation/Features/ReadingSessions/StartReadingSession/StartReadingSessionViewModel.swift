@@ -151,7 +151,6 @@ final class StartReadingSessionViewModel {
     
     func appWillEnterForeground() {
         if isReading {
-            currentSprintStartTime = Date()
             startTimerLoop()
         }
     }

@@ -88,8 +88,8 @@ final class ReadingSessionSDDataSource: ReadingSessionLocalDataSourceProtocol {
             
             var descriptor = FetchDescriptor<ReadingSessionSD>(sortBy: sortDescriptors)
             
-            var bookId = filter?.bookId
-            var isActive = filter?.isActive
+            let bookId = filter?.bookId
+            let isActive = filter?.isActive
             
             if let bookId = bookId, let active = isActive {
                 if active {
