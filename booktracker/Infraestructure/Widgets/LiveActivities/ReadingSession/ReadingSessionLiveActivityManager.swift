@@ -9,7 +9,7 @@ import Foundation
 import ActivityKit
 
 protocol ReadingSessionLiveActivityManagerProtocol {
-    func startActivity(title: String, author: String, bookId: UUID, startTime: Date)
+    func startActivity(title: String, author: String, bookId: UUID, startTime: Date, accumulatedTime: TimeInterval)
     func updateActivity(isReading: Bool, startTime: Date?, accumulatedTime: TimeInterval) async
     func endActivity() async
 }
@@ -17,7 +17,7 @@ protocol ReadingSessionLiveActivityManagerProtocol {
 final class ReadingLiveActivityManager: ReadingSessionLiveActivityManagerProtocol {
     private var currentActivity: Activity<ReadingSessionAttributes>?
     
-    func startActivity(title: String, author: String, bookId: UUID, startTime: Date) {
+    func startActivity(title: String, author: String, bookId: UUID, startTime: Date, accumulatedTime: TimeInterval = 0) {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else {
             print("[LIVE ACTIVITY] Use has not enabled live activities")
             return
@@ -43,7 +43,7 @@ final class ReadingLiveActivityManager: ReadingSessionLiveActivityManagerProtoco
         let initialState = ReadingSessionAttributes.ContentState(
             isReading: true,
             currentSprintStartTime: startTime,
-            accumulatedTime: 0
+            accumulatedTime: accumulatedTime
         )
         
         do {

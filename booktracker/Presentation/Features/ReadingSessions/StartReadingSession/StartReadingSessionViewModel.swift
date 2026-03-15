@@ -59,13 +59,16 @@ final class StartReadingSessionViewModel {
     
     func onAppear() {
         if isReading && timerTask == nil {
-            currentSprintStartTime = sessionStartTime ?? Date()
+            if currentSprintStartTime  == nil {
+                currentSprintStartTime = Date()
+            }
             
             readingSessionLiveActivityManager.startActivity(
                 title: book.title,
                 author: book.title,
                 bookId: book.id,
-                startTime: currentSprintStartTime!
+                startTime: currentSprintStartTime!,
+                accumulatedTime: self.accumulatedTime
             )
             
             startTimerLoop()
@@ -128,7 +131,8 @@ final class StartReadingSessionViewModel {
                     title: book.title,
                     author: book.author,
                     bookId: book.id,
-                    startTime: now
+                    startTime: now,
+                    accumulatedTime: 0
                 )
                 
             } catch {
