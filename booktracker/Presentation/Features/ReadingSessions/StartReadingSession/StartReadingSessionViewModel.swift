@@ -31,19 +31,22 @@ final class StartReadingSessionViewModel {
     private let finishSessionUseCase: FinishReadingSessionUseCaseProtocol
     private let createSessionUseCase: CreateReadingSessionUseCaseProtocol
     private let deleteSessionUseCase: DeleteReadingSessionUseCaseProtocol
+    private let readingSessionLiveActivityManager: ReadingSessionLiveActivityManagerProtocol
     
     init(
         book: Book,
         activeSession: ReadingSession? = nil,
         finishSessionUseCase: FinishReadingSessionUseCaseProtocol,
         createSessionUseCase: CreateReadingSessionUseCaseProtocol,
-        deleteSessionUseCase: DeleteReadingSessionUseCaseProtocol
+        deleteSessionUseCase: DeleteReadingSessionUseCaseProtocol,
+        readingSessionLiveActivityManager: ReadingSessionLiveActivityManagerProtocol
     ) {
         self.book = book
         self.endPage = book.currentPage
         self.finishSessionUseCase = finishSessionUseCase
         self.createSessionUseCase = createSessionUseCase
         self.deleteSessionUseCase = deleteSessionUseCase
+        self.readingSessionLiveActivityManager = readingSessionLiveActivityManager
         
         if let session = activeSession {
             self.currentSessionId = session.id
@@ -57,6 +60,14 @@ final class StartReadingSessionViewModel {
     func onAppear() {
         if isReading && timerTask == nil {
             currentSprintStartTime = Date()
+            
+            readingSessionLiveActivityManager.startActivity(
+                title: book.title,
+                author: book.title,
+                bookId: book.id,
+                startTime: currentSprintStartTime!
+            )
+            
             startTimerLoop()
         }
     }
@@ -79,6 +90,7 @@ final class StartReadingSessionViewModel {
             self.errorMessage = error.localizedDescription
         }
         
+        await readingSessionLiveActivityManager.endActivity()
         isLoading = false
     }
     
@@ -90,24 +102,35 @@ final class StartReadingSessionViewModel {
                 print("[START READING SESSION VIEW MODEL] error to delete orphan session")
             }
         }
+        await readingSessionLiveActivityManager.endActivity()
     }
     
     private func startTimer() async {
         guard !isReading else { return }
         isReading = true
+        let now = Date()
         
         if sessionStartTime == nil {
-            let startTime = Date()
-            sessionStartTime = startTime
+            sessionStartTime = now
             
             do {
                 let command = CreateReadingSessionCommand(
                     bookId: book.id,
-                    startTime: startTime,
+                    startTime: now,
                     startPage: book.currentPage,
                 )
                let sessionId = try await createSessionUseCase.execute(command: command)
                 self.currentSessionId = sessionId
+            
+                currentSprintStartTime = now
+                
+                readingSessionLiveActivityManager.startActivity(
+                    title: book.title,
+                    author: book.author,
+                    bookId: book.id,
+                    startTime: now
+                )
+                
             } catch {
                 self.errorMessage = error.localizedDescription
                 isReading = false
@@ -117,6 +140,13 @@ final class StartReadingSessionViewModel {
         }
         
         currentSprintStartTime = Date()
+        
+        await readingSessionLiveActivityManager.updateActivity(
+            isReading: true,
+            startTime: now,
+            accumulatedTime: self.accumulatedTime
+        )
+        
         startTimerLoop()
 
     }
@@ -125,6 +155,19 @@ final class StartReadingSessionViewModel {
         isReading = false
         timerTask?.cancel()
         timerTask = nil
+        
+        if let sprintStart = currentSprintStartTime {
+            accumulatedTime += Date().timeIntervalSince(sprintStart)
+        }
+        currentSprintStartTime = nil
+        
+        Task {
+            await readingSessionLiveActivityManager.updateActivity(
+                isReading: false,
+                startTime: nil,
+                accumulatedTime: accumulatedTime
+            )
+        }
     }
     
     private func startTimerLoop() {

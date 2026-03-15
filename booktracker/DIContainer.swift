@@ -51,6 +51,10 @@ final class DIContainer {
         return GlobalSessionManager(getActiveSessionUseCase: makeGetActiveReadingSessionUseCase(), fetchBookUseCase: makeFetchBookUseCase())
     }()
     
+    lazy var readingSessionLiveActivityManager: ReadingLiveActivityManager = {
+        return ReadingLiveActivityManager()
+    }()
+    
     // MARK: - 🚀 Use Cases (La Lógica de Negocio)
         
         // Aquí es donde instanciarás tus Casos de Uso pasándoles el Repositorio.
@@ -198,7 +202,8 @@ final class DIContainer {
             activeSession: activeSession,
             finishSessionUseCase: finishSessionUseCase,
             createSessionUseCase: createSessionUseCase,
-            deleteSessionUseCase: deleteSessionUseCase
+            deleteSessionUseCase: deleteSessionUseCase,
+            readingSessionLiveActivityManager: readingSessionLiveActivityManager
         )
     }
     
