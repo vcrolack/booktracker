@@ -23,6 +23,18 @@ final class ReadingLiveActivityManager: ReadingSessionLiveActivityManagerProtoco
             return
         }
         
+        let existingActivities = Activity<ReadingSessionAttributes>.activities
+        
+        if let activityForThisBook = existingActivities.first(where: { $0.attributes.bookId == bookId }) {
+            self.currentActivity = activityForThisBook
+            print("[LIVE ACTIVITY] Existing activite recovered. Ignoring create another one")
+            return
+        }
+        
+        for orphanedActivity in existingActivities {
+            Task { await orphanedActivity.end(nil, dismissalPolicy: .immediate) }
+        }
+        
         if currentActivity != nil {
             Task { await endActivity()}
         }

@@ -48,6 +48,7 @@ struct ReadingSessionWidgetLiveActivity: Widget {
             .padding()
             .activityBackgroundTint(Color(UIColor.systemBackground).opacity(0.6))
             .activitySystemActionForegroundColor(Color.white)
+            .widgetURL(URL(string: "booktracker://activeSession"))
             
         } dynamicIsland: { context in
             // 2. 🏝️ LA ISLA DINÁMICA (Dynamic Island)
@@ -121,6 +122,7 @@ struct ReadingSessionWidgetLiveActivity: Widget {
                 Image(systemName: "book.fill")
                     .foregroundColor(.blue)
             }
+            .widgetURL(URL(string: "booktracker://activeSession"))
         }
     }
 }

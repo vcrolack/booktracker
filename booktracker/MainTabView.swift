@@ -85,6 +85,15 @@ struct MainTabView: View {
                 await sessionManager.checkActiveSession()
             }
         }
+        .onOpenURL { url in
+            if url.absoluteString == "booktracker://activeSession" {
+                if sessionManager.activeSession != nil {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        sessionManager.isSessionSheetPresented = true
+                    }
+                }
+            }
+        }
     }
 }
 

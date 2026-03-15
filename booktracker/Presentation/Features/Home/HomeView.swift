@@ -118,9 +118,9 @@ struct HomeView: View {
                             CurrentReadingWidget(book: book) {
                                 selectedBookForSession = book
                             }
-                                .containerRelativeFrame(.horizontal) { length, _ in
-                                    length - 48
-                                }
+                            .containerRelativeFrame(.horizontal) { length, _ in
+                                length - 48
+                            }
                         }
                     }.padding(.horizontal)
                 }

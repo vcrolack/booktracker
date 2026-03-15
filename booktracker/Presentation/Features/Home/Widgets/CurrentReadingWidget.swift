@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CurrentReadingWidget: View {
+    @Environment(GlobalSessionManager.self) private var sessionManager
     let book: Book
     let onStartReading: () -> Void
     
@@ -54,21 +55,31 @@ struct CurrentReadingWidget: View {
                 onStartReading()
             }) {
                 HStack {
-                    Image(systemName: "bookmark.fill")
-                    Text("Registrar lectura")
+                    Image(systemName: isThisBookActive ? "bookmark.fill" : "play.fill")
+                    Text(isThisBookActive ? "Lectura en curso" : "Registrar lectura")
                         .fontWeight(.semibold)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
-                .background(Color.blue.opacity(0.1))
-                .foregroundColor(.blue)
+                .background(isThisBookActive ? Color.green.opacity(0.2) :  Color.blue.opacity(0.1))
+                .foregroundColor(isThisBookActive ? .green : .blue)
                 .cornerRadius(10)
             }
+            .disabled(isAnySessionActive)
         }
         .padding(16)
         .background(Color(UIColor.systemBackground))
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+        .opacity(isAnySessionActive && !isThisBookActive ? 0.6 : 1.0)
+    }
+    
+    private var isThisBookActive: Bool {
+        sessionManager.activeBook?.id == book.id
+    }
+    
+    private var isAnySessionActive: Bool {
+        sessionManager.activeSession != nil
     }
 }
 

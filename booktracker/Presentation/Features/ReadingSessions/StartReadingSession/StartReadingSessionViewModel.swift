@@ -59,7 +59,7 @@ final class StartReadingSessionViewModel {
     
     func onAppear() {
         if isReading && timerTask == nil {
-            currentSprintStartTime = Date()
+            currentSprintStartTime = sessionStartTime ?? Date()
             
             readingSessionLiveActivityManager.startActivity(
                 title: book.title,
@@ -98,11 +98,11 @@ final class StartReadingSessionViewModel {
         if self.currentSessionId != nil {
             do {
                 try await deleteSessionUseCase.execute(readingSessionId: currentSessionId!)
+                await readingSessionLiveActivityManager.endActivity()
             } catch {
                 print("[START READING SESSION VIEW MODEL] error to delete orphan session")
             }
         }
-        await readingSessionLiveActivityManager.endActivity()
     }
     
     private func startTimer() async {
