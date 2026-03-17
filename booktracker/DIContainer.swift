@@ -19,6 +19,7 @@ final class DIContainer {
             let schema = Schema([
                 BookSD.self,
                 ReadingSessionSD.self,
+                BookCollectionSD.self,
             ])
             
             let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
@@ -37,12 +38,20 @@ final class DIContainer {
         return ReadingSessionSDDataSource(context: modelContainer.mainContext)
     }
     
+    private func makeBookCollectionDataSource() -> BookCollectionLocalDataSourceProtocol {
+        return BookCollectionSDDataSource(context: modelContainer.mainContext)
+    }
+    
     func makeBookRepository() -> BookRepositoryProtocol {
         return BookRepositoryImpl(localDataSource: makeBookDataSource())
     }
     
     func makeReadingSessionRepository() -> ReadingSessionRepositoryProtocol {
         return ReadingSessionRepositoryImpl(localDataSource: makeReadingSessionDataSource())
+    }
+    
+    func makeBookCollectionRepository() -> BookCollectionRepositoryProtocol {
+        return BookCollectionRepositoryImpl(localDataSource: makeBookCollectionDataSource())
     }
     
     // MARK: - 🌍 Global State
@@ -102,9 +111,13 @@ final class DIContainer {
         return UpdateBookProgressUseCase(repository: makeBookRepository())
     }
     
-//     func makeDeleteBookUseCase() -> DeleteBookUseCaseProtocol {
-//         return DeleteBookUseCase(repository: makeBookRepository(), deleteAllSessionsUseCase: makeDeleteAllReadingSessionsUseCase(), removeBookFromAllCollectionsUseCase: TODO )
-//     }
+     func makeDeleteBookUseCase() -> DeleteBookUseCaseProtocol {
+         return DeleteBookUseCase(
+            repository: makeBookRepository(),
+            deleteAllSessionsUseCase: makeDeleteAllReadingSessionsUseCase(),
+            removeBookFromAllCollectionsUseCase: makeRemoveBookFromAllCollectionsUseCase()
+         )
+     }
     
     func makeSearchExternalBooksUseCase() -> SearchExternalBooksUseCaseProtocol {
         return SearchExternalBooksUseCase(provider: makeExternalBookProvider())
@@ -133,6 +146,17 @@ final class DIContainer {
     
     func makeDeleteAllReadingSessionsUseCase() -> DeleteAllReadingSessionsUseCaseProtocol {
         return DeleteAllReadingSessionsUseCase(repository: makeReadingSessionRepository())
+    }
+    
+    // MARK: BOOK COLLECTIONS USE CASES
+    func makeRemoveBooksFromCollectionUseCase() -> RemoveBooksFromCollectionUseCaseProtocol {
+        return RemoveBooksFromCollectionUseCase(
+            repository: makeBookCollectionRepository()
+        )
+    }
+    
+    func makeRemoveBookFromAllCollectionsUseCase() -> RemoveBookFromAllCollectionsUseCaseProtocol {
+        return RemoveBookFromAllCollectionsUseCase(repository: makeBookCollectionRepository())
     }
     
     // TODO: need ReadingSession impl

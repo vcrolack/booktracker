@@ -23,6 +23,6 @@ protocol BookCollectionRepositoryProtocol {
     func fetchCollections(matching filter: BookCollectionFilter?) async throws -> [BookCollection]
     
     func save(bookCollection: BookCollection) async throws
-    func delete(bookCollection: UUID) async throws
-    func deleteBookFromAll(bookId: UUID) async throws
+    func delete(by id: UUID) async throws
+    func removeBookReferenceFromAllCollections(bookId: UUID) async throws
 }

@@ -19,6 +19,6 @@ final class RemoveBookFromAllCollectionsUseCase: RemoveBookFromAllCollectionsUse
     }
     
     func execute(bookId: UUID) async throws {
-        try await repository.deleteBookFromAll(bookId: bookId)
+        try await repository.removeBookReferenceFromAllCollections(bookId: bookId)
     }
 }

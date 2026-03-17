@@ -24,7 +24,14 @@ struct BookCollection: Identifiable, Equatable, Codable {
     let createdAt: Date
     private(set) var updatedAt: Date = Date()
     
-    init(id: UUID = UUID(), name: String, description: String? = nil, cover: String? = nil, bookIds: Set<UUID> = [], createdAt: Date = Date()) throws {
+    init(
+        id: UUID = UUID(),
+        name: String,
+        description: String? = nil,
+        cover: String? = nil,
+        bookIds: Set<UUID> = [],
+        createdAt: Date = Date()
+    ) throws {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard !trimmedName.isEmpty else {
@@ -39,6 +46,26 @@ struct BookCollection: Identifiable, Equatable, Codable {
         self.bookIds = bookIds
         self.createdAt = createdAt
     }
+    
+    init(
+        reconstituting id: UUID,
+        name: String,
+        description: String?,
+        cover: String?,
+        bookIds: Set<UUID>,
+        createdAt: Date,
+        updatedAt: Date,
+    ) {
+        self.id = id
+        self.name = name
+        self.description = description
+        self.cover = cover
+        self.bookIds = bookIds
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+    }
+    
+    
     
     mutating func addBook(id: UUID) throws {
         let (inserted, _) = bookIds.insert(id)
