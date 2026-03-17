@@ -99,6 +99,16 @@ struct HomeView: View {
             }
         }
         .padding(.horizontal)
+        
+        VStack(spacing: 20) {
+            if let readingStats = viewModel.readingQuickStats, let libraryStats = viewModel.libraryQuickStats {
+                StatsResumeWidget(readingStats: readingStats, libraryStats: libraryStats)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .padding(.horizontal)
+            }
+        }
+        .animation(.spring(), value: viewModel.readingQuickStats != nil)
+
     }
     
     @ViewBuilder
@@ -191,8 +201,6 @@ struct HomeView: View {
 
 
 // MARK: - 🧪 Mocks para el Preview
-
-// 1. Declaramos el struct AFUERA del #Preview
 struct MockGetAllBooksUseCase: FetchBooksUseCaseProtocol {
     func execute(filter: BookFilter? = nil) async throws -> [Book] {
         return [
@@ -242,8 +250,18 @@ struct MockGetAllBooksUseCase: FetchBooksUseCaseProtocol {
 
 #Preview {
     // 2. Instanciamos el ViewModel (las variables sí están permitidas)
-    let mockViewModel = HomeViewModel(fetchBooksUseCase: MockGetAllBooksUseCase(), getActiveSessionUseCase: DIContainer.shared.makeGetActiveReadingSessionUseCase())
+    let mockViewModel = HomeViewModel(
+        fetchBooksUseCase: MockGetAllBooksUseCase(),
+        getActiveSessionUseCase: DIContainer.shared.makeGetActiveReadingSessionUseCase(),
+        fetchReadingSessionsUseCase: DIContainer.shared.makeFetchReadingSessionsUseCase(),
+        readingStatisticsService: ReadingStatisticsService(),
+        libraryStatisticsService: LibraryStatisticsService()
+    )
     
     // 3. Simplemente llamamos a la vista, sin la palabra "return"
     HomeView(viewModel: mockViewModel)
+        .environment(GlobalSessionManager(
+            getActiveSessionUseCase: DIContainer.shared.makeGetActiveReadingSessionUseCase(),
+            fetchBookUseCase: DIContainer.shared.makeFetchBookUseCase()
+        ))
 }

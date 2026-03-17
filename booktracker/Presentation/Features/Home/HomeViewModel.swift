@@ -12,6 +12,10 @@ import Observation
 @Observable
 class HomeViewModel {
     private var allBooks: [Book] = []
+    private var allSessions: [ReadingSession] = []
+    
+    var readingQuickStats: ReadingStats?
+    var libraryQuickStats: LibraryStats?
 
     var showingActiveSessionSheet: Bool = false
 
@@ -42,17 +46,40 @@ class HomeViewModel {
     
     private let fetchBooksUseCase: FetchBooksUseCaseProtocol
     private let getActiveSessionUseCase: GetActiveReadingSessionUseCaseProtocol
+    private let fetchReadingSessionsUseCase: FetchReadingSessionsUseCaseProtocol
+    private let readingStatisticsService: ReadingStatisticsServiceProtocol
+    private let libraryStatisticsService: LibraryStatisticsServiceProtocol
     
-    init(fetchBooksUseCase: FetchBooksUseCaseProtocol, getActiveSessionUseCase: GetActiveReadingSessionUseCaseProtocol) {
+    init(
+        fetchBooksUseCase: FetchBooksUseCaseProtocol,
+        getActiveSessionUseCase: GetActiveReadingSessionUseCaseProtocol,
+        fetchReadingSessionsUseCase: FetchReadingSessionsUseCaseProtocol,
+        readingStatisticsService: ReadingStatisticsServiceProtocol,
+        libraryStatisticsService: LibraryStatisticsServiceProtocol
+    ) {
         self.fetchBooksUseCase = fetchBooksUseCase
         self.getActiveSessionUseCase = getActiveSessionUseCase
+        self.fetchReadingSessionsUseCase = fetchReadingSessionsUseCase
+        self.readingStatisticsService = readingStatisticsService
+        self.libraryStatisticsService = libraryStatisticsService
     }
     
     func loadDashboard() async {
         do {
-            self.allBooks = try await fetchBooksUseCase.execute(filter: nil)
+            async let booksTask = fetchBooksUseCase.execute(filter: nil)
+            async let readingSessionsTask = fetchReadingSessionsUseCase.execute(filter: nil)
+            
+            self.allBooks = try await booksTask
+            self.allSessions = try await readingSessionsTask
+            
+            updateAllStats()
         } catch {
             print("Error cargando dashboard: \(error.localizedDescription)")
         }
+    }
+    
+    func updateAllStats() {
+        readingQuickStats = readingStatisticsService.calculateStats(from: allSessions)
+        libraryQuickStats = libraryStatisticsService.calculateStats(from: allBooks)
     }
 }

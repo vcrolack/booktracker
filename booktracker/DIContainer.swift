@@ -102,6 +102,10 @@ final class DIContainer {
         return UpdateBookProgressUseCase(repository: makeBookRepository())
     }
     
+//     func makeDeleteBookUseCase() -> DeleteBookUseCaseProtocol {
+//         return DeleteBookUseCase(repository: makeBookRepository(), deleteAllSessionsUseCase: makeDeleteAllReadingSessionsUseCase(), removeBookFromAllCollectionsUseCase: TODO )
+//     }
+    
     func makeSearchExternalBooksUseCase() -> SearchExternalBooksUseCaseProtocol {
         return SearchExternalBooksUseCase(provider: makeExternalBookProvider())
     }
@@ -125,6 +129,10 @@ final class DIContainer {
     
     func makeGetActiveReadingSessionUseCase() -> GetActiveReadingSessionUseCaseProtocol {
         return GetActiveReadingSessionUseCase(repository: makeReadingSessionRepository())
+    }
+    
+    func makeDeleteAllReadingSessionsUseCase() -> DeleteAllReadingSessionsUseCaseProtocol {
+        return DeleteAllReadingSessionsUseCase(repository: makeReadingSessionRepository())
     }
     
     // TODO: need ReadingSession impl
@@ -177,7 +185,13 @@ final class DIContainer {
     
     @MainActor
     func makeHomeViewModel() -> HomeViewModel {
-        return HomeViewModel(fetchBooksUseCase: makeFetchBooksUseCase(), getActiveSessionUseCase: makeGetActiveReadingSessionUseCase())
+        return HomeViewModel(
+            fetchBooksUseCase: makeFetchBooksUseCase(),
+            getActiveSessionUseCase: makeGetActiveReadingSessionUseCase(),
+            fetchReadingSessionsUseCase: makeFetchReadingSessionsUseCase(),
+            readingStatisticsService: ReadingStatisticsService(),
+            libraryStatisticsService: LibraryStatisticsService(),
+        )
     }
     
     @MainActor

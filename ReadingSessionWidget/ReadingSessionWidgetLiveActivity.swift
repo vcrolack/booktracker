@@ -9,8 +9,6 @@ import ActivityKit
 import WidgetKit
 import SwiftUI
 
-// Asegúrate de que este archivo también tenga el Target Membership de tu Widget marcado ✅
-
 struct ReadingSessionWidgetLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: ReadingSessionAttributes.self) { context in
