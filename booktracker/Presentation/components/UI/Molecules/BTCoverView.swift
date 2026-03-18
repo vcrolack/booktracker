@@ -43,7 +43,12 @@ struct BTCoverView: View {
             RoundedRectangle(cornerRadius: 6)
                 .stroke(Color.primary.opacity(0.1), lineWidth: 1)
         )
-        .task { await loadImage() }
+        .onAppear {
+            if uiImage == nil, let urlString, !urlString.isEmpty {
+               uiImage = ImageCacheManager.shared.getCachedImage(from: urlString)
+           }
+        }
+        .task(id: urlString) { await loadImage() }
     }
     
     private func loadImage() async {

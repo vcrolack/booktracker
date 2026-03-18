@@ -19,6 +19,6 @@ final class DeleteBookCollectionUseCase: DeleteBookCollectionUseCaseProtocol {
     }
     
     func execute(bookCollectionId: UUID) async throws {
-        try await repository.delete(bookCollection: bookCollectionId)
+        try await repository.delete(by: bookCollectionId)
     }
 }

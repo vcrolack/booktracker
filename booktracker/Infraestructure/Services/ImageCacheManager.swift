@@ -10,6 +10,7 @@ import UIKit
 
 actor ImageCacheManager {
     static let shared = ImageCacheManager()
+    static let memoryCache = NSCache<NSString, UIImage>()
     
     private let fileManager = FileManager.default
     private let cacheDirectory: URL
@@ -21,10 +22,19 @@ actor ImageCacheManager {
         if !fileManager.fileExists(atPath: cacheDirectory.path) {
             try? fileManager.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
         }
+        Self.memoryCache.countLimit = 15
+    }
+    
+    nonisolated func getCachedImage(from urlString: String) -> UIImage? {
+        Self.memoryCache.object(forKey: urlString as NSString)
     }
     
     func getImage(from urlString: String) async -> UIImage? {
         guard let url = URL(string: urlString) else { return nil }
+        
+        if let cached = Self.memoryCache.object(forKey: urlString as NSString) {
+            return cached
+        }
         
         let safeFileName = urlString.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? UUID().uuidString
         let fileUrl = cacheDirectory.appendingPathComponent(safeFileName)
@@ -32,6 +42,7 @@ actor ImageCacheManager {
         if fileManager.fileExists(atPath: fileUrl.path),
            let data = try? Data(contentsOf: fileUrl),
            let localImage = UIImage(data: data) {
+            Self.memoryCache.setObject(localImage, forKey: urlString as NSString)
             return localImage
         }
         
@@ -41,6 +52,7 @@ actor ImageCacheManager {
             guard let downloadedImage = UIImage(data: data) else { return nil }
             
             try? data.write(to: fileUrl)
+            Self.memoryCache.setObject(downloadedImage, forKey: urlString as NSString)
 
             return downloadedImage
         } catch {

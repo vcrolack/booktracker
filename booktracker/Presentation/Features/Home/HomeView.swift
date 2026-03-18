@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @Environment(GlobalSessionManager.self) private var sessionManager
+    @Namespace private var bookTransitionNamespace
     @State var viewModel: HomeViewModel
     @State private var showingAddBook: Bool = false
     @State private var selectedBookForSession: Book? = nil
@@ -150,7 +151,10 @@ struct HomeView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 16) {
                     ForEach(viewModel.upNextBooks) { book in
-                        NavigationLink(destination: BookDetailView(viewModel: DIContainer.shared.makeBookDetailViewModel(book: book))) {
+                        NavigationLink(destination: BookDetailView(
+                                viewModel: DIContainer.shared.makeBookDetailViewModel(book: book),
+                            )
+                        ) {
                             UpNextBookCell(book: book)
                         }
                     }

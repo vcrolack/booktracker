@@ -21,8 +21,8 @@ struct BookDetailView: View {
             }
             .padding(.vertical)
         }
-        .navigationBarTitleDisplayMode(.inline)
         .background(Color(UIColor.systemGroupedBackground))
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button("Editar") {
