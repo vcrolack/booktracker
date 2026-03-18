@@ -33,7 +33,7 @@ final class BookCollectionSDDataSource: BookCollectionLocalDataSourceProtocol {
             if let existingBookCollection = try context.fetch(descriptor).first {
                 existingBookCollection.name = bookCollection.name
                 existingBookCollection.collectionDescription = bookCollection.description
-                existingBookCollection.cover = bookCollection.cover
+                existingBookCollection.coverFileName = bookCollection.cover
                 existingBookCollection.bookIds = bookCollection.bookIds
                 existingBookCollection.updatedAt = Date()
             } else {
@@ -65,7 +65,7 @@ final class BookCollectionSDDataSource: BookCollectionLocalDataSourceProtocol {
     
     func fetchBookCollections() throws -> [BookCollection] {
         do {
-            var descriptor = FetchDescriptor<BookCollectionSD>()
+            let descriptor = FetchDescriptor<BookCollectionSD>()
             let fetchedModels = try context.fetch(descriptor)
             return fetchedModels.map { BookCollectionMapper.toDomain(from: $0) }
         } catch {

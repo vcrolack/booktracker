@@ -13,7 +13,7 @@ final class BookCollectionSD {
     
     var name: String
     var collectionDescription: String?
-    var cover: String?
+    var coverFileName: String?
     var bookIds: Set<UUID>
     var createdAt: Date
     var updatedAt: Date
@@ -22,7 +22,7 @@ final class BookCollectionSD {
         id: UUID,
         name: String,
         collectionDescription: String? = nil,
-        cover: String? = nil,
+        coverFileName: String? = nil,
         bookIds: Set<UUID>,
         createdAt: Date,
         updatedAt: Date
@@ -30,7 +30,7 @@ final class BookCollectionSD {
         self.id = id
         self.name = name
         self.collectionDescription = collectionDescription
-        self.cover = cover
+        self.coverFileName = coverFileName
         self.bookIds = bookIds
         self.createdAt = createdAt
         self.updatedAt = updatedAt

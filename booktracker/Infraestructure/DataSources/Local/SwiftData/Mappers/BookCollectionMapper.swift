@@ -11,7 +11,7 @@ enum BookCollectionMapper {
             id: domain.id,
             name: domain.name,
             collectionDescription: domain.description,
-            cover: domain.cover,
+            coverFileName: domain.cover,
             bookIds: domain.bookIds,
             createdAt: domain.createdAt,
             updatedAt: domain.updatedAt,
@@ -23,7 +23,7 @@ enum BookCollectionMapper {
             reconstituting: sdModel.id,
             name: sdModel.name,
             description: sdModel.collectionDescription,
-            cover: sdModel.cover,
+            cover: sdModel.coverFileName,
             bookIds: sdModel.bookIds,
             createdAt: sdModel.createdAt,
             updatedAt: sdModel.updatedAt
