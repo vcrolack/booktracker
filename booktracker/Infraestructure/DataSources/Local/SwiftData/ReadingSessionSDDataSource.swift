@@ -133,19 +133,12 @@ final class ReadingSessionSDDataSource: ReadingSessionLocalDataSourceProtocol {
         do {
             let targetBookId = bookId
             
-            let descriptor = FetchDescriptor<ReadingSessionSD>(
-                predicate: #Predicate { $0.bookId == targetBookId }
-            )
+            try context.delete(model: ReadingSessionSD.self, where: #Predicate {
+                $0.bookId == targetBookId
+            })
             
-            let sessionsToDelete = try context.fetch(descriptor)
-            
-            for session in sessionsToDelete {
-                context.delete(session)
-            }
-            
-            if !sessionsToDelete.isEmpty {
-                try context.save()
-            }
+            // Guardamos para asegurar que el cambio se persista inmediatamente
+            try context.save()
         } catch {
             throw DataSourceError.deleteFailed(error.localizedDescription)
         }

@@ -14,10 +14,12 @@ class BookDetailViewModel {
     var book: Book
     
     var isLoading: Bool = false
+    var shouldDismiss: Bool = false
     var errorMessage: String? = nil
     var showingFinishSheet: Bool = false
     var showingAbandonAlert: Bool = false
     var showingEditSheet: Bool = false
+    var showingDeleteConfirmation: Bool = false
     
     var tempRating: Int = 5
     var tempReview: String = ""
@@ -28,6 +30,7 @@ class BookDetailViewModel {
     private let abandonBookUseCase: AbandonBookUseCaseProtocol
     private let acquireBookForReading: AcquireBookForReadingUseCaseProtocol
     private let fetchBookUseCase: FetchBookUseCaseProtocol
+    private let deleteBookUseCase: DeleteBookUseCaseProtocol
     
     init(
         book: Book,
@@ -36,6 +39,7 @@ class BookDetailViewModel {
         abandonBookUseCase: AbandonBookUseCaseProtocol,
         acquireBookForReading: AcquireBookForReadingUseCaseProtocol,
         fetchBookUseCase: FetchBookUseCaseProtocol,
+        deleteBookUseCase: DeleteBookUseCaseProtocol
     ) {
         self.book = book
         self.finishReadingBookUseCase = finishReadingBookUseCase
@@ -43,6 +47,7 @@ class BookDetailViewModel {
         self.abandonBookUseCase = abandonBookUseCase
         self.acquireBookForReading = acquireBookForReading
         self.fetchBookUseCase = fetchBookUseCase
+        self.deleteBookUseCase = deleteBookUseCase
     }
     
     // MARK: - Actions
@@ -147,7 +152,14 @@ class BookDetailViewModel {
         }
     }
     
-    func deleteBook() {
-        print("Deleting book... (pending cause ReadginSession implementation)")
+    func deleteBook() async {
+        isLoading = true
+        do {
+            try await deleteBookUseCase.execute(bookId: book.id)
+            shouldDismiss = true
+        } catch {
+            self.errorMessage = "Nose pudo eliminar el libro"
+        }
+        isLoading = false
     }
 }

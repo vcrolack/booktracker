@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct BookDetailView: View {
+    @Environment(\.dismiss) private var dismiss
     @State var viewModel: BookDetailViewModel
     
     var body: some View {
@@ -18,6 +19,7 @@ struct BookDetailView: View {
                 actionsSection
                 milestonesSection
                 metadataSection
+                deleteSection
             }
             .padding(.vertical)
         }
@@ -46,6 +48,22 @@ struct BookDetailView: View {
             BookFormView(viewModel: DIContainer.shared.makeBookFormViewModel(book: viewModel.book))
         }
         .presentationDetents([.medium, .large])
+        .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
+            if shouldDismiss {
+                dismiss()
+            }
+        }
+        .alert("¿Eliminar este libro?", isPresented: $viewModel.showingDeleteConfirmation) {
+            Button("Eliminar permanentemente", role: .destructive) {
+                Task { await viewModel.deleteBook() }
+            }
+            
+            Button("Cancelar", role: .cancel) {
+                
+            }
+        } message: {
+            Text("Se borrarán también todas tus sesiones de lectura y se quitará de tus colecciones. Esta acción no puede deshacerse.")
+        }
     }
     
     @ViewBuilder
@@ -290,6 +308,24 @@ struct BookDetailView: View {
                 await viewModel.confirmAbandone()
             }
         }
+    }
+    
+    @ViewBuilder
+    private var deleteSection: some View {
+        VStack {
+            Button(role: .destructive) {
+                viewModel.showingDeleteConfirmation = true
+            } label: {
+                actionButtonLabel(
+                    title: "Eliminar de la biblioteca",
+                    icon: "trash.fill",
+                    color: .red,
+                    isSecondary: true
+                )
+            }
+        }
+        .padding(.horizontal)
+        .padding(.top, 20)
     }
     
     private func actionButtonLabel(title: String, icon: String, color: Color, isSecondary: Bool = false) -> some View {

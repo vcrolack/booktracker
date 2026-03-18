@@ -199,6 +199,7 @@ final class DIContainer {
             abandonBookUseCase: makeAbandonBookUseCase(),
             acquireBookForReading: makeAcquireBookForReadingUseCase(),
             fetchBookUseCase: makeFetchBookUseCase(),
+            deleteBookUseCase: makeDeleteBookUseCase()
         )
     }
     
