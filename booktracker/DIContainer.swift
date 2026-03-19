@@ -14,7 +14,10 @@ final class DIContainer {
     
     static let shared = DIContainer()
     
+    private let imageProcessor: ImageProcessorService
+    
     private init() {
+        self.imageProcessor = ImageProcessor()
         do {
             let schema = Schema([
                 BookSD.self,
@@ -63,6 +66,10 @@ final class DIContainer {
     lazy var readingSessionLiveActivityManager: ReadingLiveActivityManager = {
         return ReadingLiveActivityManager()
     }()
+    
+    func makeImageProcessor() -> ImageProcessorService {
+        return imageProcessor
+    }
     
     // MARK: - 🚀 Use Cases (La Lógica de Negocio)
         
@@ -160,7 +167,11 @@ final class DIContainer {
     }
     
     func makeCreateBookCollectionUseCase() -> CreateBookCollectionUseCaseProtocol {
-        return CreateBookCollectionUseCase(repository: makeBookCollectionRepository(), imageProcessor: ImageProcessor())
+        return CreateBookCollectionUseCase(repository: makeBookCollectionRepository(), imageProcessor: makeImageProcessor())
+    }
+    
+    func makeFetchBookCollectionsUseCase() -> FetchBookCollectionsUseCaseProtocol {
+        return FetchBookCollectionsUseCase(repository: makeBookCollectionRepository())
     }
     
     // MARK: - 🌐 Providers (Capa de Datos Externa)
@@ -213,6 +224,7 @@ final class DIContainer {
             fetchBooksUseCase: makeFetchBooksUseCase(),
             getActiveSessionUseCase: makeGetActiveReadingSessionUseCase(),
             fetchReadingSessionsUseCase: makeFetchReadingSessionsUseCase(),
+            fetchBookCollectionsUseCase: makeFetchBookCollectionsUseCase(),
             readingStatisticsService: ReadingStatisticsService(),
             libraryStatisticsService: LibraryStatisticsService(),
         )
@@ -252,5 +264,15 @@ final class DIContainer {
             fetchSessionsUseCase: makeFetchReadingSessionsUseCase(),
             readingStatisticsService: ReadingStatisticsService()
         )
+    }
+    
+    @MainActor
+    func makeBookCollectionFormViewModel(collectionToEdit: BookCollection? = nil) -> BookCollectionFormViewModel {
+        return BookCollectionFormViewModel(createBookCollectionUseCase: makeCreateBookCollectionUseCase(), collectionToEdit: collectionToEdit)
+    }
+    
+    @MainActor
+    func makeBookCollectionListViewModel() -> BookCollectionListViewModel {
+        return BookCollectionListViewModel(fetchBookCollectionsUseCase: makeFetchBookCollectionsUseCase())
     }
 }

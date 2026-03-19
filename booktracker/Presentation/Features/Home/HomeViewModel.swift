@@ -16,6 +16,7 @@ class HomeViewModel {
     
     var readingQuickStats: ReadingStats?
     var libraryQuickStats: LibraryStats?
+    var topCollections: [BookCollection] = []
 
     var showingActiveSessionSheet: Bool = false
 
@@ -47,6 +48,7 @@ class HomeViewModel {
     private let fetchBooksUseCase: FetchBooksUseCaseProtocol
     private let getActiveSessionUseCase: GetActiveReadingSessionUseCaseProtocol
     private let fetchReadingSessionsUseCase: FetchReadingSessionsUseCaseProtocol
+    private let fetchBookCollectionsUseCase: FetchBookCollectionsUseCaseProtocol
     private let readingStatisticsService: ReadingStatisticsServiceProtocol
     private let libraryStatisticsService: LibraryStatisticsServiceProtocol
     
@@ -54,12 +56,14 @@ class HomeViewModel {
         fetchBooksUseCase: FetchBooksUseCaseProtocol,
         getActiveSessionUseCase: GetActiveReadingSessionUseCaseProtocol,
         fetchReadingSessionsUseCase: FetchReadingSessionsUseCaseProtocol,
+        fetchBookCollectionsUseCase: FetchBookCollectionsUseCaseProtocol,
         readingStatisticsService: ReadingStatisticsServiceProtocol,
-        libraryStatisticsService: LibraryStatisticsServiceProtocol
+        libraryStatisticsService: LibraryStatisticsServiceProtocol,
     ) {
         self.fetchBooksUseCase = fetchBooksUseCase
         self.getActiveSessionUseCase = getActiveSessionUseCase
         self.fetchReadingSessionsUseCase = fetchReadingSessionsUseCase
+        self.fetchBookCollectionsUseCase = fetchBookCollectionsUseCase
         self.readingStatisticsService = readingStatisticsService
         self.libraryStatisticsService = libraryStatisticsService
     }
@@ -68,9 +72,12 @@ class HomeViewModel {
         do {
             async let booksTask = fetchBooksUseCase.execute(filter: nil)
             async let readingSessionsTask = fetchReadingSessionsUseCase.execute(filter: nil)
+            async let bookCollectionsTask = fetchBookCollectionsUseCase.execute(filter: nil)
             
             self.allBooks = try await booksTask
             self.allSessions = try await readingSessionsTask
+            let bookCollections = try await bookCollectionsTask
+            self.topCollections = Array(bookCollections.prefix(5))
             
             updateAllStats()
         } catch {

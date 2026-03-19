@@ -29,6 +29,9 @@ struct HomeView: View {
                         if !viewModel.recentlyFinishedBooks.isEmpty {
                             recentlyFinishedSection
                         }
+
+                        myBookCollections
+                        
                     }
                     .padding(.bottom, 80)
                     .padding(.vertical)
@@ -185,6 +188,44 @@ struct HomeView: View {
     }
     
     @ViewBuilder
+    private var myBookCollections: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            BTSectionHeaderView(title: "Mis colecciones", destination: BookCollectionList(viewModel: DIContainer.shared.makeBookCollectionListViewModel()))
+            
+            if viewModel.topCollections.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "folder.badge.plus")
+                        .font(.largeTitle)
+                        .foregroundStyle(.secondary.opacity(0.8))
+                    
+                    Text("No tienes colecciones actualmente")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 180)
+                .background(Color(UIColor.secondarySystemBackground).opacity(0.5))
+                .cornerRadius(12)
+                .padding(.horizontal)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(alignment: .top, spacing: 16) {
+                            ForEach(viewModel.topCollections) { collection in
+                                NavigationLink {
+                                    Text("Detalle de \(collection.name)")
+                                } label: {
+                                    BookCollectionCellView(bookCollection: collection)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                    }
+                    .padding(.horizontal)
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
     private var emptyReadingState: some View {
         VStack(spacing: 12) {
             Image(systemName: "book.closed")
@@ -258,6 +299,7 @@ struct MockGetAllBooksUseCase: FetchBooksUseCaseProtocol {
         fetchBooksUseCase: MockGetAllBooksUseCase(),
         getActiveSessionUseCase: DIContainer.shared.makeGetActiveReadingSessionUseCase(),
         fetchReadingSessionsUseCase: DIContainer.shared.makeFetchReadingSessionsUseCase(),
+        fetchBookCollectionsUseCase: DIContainer.shared.makeFetchBookCollectionsUseCase(),
         readingStatisticsService: ReadingStatisticsService(),
         libraryStatisticsService: LibraryStatisticsService()
     )
