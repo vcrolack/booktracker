@@ -24,15 +24,18 @@ final class BookCollectionDetailViewModel {
     
     private let fetchBooksUseCase: FetchBooksUseCaseProtocol
     private let updateBookCollectionUseCase: UpdateBookCollectionUseCaseProtocol
+    private let fetchBookCollectionUseCase: FetchBookCollectionUseCaseProtocol
     
     init(
         bookCollection: BookCollection,
         fetchBooksUseCase: FetchBooksUseCaseProtocol,
-        updateBookCollectionUseCase: UpdateBookCollectionUseCaseProtocol
+        updateBookCollectionUseCase: UpdateBookCollectionUseCaseProtocol,
+        fetchBookCollectionUseCase: FetchBookCollectionUseCaseProtocol
     ) {
         self.bookCollection = bookCollection
         self.fetchBooksUseCase = fetchBooksUseCase
         self.updateBookCollectionUseCase = updateBookCollectionUseCase
+        self.fetchBookCollectionUseCase = fetchBookCollectionUseCase
     }
     
     func loadBooks() async {
@@ -65,5 +68,18 @@ final class BookCollectionDetailViewModel {
             print("[BC DETAIL VM] Failed to update collection: \(error)")
             errorMessage = "No hemos logrado actualizar tus libros."
         }
+    }
+    
+    func refreshData() async {
+        isLoading = true
+        do {
+            if let updatedCollection = try await fetchBookCollectionUseCase.execute(bookCollectionId: bookCollection.id) {
+                self.bookCollection = updatedCollection
+            }
+            await loadBooks()
+        } catch {
+            print("❌ Error al refrescar: \(error)")
+        }
+        isLoading = false
     }
 }

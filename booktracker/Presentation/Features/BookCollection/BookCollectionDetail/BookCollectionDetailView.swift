@@ -54,8 +54,10 @@ struct BookCollectionDetailView: View {
                 Task { await viewModel.updateBooks(newIds: updatedIds) }
             }
         }
-        .sheet(isPresented: $showingEditorForm) {
-            BookCollectionFormView(viewModel: DIContainer.shared.makeBookCollectionFormViewModel())
+        .sheet(isPresented: $showingEditorForm, onDismiss: {
+            Task { await viewModel.refreshData() }
+        }) {
+            BookCollectionFormView(viewModel: DIContainer.shared.makeBookCollectionFormViewModel(collectionToEdit: viewModel.bookCollection))
         }
         .task { await viewModel.loadBooks() }
     }

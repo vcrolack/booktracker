@@ -178,6 +178,10 @@ final class DIContainer {
         return UpdateBookCollectionUseCase(repository: makeBookCollectionRepository(), imageProcessor: makeImageProcessor())
     }
     
+    func makeFetchBookCollectionUseCase() -> FetchBookCollectionUseCaseProtocol {
+        return FetchBookCollectionUseCase(repository: makeBookCollectionRepository())
+    }
+    
     // MARK: - 🌐 Providers (Capa de Datos Externa)
     func makeExternalBookProvider() -> ExternalBookProviderProtocol {
         return GoogleBooksProvider()
@@ -272,7 +276,12 @@ final class DIContainer {
     
     @MainActor
     func makeBookCollectionFormViewModel(collectionToEdit: BookCollection? = nil) -> BookCollectionFormViewModel {
-        return BookCollectionFormViewModel(createBookCollectionUseCase: makeCreateBookCollectionUseCase(), collectionToEdit: collectionToEdit)
+        return BookCollectionFormViewModel(
+            createBookCollectionUseCase: makeCreateBookCollectionUseCase(),
+            collectionToEdit: collectionToEdit,
+            updateBookCollectionUseCase: makeUpdateBookCollectionUseCase(),
+            imageProcessor: makeImageProcessor()
+        )
     }
     
     @MainActor
@@ -286,7 +295,8 @@ final class DIContainer {
         return BookCollectionDetailViewModel(
             bookCollection: bookCollection,
             fetchBooksUseCase: makeFetchBooksUseCase(),
-            updateBookCollectionUseCase: makeUpdateBookCollectionUseCase()
+            updateBookCollectionUseCase: makeUpdateBookCollectionUseCase(),
+            fetchBookCollectionUseCase: makeFetchBookCollectionUseCase()
         )
     }
     

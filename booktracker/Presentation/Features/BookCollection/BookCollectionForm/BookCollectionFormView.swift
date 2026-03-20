@@ -34,8 +34,21 @@ struct BookCollectionFormView: View {
                     TextField("Descripción (opcional)", text: $viewModel.description)
                         .lineLimit(3...5)
                 }
+                if viewModel.collectionToEdit != nil {
+                    Button {
+                        
+                    } label: {
+                        HStack {
+                            Image(systemName: "trash.fill")
+                                .foregroundStyle(.red)
+                            Text("Eliminar colección")
+                                .foregroundStyle(.red)
+                        }
+                    }
+                }
+
             }
-            .navigationTitle(viewModel.name.isEmpty ? "Nueva colección" : viewModel.name)
+            .navigationTitle(viewModel.name.isEmpty ? "Nueva colección" : "Editar colección")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
