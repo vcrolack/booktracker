@@ -80,7 +80,7 @@ struct BookCollection: Identifiable, Equatable, Codable {
         }
     }
     
-    mutating func updateBookCollection(name: String?, description: String?, cover: String?) throws {
+    mutating func updateBookCollection(name: String?, description: String?, cover: String?, bookIds: Set<UUID>?) throws {
         if let newName = name {
             let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !trimmed.isEmpty else { throw BookCollectionDomainError.emptyName}
@@ -89,6 +89,7 @@ struct BookCollection: Identifiable, Equatable, Codable {
         
         if let newDescription = description { self.description = newDescription }
         if let newCover = cover { self.cover = newCover }
+        if let newBookIds = bookIds { self.bookIds = newBookIds }
         
         self.updatedAt = Date()
     }

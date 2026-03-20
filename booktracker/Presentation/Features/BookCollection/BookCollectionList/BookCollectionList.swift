@@ -52,8 +52,7 @@ struct BookCollectionList: View {
             LazyVGrid(columns: columns, spacing: 25) {
                 ForEach(viewModel.filteredCollections) { bookCollection in
                     NavigationLink {
-                        // TODO: Implements Book Collection Detail View
-                        Text("Detalle de \(bookCollection.name)")
+                        BookCollectionDetailView(viewModel: DIContainer.shared.makeBookCollectionDetailViewModel(bookCollection: bookCollection))
                     } label: {
                         BookCollectionCellView(bookCollection: bookCollection)
                     }

@@ -13,6 +13,7 @@ protocol ImageProcessorService {
     func resizeAndCompress(data: Data, targetSize: CGSize) -> Data?
     func saveImage(data: Data, fileName: String, folderName: String) -> String?
     func loadImage(fileName: String, folderName: String) -> UIImage?
+    func deleteImage(fileName: String, folderName: String) -> Bool
 }
 extension ImageProcessorService {
     func resizeAndCompress(data: Data) -> Data? {

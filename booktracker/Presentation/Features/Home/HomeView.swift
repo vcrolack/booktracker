@@ -212,7 +212,7 @@ struct HomeView: View {
                     HStack(alignment: .top, spacing: 16) {
                             ForEach(viewModel.topCollections) { collection in
                                 NavigationLink {
-                                    Text("Detalle de \(collection.name)")
+                                    BookCollectionDetailView(viewModel: DIContainer.shared.makeBookCollectionDetailViewModel(bookCollection: collection))
                                 } label: {
                                     BookCollectionCellView(bookCollection: collection)
                                 }

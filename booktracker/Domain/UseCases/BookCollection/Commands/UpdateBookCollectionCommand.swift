@@ -11,5 +11,6 @@ struct UpdateBookCollectionCommand {
     let bookCollectionId: UUID
     var name: String?
     var description: String?
-    var cover: String?
+    var cover: Data?
+    var bookIds: Set<UUID>?
 }

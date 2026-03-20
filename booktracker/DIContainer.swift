@@ -174,6 +174,10 @@ final class DIContainer {
         return FetchBookCollectionsUseCase(repository: makeBookCollectionRepository())
     }
     
+    func makeUpdateBookCollectionUseCase() -> UpdateBookCollectionUseCaseProtocol {
+        return UpdateBookCollectionUseCase(repository: makeBookCollectionRepository(), imageProcessor: makeImageProcessor())
+    }
+    
     // MARK: - 🌐 Providers (Capa de Datos Externa)
     func makeExternalBookProvider() -> ExternalBookProviderProtocol {
         return GoogleBooksProvider()
@@ -274,5 +278,20 @@ final class DIContainer {
     @MainActor
     func makeBookCollectionListViewModel() -> BookCollectionListViewModel {
         return BookCollectionListViewModel(fetchBookCollectionsUseCase: makeFetchBookCollectionsUseCase())
+    }
+    
+    
+    @MainActor
+    func makeBookCollectionDetailViewModel(bookCollection: BookCollection) -> BookCollectionDetailViewModel {
+        return BookCollectionDetailViewModel(
+            bookCollection: bookCollection,
+            fetchBooksUseCase: makeFetchBooksUseCase(),
+            updateBookCollectionUseCase: makeUpdateBookCollectionUseCase()
+        )
+    }
+    
+    @MainActor
+    func makeBookSelectionViewModel(initialSelectedIds: Set<UUID>) -> BookSelectionViewModel {
+        return BookSelectionViewModel(initialSelectedIds: initialSelectedIds, fetchBooksUseCase: makeFetchBooksUseCase())
     }
 }

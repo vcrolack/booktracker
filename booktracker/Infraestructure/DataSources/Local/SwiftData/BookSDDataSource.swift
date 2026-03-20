@@ -131,6 +131,13 @@ final class BookSDDataSource: BookLocalDataSourceProtocol {
                     if let genre = activeFilter.genre, !genre.isEmpty {
                         booksSD = booksSD.filter { $0.genre == genre }
                     }
+                    
+                    if let ids = activeFilter.ids {
+                        print("🔍 Buscando libros con IDs: \(ids)")
+                        print("📚 Libros disponibles en DB: \(booksSD.map { $0.id })")
+                        booksSD = booksSD.filter { ids.contains($0.id) }
+                        print("✅ Encontrados: \(booksSD.count)")
+                    }
                 }
                 
                 // 5. 📦 Traducir a Entidades de Dominio

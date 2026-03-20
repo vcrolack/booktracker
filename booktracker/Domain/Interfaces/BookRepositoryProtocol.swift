@@ -13,6 +13,7 @@ struct BookFilter {
     var ownership: Ownership?
     var author: String?
     var genre: String?
+    var ids: Set<UUID>?
     
     var sortBy: SortOption? = .createdAtAscending
     

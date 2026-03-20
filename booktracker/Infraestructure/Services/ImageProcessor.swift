@@ -65,4 +65,22 @@ struct ImageProcessor: ImageProcessorService {
         guard let data = try? Data(contentsOf: fileUrl) else { return nil }
         return UIImage(data: data)
     }
+    
+    func deleteImage(fileName: String, folderName: String) -> Bool {
+        let fileUrl = getDirectory(for: folderName).appendingPathComponent(fileName)
+        
+        guard FileManager.default.fileExists(atPath: fileUrl.path) else {
+            print("[Image Processor] File not does exist, no need to delete: \(fileName)")
+            return true
+        }
+        
+        do {
+            try FileManager.default.removeItem(at: fileUrl)
+            print("[Image Processor] Successfully deleted: \(fileName)")
+            return true
+        } catch {
+            print("[Image Processor] Error deleting image: \(error.localizedDescription)")
+            return false
+        }
+    }
 }
