@@ -23,6 +23,7 @@ final class BookCollectionFormViewModel {
     
     private let createBookCollectionUseCase: CreateBookCollectionUseCaseProtocol
     private let updateBookCollectionUseCase: UpdateBookCollectionUseCaseProtocol
+    private let deleteBookCollectionUseCase: DeleteBookCollectionUseCaseProtocol
     private let imageProcessor: ImageProcessorService
     
     let collectionToEdit: BookCollection?
@@ -31,24 +32,20 @@ final class BookCollectionFormViewModel {
         createBookCollectionUseCase: CreateBookCollectionUseCaseProtocol, 
         collectionToEdit: BookCollection? = nil,
         updateBookCollectionUseCase: UpdateBookCollectionUseCaseProtocol,
+        deleteBookCollectionUseCase: DeleteBookCollectionUseCaseProtocol,
         imageProcessor: ImageProcessorService
     ) {
         self.createBookCollectionUseCase = createBookCollectionUseCase
         self.collectionToEdit = collectionToEdit
         self.updateBookCollectionUseCase = updateBookCollectionUseCase
+        self.deleteBookCollectionUseCase = deleteBookCollectionUseCase
         self.imageProcessor = imageProcessor
-        
-        if let collection = collectionToEdit {
-            self.setupEditMode(with: collection)
-        }
         
         if let collection = collectionToEdit {
             self.name = collection.name
             self.description = collection.description ?? ""
             
-            // Cargamos los bytes del disco para que el CoverPickerView los muestre
             if let fileName = collection.cover {
-                // Necesitamos un método en el imageProcessor que devuelva Data? o cargar el UIImage y convertirlo
                 if let uiImage = imageProcessor.loadImage(fileName: fileName, folderName: "CollectionCovers") {
                     self.selectedImageData = uiImage.jpegData(compressionQuality: 0.8)
                 }
@@ -97,17 +94,25 @@ final class BookCollectionFormViewModel {
         }
     }
     
+    func deleteBookCollection() async {
+        guard let id = collectionToEdit?.id else { return }
+        
+        isLoading = true
+        do {
+            try await deleteBookCollectionUseCase.execute(bookCollectionId: id)
+            self.shouldDismiss = true
+        } catch {
+            self.errorMessage = "No se ha podido eliminar tu colección"
+            print("[BC FORM VM] Error al borrar: \(error)")
+        }
+        
+    }
+    
     private func validate() -> Bool {
         if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             errorMessage = "El nombre no debe estar vacío"
             return false
         }
         return true
-    }
-    
-    private func setupEditMode(with collection: BookCollection) {
-        self.name = collection.name
-        self.description = collection.description ?? ""
-        // TODO: Add image and book ids
     }
 }

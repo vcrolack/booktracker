@@ -11,6 +11,7 @@ struct BookCollectionDetailView: View {
     @State var viewModel: BookCollectionDetailViewModel
     @State var showingBookSelector: Bool = false
     @State var showingEditorForm: Bool = false
+    @Environment(\.dismiss) private var dismissDetail
     
     private let imageProcessor: ImageProcessorService = DIContainer.shared.makeImageProcessor()
     
@@ -57,7 +58,12 @@ struct BookCollectionDetailView: View {
         .sheet(isPresented: $showingEditorForm, onDismiss: {
             Task { await viewModel.refreshData() }
         }) {
-            BookCollectionFormView(viewModel: DIContainer.shared.makeBookCollectionFormViewModel(collectionToEdit: viewModel.bookCollection))
+            BookCollectionFormView(
+                viewModel: DIContainer.shared.makeBookCollectionFormViewModel(collectionToEdit: viewModel.bookCollection),
+                onDeleteSuccess: {
+                    dismissDetail()
+                }
+            )
         }
         .task { await viewModel.loadBooks() }
     }

@@ -182,6 +182,10 @@ final class DIContainer {
         return FetchBookCollectionUseCase(repository: makeBookCollectionRepository())
     }
     
+    func makeDeleteBookCollectionUseCase() -> DeleteBookCollectionUseCaseProtocol {
+        return DeleteBookCollectionUseCase(repository: makeBookCollectionRepository())
+    }
+    
     // MARK: - 🌐 Providers (Capa de Datos Externa)
     func makeExternalBookProvider() -> ExternalBookProviderProtocol {
         return GoogleBooksProvider()
@@ -280,6 +284,7 @@ final class DIContainer {
             createBookCollectionUseCase: makeCreateBookCollectionUseCase(),
             collectionToEdit: collectionToEdit,
             updateBookCollectionUseCase: makeUpdateBookCollectionUseCase(),
+            deleteBookCollectionUseCase: makeDeleteBookCollectionUseCase(),
             imageProcessor: makeImageProcessor()
         )
     }

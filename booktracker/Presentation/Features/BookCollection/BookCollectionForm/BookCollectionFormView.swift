@@ -9,7 +9,10 @@ import SwiftUI
 
 struct BookCollectionFormView: View {
     @State var viewModel: BookCollectionFormViewModel
+    @State var showindDeleteAlert: Bool = false
     @Environment(\.dismiss) private var dismiss
+    
+    var onDeleteSuccess: (() -> Void)?
     
     var body: some View {
         NavigationStack {
@@ -36,7 +39,7 @@ struct BookCollectionFormView: View {
                 }
                 if viewModel.collectionToEdit != nil {
                     Button {
-                        
+                        showindDeleteAlert = true
                     } label: {
                         HStack {
                             Image(systemName: "trash.fill")
@@ -81,6 +84,21 @@ struct BookCollectionFormView: View {
             if let message = viewModel.errorMessage {
                 Text(message)
             }
+        }
+        .alert("¿Seguro que quieres eliminar tu colección?", isPresented: $showindDeleteAlert) {
+            Button("Eliminar", role: .destructive) {
+                Task {
+                    await viewModel.deleteBookCollection()
+                    if viewModel.shouldDismiss {
+                        dismiss()
+                        onDeleteSuccess?()
+                    }
+                }
+            }
+            
+            Button("Cancelar", role: .cancel) {}
+        } message: {
+            Text("Esta acción no puede deshacerse.")
         }
     }
 }
