@@ -183,7 +183,10 @@ final class DIContainer {
     }
     
     func makeDeleteBookCollectionUseCase() -> DeleteBookCollectionUseCaseProtocol {
-        return DeleteBookCollectionUseCase(repository: makeBookCollectionRepository())
+        return DeleteBookCollectionUseCase(
+            repository: makeBookCollectionRepository(),
+            fetchBookCollectionUseCase: makeFetchBookCollectionUseCase(),
+            imageProcessor: makeImageProcessor())
     }
     
     // MARK: - 🌐 Providers (Capa de Datos Externa)
