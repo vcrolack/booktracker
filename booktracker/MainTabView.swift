@@ -46,7 +46,7 @@ struct MainTabView: View {
             }
             
             Tab("Ajustes", systemImage: "gearshape.fill", value: .settings) {
-                Text("Pantalla de ajustes en construcción")
+                SettingsView()
             }
             
             Tab(value: .search, role: .search) {

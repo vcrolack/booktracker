@@ -312,4 +312,9 @@ final class DIContainer {
     func makeBookSelectionViewModel(initialSelectedIds: Set<UUID>) -> BookSelectionViewModel {
         return BookSelectionViewModel(initialSelectedIds: initialSelectedIds, fetchBooksUseCase: makeFetchBooksUseCase())
     }
+    
+    @MainActor
+    func makeSettingsViewModel() -> SettingsViewModel {
+        return SettingsViewModel()
+    }
 }

@@ -8,9 +8,12 @@
 import SwiftUI
 
 struct ContentView: View {
-
+    @AppStorage("app_theme") private var selectedTheme: AppTheme = .system
+    
     var body: some View {
         MainTabView()
+            .preferredColorScheme(selectedTheme.colorScheme)
+        
     }
 }
 

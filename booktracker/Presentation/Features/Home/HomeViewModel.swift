@@ -24,14 +24,14 @@ class HomeViewModel {
         allBooks
             .filter { $0.status == .reading }
             .sorted { $0.updatedAt > $1.updatedAt }
-            .prefix(3)
+            .prefix(5)
             .map { $0 }
     }
     
     var upNextBooks: [Book] {
         allBooks
             .filter { $0.status == .toRead }
-            .prefix(3)
+            .prefix(5)
             .map { $0 }
     }
     
