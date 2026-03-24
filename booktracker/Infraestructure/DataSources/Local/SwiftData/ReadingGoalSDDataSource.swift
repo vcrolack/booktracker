@@ -10,7 +10,7 @@ import SwiftData
 
 protocol ReadingGoalLocalDataSourceProtocol {
     func save(goal: ReadingGoal) throws
-    func fetchReadingSession(by id: UUID) throws -> ReadingGoal?
+    func fetchReadingGoal(by id: UUID) throws -> ReadingGoal?
     func fetchReadingGoals(criteria: ReadingGoalSearchField) throws -> [ReadingGoal]
     func deleteReadingGoal(by id: UUID) throws
 }
@@ -44,7 +44,7 @@ final class ReadingGoalSDDataSource: ReadingGoalLocalDataSourceProtocol {
         }
     }
     
-    func fetchReadingSession(by id: UUID) throws -> ReadingGoal? {
+    func fetchReadingGoal(by id: UUID) throws -> ReadingGoal? {
         do {
             let readingGoalId = id
             var descriptor = FetchDescriptor<ReadingGoalSD>(

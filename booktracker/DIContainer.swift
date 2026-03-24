@@ -23,6 +23,7 @@ final class DIContainer {
                 BookSD.self,
                 ReadingSessionSD.self,
                 BookCollectionSD.self,
+                ReadingGoalSD.self,
             ])
             
             let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
@@ -45,6 +46,10 @@ final class DIContainer {
         return BookCollectionSDDataSource(context: modelContainer.mainContext)
     }
     
+    private func makeReadingGoalDataSource() -> ReadingGoalLocalDataSourceProtocol {
+        return ReadingGoalSDDataSource(context: modelContainer.mainContext)
+    }
+    
     func makeBookRepository() -> BookRepositoryProtocol {
         return BookRepositoryImpl(localDataSource: makeBookDataSource())
     }
@@ -55,6 +60,10 @@ final class DIContainer {
     
     func makeBookCollectionRepository() -> BookCollectionRepositoryProtocol {
         return BookCollectionRepositoryImpl(localDataSource: makeBookCollectionDataSource())
+    }
+    
+    func makeReadingGoalRepository() -> ReadingGoalRepositoryProtocol {
+        return ReadingGoalRepositoryImpl(localDataSource: makeReadingGoalDataSource())
     }
     
     // MARK: - 🌍 Global State
