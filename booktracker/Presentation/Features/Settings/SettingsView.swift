@@ -8,37 +8,20 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("app_theme") private var selectedTheme: AppTheme = .system
-    @State private var notificationsEnabled = true
+    @State var viewModel: SettingsViewModel
+    @State private var showingEmojiPicker = false
 
 
     var body: some View {
         NavigationStack {
             List {
-                // 👤 SECCIÓN: PERFIL / CUENTA
-                Section {
-                    HStack(spacing: 15) {
-                        Image(systemName: "person.crop.circle.fill")
-                            .resizable()
-                            .frame(width: 60, height: 60)
-                            .foregroundColor(.blue)
-                        
-                        VStack(alignment: .leading) {
-                            Text("Vitocondrio")
-                                .font(.headline)
-                            Text("Miembro desde 2026")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .padding(.vertical, 8)
-                } header: { Text("Cuenta") }
+                account
 
                 // ⚙️ SECCIÓN: PREFERENCIAS
                 Section {
-                    Toggle("Notificaciones de lectura", isOn: $notificationsEnabled)
+                    Toggle("Notificaciones de lectura", isOn: $viewModel.notificationsEnabled)
                     
-                    Picker(selection: $selectedTheme) {
+                    Picker(selection: $viewModel.selectedTheme) {
                         ForEach(AppTheme.allCases) { theme in
                             Label(theme.rawValue, systemImage: theme.icon)
                                 .tag(theme)
@@ -49,35 +32,85 @@ struct SettingsView: View {
                     .pickerStyle(.menu)
                 } header: { Text("Personalización") }
 
-                // 🗄️ SECCIÓN: GESTIÓN DE DATOS (Muy Senior 🛡️)
-                Section {
-                    NavigationLink(destination: Text("Lógica de Exportar")) {
-                        Label("Exportar mi Biblioteca (JSON)", systemImage: "square.and.arrow.up")
-                    }
-                    
-                    Button(role: .destructive) {
-                        // Acción de borrar cache de portadas
-                    } label: {
-                        Label("Limpiar caché de portadas", systemImage: "trash")
-                    }
-                } header: { Text("Datos y Almacenamiento") }
+                dataAndStorage
                 
-                // 📖 SECCIÓN: IDENTIDAD (Un toque de reverencia)
-                Section {
-                    NavigationLink(destination: Text("Créditos y Versión")) {
-                        Label("Acerca de BookTracker", systemImage: "info.circle")
-                    }
-                    
-                    Link(destination: URL(string: "https://github.com/vcrolack")!) {
-                        Label("Código Fuente", systemImage: "chevron.left.forwardslash.chevron.right")
-                    }
-                } header: { Text("Información") }
+                about
             }
             .navigationTitle("Ajustes")
         }
     }
+    
+    @ViewBuilder
+    private var account: some View {
+        Section {
+            HStack(spacing: 15) {
+                Button {
+                    showingEmojiPicker = true
+                } label: {
+                    Text(viewModel.userAvatar)
+                        .font(.system(size:40))
+                        .frame(width: 70, height: 70)
+                        .background(Color.accentColor.opacity(0.1))
+                        .clipShape(Circle())
+                        .overlay(
+                            Image(systemName: "pencil.circle.fill")
+                                .foregroundColor(.accentColor)
+                                .background(Circle().fill(.background))
+                                .offset(x: 25, y: 25)
+                        )
+                }
+                .buttonStyle(.plain)
+                
+                VStack(alignment: .leading) {
+                    TextField("Nombre", text: $viewModel.userName)
+                        .font(.headline)
+                    Text("Miembro desde 2026")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding(.vertical, 8)
+            .sheet(isPresented: $showingEmojiPicker) {
+                BTEmojiPickerView(selectedEmoji: $viewModel.userAvatar, title: "Elije tu avatar")
+            }
+        } header: { Text("Cuenta") }
+    }
+    
+    @ViewBuilder
+    private var dataAndStorage: some View {
+        // 🗄️ SECCIÓN: GESTIÓN DE DATOS (Muy Senior 🛡️)
+        Section {
+            NavigationLink(destination: Text("Lógica de Exportar")) {
+                Label("Exportar mi Biblioteca (JSON)", systemImage: "square.and.arrow.up")
+            }
+            
+            Button(role: .destructive) {
+                // Acción de borrar cache de portadas
+            } label: {
+                Label("Limpiar caché de portadas", systemImage: "trash")
+            }
+        } header: { Text("Datos y Almacenamiento") }
+    }
+    
+    @ViewBuilder
+    private var about: some View {
+        // 📖 SECCIÓN: IDENTIDAD (Un toque de reverencia)
+        Section {
+            NavigationLink(destination: AboutBookTracker()) {
+                Label("Acerca de BookTracker", systemImage: "info.circle")
+            }
+            
+            Link(destination: URL(string: "https://rolackdev.com")!) {
+                Label("Acerca del creador", systemImage: "person.fill")
+            }
+            
+            Link(destination: URL(string: "https://github.com/vcrolack")!) {
+                Label("Código Fuente", systemImage: "chevron.left.forwardslash.chevron.right")
+            }
+        } header: { Text("Información") }
+    }
 }
 
 #Preview {
-    SettingsView()
+    SettingsView(viewModel: DIContainer.shared.makeSettingsViewModel())
 }

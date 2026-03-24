@@ -46,7 +46,7 @@ struct MainTabView: View {
             }
             
             Tab("Ajustes", systemImage: "gearshape.fill", value: .settings) {
-                SettingsView()
+                SettingsView(viewModel: DIContainer.shared.makeSettingsViewModel())
             }
             
             Tab(value: .search, role: .search) {
