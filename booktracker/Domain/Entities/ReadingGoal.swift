@@ -39,6 +39,20 @@ struct ReadingGoal: Identifiable, Equatable, Codable {
         self.createdAt = Date()
     }
     
+    init(
+        reconstituting id: UUID,
+        year: Int,
+        targetBooks: Int,
+        targetMinutesPerDay: Int?,
+        createdAt: Date
+    ) {
+        self.id = id
+        self.year = year
+        self.targetBooks = targetBooks
+        self.targetMinutesPerDay = targetMinutesPerDay
+        self.createdAt = createdAt
+    }
+    
     mutating func updateGoals(newTargetBooks: Int? = nil, newTargetMinutesPerDay: Int? = nil) throws {
             
             if let books = newTargetBooks {

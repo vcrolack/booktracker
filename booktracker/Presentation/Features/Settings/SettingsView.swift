@@ -80,7 +80,6 @@ struct SettingsView: View {
     
     @ViewBuilder
     private var dataAndStorage: some View {
-        // 🗄️ SECCIÓN: GESTIÓN DE DATOS (Muy Senior 🛡️)
         Section {
             LabeledContent("Memoria utilizada", value: viewModel.storageUsage ?? "Cargando...")
             NavigationLink(destination: Text("Lógica de Exportar")) {
@@ -91,7 +90,6 @@ struct SettingsView: View {
     
     @ViewBuilder
     private var about: some View {
-        // 📖 SECCIÓN: IDENTIDAD (Un toque de reverencia)
         Section {
             NavigationLink(destination: AboutBookTracker()) {
                 Label("Acerca de BookTracker", systemImage: "info.circle")
