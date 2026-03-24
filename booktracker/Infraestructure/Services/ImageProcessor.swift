@@ -83,4 +83,51 @@ struct ImageProcessor: ImageProcessorService {
             return false
         }
     }
+    
+    func getStorageUsage(folders: [String]) -> Int64 {
+        let fileManager = FileManager.default
+        var totalSize: Int64 = 0
+        
+        let storageMap: [String: URL] = [
+            "BookCovers": getCachesDirectory(),
+            "CollectionCovers": getAppSupportDirectory(),
+        ]
+        
+        for (folderName, baseUrl) in storageMap {
+            let folderUrl = baseUrl.appendingPathComponent(folderName)
+            
+            var isDirectory: ObjCBool = false
+            if fileManager.fileExists(atPath: folderUrl.path, isDirectory: &isDirectory) {
+                do {
+                    let contents = try fileManager.contentsOfDirectory(at: folderUrl, includingPropertiesForKeys: [.fileSizeKey])
+                    
+                    for fileUrl in contents {
+                        let attributes = try fileManager.attributesOfItem(atPath: fileUrl.path)
+                        if let size = attributes[.size] as? Int64 {
+                            totalSize += size
+                        }
+                    }
+                } catch {
+                    print("[IMAGE PROCESSOR] Error calculating size of folder \(folderName): \(error.localizedDescription)")
+                }
+            }
+        }
+        
+        return totalSize
+    }
+    
+    private func getDocumentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
+    }
+    
+    private func getCachesDirectory() -> URL {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+    }
+    
+    private func getAppSupportDirectory() -> URL {
+        let url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        return url
+    }
 }

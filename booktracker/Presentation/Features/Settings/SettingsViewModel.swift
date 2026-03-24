@@ -11,6 +11,8 @@ import Observation
 @Observable
 @MainActor
 final class SettingsViewModel {
+    var storageUsage: String? = nil
+    
     var userName: String {
         didSet { UserDefaults.standard.set(userName, forKey: "user_name") }
     }
@@ -27,7 +29,10 @@ final class SettingsViewModel {
         didSet { UserDefaults.standard.set(notificationsEnabled, forKey: "notifications_enabled")}
     }
     
-    init() {
+    private var imageProcessor: ImageProcessorService
+    
+    init(imageProcessor: ImageProcessorService) {
+        self.imageProcessor = imageProcessor
         self.userName = UserDefaults.standard.string(forKey: "user_name") ?? "Usuario"
         self.userAvatar = UserDefaults.standard.string(forKey: "user_avatar") ?? "📖"
         
@@ -39,5 +44,20 @@ final class SettingsViewModel {
     
     func clearImageCache() {
         print("[SETTINGS VM] Clearing image cache...")
+    }
+    
+    func calculateStorage() {
+        let processor = self.imageProcessor
+        Task.detached(priority: .background) {
+            let folders = ["CollectionCovers", "BookCovers"]
+            let bytes = await processor.getStorageUsage(folders: folders)
+            
+            let formatter = ByteCountFormatter()
+            formatter.allowedUnits = [.useMB, .useKB, .useGB]
+            formatter.countStyle = .file
+            let formattedString = formatter.string(fromByteCount: bytes)
+            
+            await MainActor.run { self.storageUsage = formattedString}
+        }
     }
 }

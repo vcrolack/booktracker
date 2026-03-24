@@ -14,6 +14,7 @@ protocol ImageProcessorService {
     func saveImage(data: Data, fileName: String, folderName: String) -> String?
     func loadImage(fileName: String, folderName: String) -> UIImage?
     func deleteImage(fileName: String, folderName: String) -> Bool
+    func getStorageUsage(folders: [String]) -> Int64
 }
 extension ImageProcessorService {
     func resizeAndCompress(data: Data) -> Data? {

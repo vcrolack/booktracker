@@ -38,6 +38,7 @@ struct SettingsView: View {
             }
             .navigationTitle("Ajustes")
         }
+        .task { viewModel.calculateStorage() }
     }
     
     @ViewBuilder
@@ -80,6 +81,7 @@ struct SettingsView: View {
     private var dataAndStorage: some View {
         // 🗄️ SECCIÓN: GESTIÓN DE DATOS (Muy Senior 🛡️)
         Section {
+            LabeledContent("Memoria utilizada", value: viewModel.storageUsage ?? "Cargando...")
             NavigationLink(destination: Text("Lógica de Exportar")) {
                 Label("Exportar mi Biblioteca (JSON)", systemImage: "square.and.arrow.up")
             }

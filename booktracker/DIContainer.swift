@@ -315,6 +315,6 @@ final class DIContainer {
     
     @MainActor
     func makeSettingsViewModel() -> SettingsViewModel {
-        return SettingsViewModel()
+        return SettingsViewModel(imageProcessor: makeImageProcessor())
     }
 }
