@@ -84,9 +84,12 @@ struct HomeView: View {
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Hola, \(userName) 👋🏻")
+                Text(viewModel.welcomeMessage)
                     .font(.title2)
                     .fontWeight(.bold)
+                    .onAppear {
+                        viewModel.refreshUserData()
+                    }
                 Text("Es un gran día para avanzar en tus lecturas.")
                     .font(.subheadline)
                     .foregroundColor(.secondary)

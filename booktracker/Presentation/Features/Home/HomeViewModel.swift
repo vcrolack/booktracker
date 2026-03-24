@@ -44,6 +44,7 @@ class HomeViewModel {
     }
     
     private var showingAddBookForm: Bool = false
+    private(set) var welcomeMessage: String = ""
     
     private let fetchBooksUseCase: FetchBooksUseCaseProtocol
     private let getActiveSessionUseCase: GetActiveReadingSessionUseCaseProtocol
@@ -66,6 +67,7 @@ class HomeViewModel {
         self.fetchBookCollectionsUseCase = fetchBookCollectionsUseCase
         self.readingStatisticsService = readingStatisticsService
         self.libraryStatisticsService = libraryStatisticsService
+        self.refreshUserData()
     }
     
     func loadDashboard() async {
@@ -88,5 +90,11 @@ class HomeViewModel {
     func updateAllStats() {
         readingQuickStats = readingStatisticsService.calculateStats(from: allSessions)
         libraryQuickStats = libraryStatisticsService.calculateStats(from: allBooks)
+    }
+    
+    func refreshUserData() {
+        let name = UserDefaults.standard.string(forKey: "user_name") ?? "Peregrino"
+        let avatar = UserDefaults.standard.string(forKey: "user_avatar") ?? "📖"
+        self.welcomeMessage = "¡Hola, \(name) \(avatar)!"
     }
 }
