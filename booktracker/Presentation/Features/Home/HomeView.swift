@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @Environment(GlobalSessionManager.self) private var sessionManager
+    @AppStorage("user_name") var userName: String = "Usuario"
     @Namespace private var bookTransitionNamespace
     @State var viewModel: HomeViewModel
     @State private var showingAddBook: Bool = false
@@ -83,7 +84,7 @@ struct HomeView: View {
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Hola, Vitocondrio 👋🏻")
+                Text("Hola, \(userName) 👋🏻")
                     .font(.title2)
                     .fontWeight(.bold)
                 Text("Es un gran día para avanzar en tus lecturas.")

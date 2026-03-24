@@ -85,12 +85,6 @@ struct SettingsView: View {
             NavigationLink(destination: Text("Lógica de Exportar")) {
                 Label("Exportar mi Biblioteca (JSON)", systemImage: "square.and.arrow.up")
             }
-            
-            Button(role: .destructive) {
-                // Acción de borrar cache de portadas
-            } label: {
-                Label("Limpiar caché de portadas", systemImage: "trash")
-            }
         } header: { Text("Datos y Almacenamiento") }
     }
     
