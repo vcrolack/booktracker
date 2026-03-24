@@ -261,7 +261,7 @@ struct BookDetailView: View {
                             Text(String(repeating: "⭐️", count: rating)).tag(rating)
                         }
                     }
-                    .pickerStyle(.navigationLink)
+                    .pickerStyle(.menu)
                 }
                 
                 Section(

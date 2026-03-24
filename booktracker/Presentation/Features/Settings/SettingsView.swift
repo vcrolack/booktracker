@@ -16,24 +16,8 @@ struct SettingsView: View {
         NavigationStack {
             List {
                 account
-
-                // ⚙️ SECCIÓN: PREFERENCIAS
-                Section {
-                    Toggle("Notificaciones de lectura", isOn: $viewModel.notificationsEnabled)
-                    
-                    Picker(selection: $viewModel.selectedTheme) {
-                        ForEach(AppTheme.allCases) { theme in
-                            Label(theme.rawValue, systemImage: theme.icon)
-                                .tag(theme)
-                        }
-                    } label: {
-                        Label("Aspecto", systemImage: "paintbrush.fill")
-                    }
-                    .pickerStyle(.menu)
-                } header: { Text("Personalización") }
-
+                preferences
                 dataAndStorage
-                
                 about
             }
             .navigationTitle("Ajustes")
@@ -75,6 +59,23 @@ struct SettingsView: View {
                 BTEmojiPickerView(selectedEmoji: $viewModel.userAvatar, title: "Elije tu avatar")
             }
         } header: { Text("Cuenta") }
+    }
+    
+    @ViewBuilder
+    private var preferences: some View {
+        Section {
+            Toggle("Notificaciones de lectura", isOn: $viewModel.notificationsEnabled)
+            
+            Picker(selection: $viewModel.selectedTheme) {
+                ForEach(AppTheme.allCases) { theme in
+                    Label(theme.rawValue, systemImage: theme.icon)
+                        .tag(theme)
+                }
+            } label: {
+                Label("Aspecto", systemImage: "paintbrush.fill")
+            }
+            .pickerStyle(.menu)
+        } header: { Text("Personalización") }
     }
     
     @ViewBuilder
