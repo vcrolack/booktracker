@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ReadingHeatmap: View {
+struct ReadingHeatmapWidget: View {
     let contributions: [DailyContribution]
     
     let rows = Array(repeating: GridItem(.fixed(12), spacing: 3), count: 7)
@@ -40,7 +40,7 @@ struct ReadingHeatmap: View {
 }
 
 #Preview {
-    ReadingHeatmap(contributions: (0..<90).map { i in
+    ReadingHeatmapWidget(contributions: (0..<90).map { i in
         DailyContribution(
             date: Calendar.current.date(byAdding: .day, value: -i, to: .now)!,
             minutes: [0, 10, 25, 45, 80].randomElement()!

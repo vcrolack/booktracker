@@ -203,7 +203,9 @@ final class DIContainer {
     }
     
     // MARK: - READING GOALS USE CASES
-
+    func makeCreateReadingGoalUseCase() -> CreateReadingGoalUseCaseProtocol {
+        return CreateReadingGoalUseCase(repository: makeReadingGoalRepository())
+    }
     
     // MARK: - STATS USE CASES
     func makeGetDashboardTodayStatsUseCase() -> GetDashboardTodayStatsUseCaseProtocol {
@@ -217,6 +219,10 @@ final class DIContainer {
     
     func makeGetReadingHeatmapUseCase() -> GetReadingHeatmapUseCaseProtocol {
         return GetReadingHeatmapUseCase(fetchSessionsUseCase: makeFetchReadingSessionsUseCase())
+    }
+    
+    func makeGetMonthlyEffortUseCase() -> GetMonthlyEffortUseCaseProtocol {
+        return GetMonthlyEffortUseCase(fetchSessionsUseCase: makeFetchReadingSessionsUseCase())
     }
     
     // MARK: - 🌐 Providers (Capa de Datos Externa)
@@ -346,5 +352,19 @@ final class DIContainer {
     @MainActor
     func makeSettingsViewModel() -> SettingsViewModel {
         return SettingsViewModel(imageProcessor: makeImageProcessor())
+    }
+    
+    @MainActor
+    func makeDashboardViewModel() -> DashboardViewModel {
+        return DashboardViewModel(
+            getTodayStats: makeGetDashboardTodayStatsUseCase(),
+            getMonthlyEffort: makeGetMonthlyEffortUseCase(),
+            getReadingHeatmap: makeGetReadingHeatmapUseCase()
+        )
+    }
+    
+    @MainActor
+    func makeReadingGoalFormViewModel() -> ReadingGoalFormViewModel {
+        return ReadingGoalFormViewModel(createGoalUseCase: makeCreateReadingGoalUseCase())
     }
 }

@@ -22,11 +22,9 @@ protocol GetMonthlyEffortUseCaseProtocol {
 }
 
 final class GetMonthlyEffortUseCase: GetMonthlyEffortUseCaseProtocol {
-    private let goalRepository: ReadingGoalRepositoryProtocol
     private let fetchSessionsUseCase: FetchReadingSessionsUseCaseProtocol
     
-    init(goalRepository: ReadingGoalRepositoryProtocol, fetchSessionsUseCase: FetchReadingSessionsUseCaseProtocol) {
-        self.goalRepository = goalRepository
+    init(fetchSessionsUseCase: FetchReadingSessionsUseCaseProtocol) {
         self.fetchSessionsUseCase = fetchSessionsUseCase
     }
     

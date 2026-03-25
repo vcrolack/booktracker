@@ -42,7 +42,7 @@ struct MainTabView: View {
             }
             
             Tab("Estadísticas", systemImage: "chart.bar.xaxis", value: .statistics) {
-                Text("Pantalla de estadísticas en construcción")
+                DashboardView(viewModel: DIContainer.shared.makeDashboardViewModel())
             }
             
             Tab("Ajustes", systemImage: "gearshape.fill", value: .settings) {
@@ -98,5 +98,8 @@ struct MainTabView: View {
 }
 
 #Preview {
+    let mockSessionManager = GlobalSessionManager(getActiveSessionUseCase: DIContainer.shared.makeGetActiveReadingSessionUseCase(), fetchBookUseCase: DIContainer.shared.makeFetchBookUseCase())
+    
     MainTabView()
+        .environment(mockSessionManager)
 }
