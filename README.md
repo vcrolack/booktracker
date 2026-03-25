@@ -24,6 +24,12 @@
 - **Calificaciones y reseñas** personales
 - **Portadas automáticas** desde Google Books API
 
+### 📂 Colecciones de Libros
+- **Crear colecciones** personalizadas con portada
+- **Agregar/quitar libros** de colecciones
+- **Vista en grid** adaptativo con búsqueda
+- **Detalle de colección** con resumen de estados
+
 ### ⏱️ Sesiones de Lectura
 - **Timer en tiempo real** para tus sesiones
 - **Pausar y reanudar** sin perder el progreso
@@ -41,13 +47,28 @@
 - **Leyendo actualmente**: Tus 3 libros más recientes en progreso
 - **Próximos**: Libros listos para empezar
 - **Terminados recientemente**: Tu historial de logros
-- **Acceso rápido** a todas las secciones
+- **Widget de estadísticas** con racha, velocidad y estado de biblioteca
+- **Mensaje de bienvenida** personalizado con nombre de usuario
 
-### 📊 Estadísticas de Lectura
-- **Total de páginas** leídas
-- **Promedio de páginas** por hora
+### 📊 Estadísticas y Dashboard
+- **Heatmap de lectura** estilo GitHub (contribución diaria)
+- **Progreso vs meta anual** de libros
+- **Gráfico de esfuerzo mensual** (minutos por mes)
 - **Racha de lectura** (días consecutivos)
-- **Historial detallado** por libro
+- **Total de páginas** y promedio por hora
+- **Estado de biblioteca** (leídos, pendientes, leyendo, abandonados)
+
+### 🎯 Metas de Lectura
+- **Meta anual de libros** a leer
+- **Meta diaria de minutos** de lectura (opcional)
+- **Seguimiento de progreso** visual
+- **Historial de metas** por año
+
+### ⚙️ Configuración
+- **Modo oscuro/claro/sistema** personalizable
+- **Perfil de usuario** con avatar (emoji) y nombre
+- **Uso de almacenamiento** de portadas
+- **Notificaciones** de lectura
 
 ### 🔍 Búsqueda Inteligente
 - **Integración con Google Books API**
@@ -69,6 +90,8 @@ BookTracker sigue los principios de **Clean Architecture** con un diseño orient
 │  │  (SwiftUI)  │  │ (@Observable)│  │  (DS/UI)   │              │
 │  └──────┬──────┘  └──────┬──────┘  └─────────────┘              │
 │         │                │                                       │
+│  Features: Home, Books, BookCollection, ReadingGoals,           │
+│            Statistics, Settings, Search, ReadingSessions        │
 └─────────┼────────────────┼───────────────────────────────────────┘
           │                │
           ▼                ▼
@@ -76,8 +99,10 @@ BookTracker sigue los principios de **Clean Architecture** con un diseño orient
 │                        🧠 DOMAIN                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
 │  │  Entities   │  │  Use Cases  │  │  Services   │              │
-│  │ (Pure Swift)│  │  (55 files) │  │ (Statistics)│              │
+│  │ (Pure Swift)│  │  (40+ files)│  │ (Statistics)│              │
 │  └─────────────┘  └──────┬──────┘  └─────────────┘              │
+│                          │                                       │
+│  Entities: Book, ReadingSession, BookCollection, ReadingGoal    │
 │                          │                                       │
 │  ┌───────────────────────┴───────────────────────┐              │
 │  │              Interfaces (Protocols)            │              │
@@ -88,7 +113,7 @@ BookTracker sigue los principios de **Clean Architecture** con un diseño orient
 ┌─────────────────────────────────────────────────────────────────┐
 │                    🔧 INFRASTRUCTURE                             │
 │  ┌─────────────────────────────────────────────────────────┐    │
-│  │                    Repositories                          │    │
+│  │          Repositories (4 implementaciones)               │    │
 │  └─────────────────────────────────────────────────────────┘    │
 │         │                                    │                   │
 │         ▼                                    ▼                   │
@@ -99,7 +124,7 @@ BookTracker sigue los principios de **Clean Architecture** con un diseño orient
 │                                                                  │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
 │  │   Widgets   │  │ LiveActivity│  │ ImageCache  │              │
-│  │  Extension  │  │   Manager   │  │   Manager   │              │
+│  │  Extension  │  │   Manager   │  │ + Processor │              │
 │  └─────────────┘  └─────────────┘  └─────────────┘              │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -113,27 +138,32 @@ booktracker/
 │   │   ├── Book.swift                  # Estado: wishlist→reading→finalized
 │   │   ├── ReadingSession.swift        # Sesiones con validación
 │   │   ├── BookCollection.swift        # Colecciones de libros
-│   │   └── ReadingGoal.swift           # Metas de lectura
+│   │   └── ReadingGoal.swift           # Metas de lectura anuales
 │   │
 │   ├── Interfaces/                     # Protocolos (contratos)
 │   │   ├── BookRepositoryProtocol
 │   │   ├── ReadingSessionRepositoryProtocol
+│   │   ├── BookCollectionRepositoryProtocol
+│   │   ├── ReadingGoalRepositoryProtocol
+│   │   ├── ImageProcessorService
 │   │   └── ExternalBookProviderProtocol
 │   │
-│   ├── UseCases/                       # Lógica de negocio (30+ casos)
+│   ├── UseCases/                       # Lógica de negocio (40+ casos)
 │   │   ├── Book/                       # CRUD + cambios de estado
 │   │   ├── ReadingSession/             # Iniciar, pausar, finalizar
-│   │   ├── BookCollection/             # Gestión de colecciones
-│   │   └── ReadingGoal/                # Metas de lectura
+│   │   ├── BookCollection/             # CRUD + gestión de libros
+│   │   ├── ReadingGoal/                # CRUD de metas anuales
+│   │   └── Stats/                      # Heatmap, dashboard, esfuerzo mensual
 │   │
 │   └── Services/                       # Servicios de dominio
 │       ├── ReadingStatisticsService    # Cálculo de estadísticas
+│       ├── LibraryStatisticsService    # Estado de biblioteca
 │       └── ReadingProgressService      # Progreso de lectura
 │
 ├── 🔧 Infraestructure/                 # Capa de Infraestructura
 │   ├── DataSources/
 │   │   ├── Local/SwiftData/            # Persistencia local
-│   │   │   ├── Models/                 # BookSD, ReadingSessionSD
+│   │   │   ├── Models/                 # BookSD, ReadingSessionSD, etc.
 │   │   │   ├── *DataSource.swift       # Operaciones CRUD
 │   │   │   └── Mappers/                # Domain ↔ SwiftData
 │   │   │
@@ -144,23 +174,42 @@ booktracker/
 │   │
 │   ├── Repositories/                   # Implementaciones concretas
 │   │   ├── BookRepositoryImpl
-│   │   └── ReadingSessionRepositoryImpl
+│   │   ├── ReadingSessionRepositoryImpl
+│   │   ├── BookCollectionRepositoryImpl
+│   │   └── ReadingGoalRepositoryImpl
 │   │
 │   ├── Services/
 │   │   ├── ImageCacheManager           # Cache de portadas
+│   │   ├── ImageProcessor              # Redimensionar y comprimir imágenes
 │   │   └── LiveActivities/             # Dynamic Island
 │   │
 │   └── Widgets/                        # Extensión de widgets
 │       └── LiveActivities/ReadingSession/
 │
 ├── 📱 Presentation/                    # Capa de Presentación
+│   ├── Common/
+│   │   └── AppTheme.swift              # Tema (dark/light/system)
+│   │
 │   ├── Features/
 │   │   ├── Home/                       # Dashboard principal
+│   │   │   └── Widgets/                # StatsResumeWidget, CurrentReadingWidget
 │   │   ├── Books/                      # Lista, detalle, formulario
 │   │   │   ├── BookList/               # Filtros y búsqueda
 │   │   │   ├── BookDetail/             # Vista detallada
 │   │   │   ├── BookForm/               # Crear/editar
 │   │   │   └── BookSessions/           # Historial de sesiones
+│   │   ├── BookCollection/             # Gestión de colecciones
+│   │   │   ├── BookCollectionList/     # Grid con búsqueda
+│   │   │   ├── BookCollectionForm/     # Crear/editar con CoverPicker
+│   │   │   ├── BookCollectionDetail/   # Vista detallada
+│   │   │   └── BookSelection/          # Modal de selección
+│   │   ├── ReadingGoals/               # Formulario de metas
+│   │   │   └── ReadingGoalForm/        # Stepper de libros y minutos
+│   │   ├── Statistics/                 # Dashboard de estadísticas
+│   │   │   ├── DashboardView           # Vista principal
+│   │   │   └── Widgets/                # Heatmap, gráficos, progreso
+│   │   ├── Settings/                   # Configuración
+│   │   │   └── SettingsView            # Tema, perfil, almacenamiento
 │   │   ├── ReadingSessions/            # Timer y controles
 │   │   └── Search/                     # Búsqueda en Google Books
 │   │
@@ -172,7 +221,7 @@ booktracker/
 │
 ├── DIContainer.swift                   # 💉 Inyección de dependencias
 ├── GlobalSessionManager.swift          # 🌐 Estado global de sesión
-├── MainTabView.swift                   # 📑 Navegación por tabs
+├── MainTabView.swift                   # 📑 Navegación por tabs (5 tabs)
 └── booktrackerApp.swift                # 🚀 Entry point
 
 ReadingSessionWidget/                   # 📦 Widget Extension
@@ -250,6 +299,32 @@ ReadingSession {
 }
 ```
 
+### 📂 BookCollection
+
+```swift
+BookCollection {
+    id: UUID
+    name: String                     // Nombre de la colección
+    description: String?             // Descripción opcional
+    cover: String?                   // Nombre archivo de portada
+    bookIds: Set<UUID>               // IDs de libros en la colección
+    createdAt: Date
+    updatedAt: Date
+}
+```
+
+### 🎯 ReadingGoal
+
+```swift
+ReadingGoal {
+    id: UUID
+    year: Int                        // Año de la meta
+    targetBooks: Int                 // Libros objetivo (>= 1)
+    targetMinutesPerDay: Int?        // Minutos diarios (1-1440, opcional)
+    createdAt: Date
+}
+```
+
 ---
 
 ## 🚀 Empezando
@@ -295,20 +370,21 @@ ReadingSession {
 - [x] Dashboard con secciones inteligentes
 - [x] Deep linking desde notificaciones
 - [x] Cache de imágenes
-
-### 🚧 En Desarrollo
-- [ ] Pantalla de estadísticas completas
-- [ ] Pantalla de configuración
-- [ ] Colecciones de libros (UI)
+- [x] Colecciones de libros (CRUD completo con UI)
+- [x] Pantalla de estadísticas (Heatmap, gráficos, progreso)
+- [x] Pantalla de configuración (tema, perfil, almacenamiento)
+- [x] Metas de lectura anuales con UI
+- [x] Modo oscuro/claro/sistema
+- [x] Procesador de imágenes (redimensionar/comprimir)
+- [x] Widget de estadísticas en Home
 
 ### 🔮 Futuro
 - [ ] Sincronización con iCloud
-- [ ] Widget de estadísticas
-- [ ] Metas de lectura con UI
+- [ ] Widget de estadísticas para pantalla de inicio
 - [ ] Exportar/importar biblioteca
-- [ ] Modo oscuro personalizado
 - [ ] Apple Watch companion app
 - [ ] Integración con Goodreads
+- [ ] Audiobooks con reproductor
 
 ---
 
@@ -316,11 +392,13 @@ ReadingSession {
 
 | Métrica | Valor |
 |---------|-------|
-| 📁 **Archivos Swift** | 113 |
-| 🧠 **Use Cases** | 30+ |
-| 📱 **ViewModels** | 7 |
-| 🎨 **Componentes UI** | 15+ |
-| 🔌 **Data Sources** | 3 (2 locales + 1 remoto) |
+| 📁 **Archivos Swift** | 152+ |
+| 🧠 **Use Cases** | 40+ |
+| 📱 **ViewModels** | 15+ |
+| 🎨 **Componentes UI** | 25+ |
+| 🔌 **Data Sources** | 5 (4 locales + 1 remoto) |
+| 📦 **Repositorios** | 4 |
+| 📊 **Entidades** | 4 |
 
 ---
 
