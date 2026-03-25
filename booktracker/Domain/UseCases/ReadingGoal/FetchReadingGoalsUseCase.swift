@@ -12,13 +12,13 @@ protocol FetchReadingGoalsUseCaseProtocol {
 }
 
 final class FetchReadingGoalsUseCase: FetchReadingGoalsUseCaseProtocol {
-    private let repository: ReadingGoalRepository
+    private let repository: ReadingGoalRepositoryProtocol
     
-    init(repository: ReadingGoalRepository) {
+    init(repository: ReadingGoalRepositoryProtocol) {
         self.repository = repository
     }
     
     func execute() async throws -> [ReadingGoal] {
-        return try await repository.fetchReadingGoals()
+        return try await repository.fetchReadingGoals(criteria: ReadingGoalSearchField())
     }
 }

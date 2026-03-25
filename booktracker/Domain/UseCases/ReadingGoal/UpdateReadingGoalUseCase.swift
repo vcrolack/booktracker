@@ -12,20 +12,20 @@ protocol UpdateReadingGoalUseCaseProtocol {
 }
 
 final class UpdateReadingGoalUseCase: UpdateReadingGoalUseCaseProtocol {
-    private let repository: ReadingGoalRepository
+    private let repository: ReadingGoalRepositoryProtocol
     
-    init(repository: ReadingGoalRepository) {
+    init(repository: ReadingGoalRepositoryProtocol) {
         self.repository = repository
     }
     
     func execute(command: UpdateReadingGoalCommand) async throws -> UUID {
-        guard var goal = try await repository.fetchReadingGoal(for: ReadingGoalSearchField(id: command.goalId)) else {
+        guard var goal = try await repository.fetchReadingGoal(by: command.goalId) else {
             throw RepositoryError.notFound
         }
         
         try goal.updateGoals(newTargetBooks: command.targetBooks, newTargetMinutesPerDay: command.targetMinutesPerDay)
         
-        try await repository.save(readingGoal: goal)
+        try await repository.save(goal: goal)
         
         return goal.id
     }

@@ -64,12 +64,23 @@ final class ReadingGoalSDDataSource: ReadingGoalLocalDataSourceProtocol {
     }
     
     func fetchReadingGoals(criteria: ReadingGoalSearchField) throws -> [ReadingGoal] {
-        let targetYear = criteria.year
-        let targetId = criteria.id
+        let predicate: Predicate<ReadingGoalSD>
         
-        let predicate = #Predicate<ReadingGoalSD> { goal in
-            (targetYear == nil || goal.year == targetYear)
-            && (targetId == nil || goal.id == targetId)
+        switch (criteria.year, criteria.id) {
+        case let (year?, id?):
+            predicate = #Predicate<ReadingGoalSD> { goal in
+                goal.year == year && goal.id == id
+            }
+        case let (year?, nil):
+            predicate = #Predicate<ReadingGoalSD> { goal in
+                goal.year == year
+            }
+        case let (nil, id?):
+            predicate = #Predicate<ReadingGoalSD> { goal in
+                goal.id == id
+            }
+        case (nil, nil):
+            predicate = #Predicate<ReadingGoalSD> { _ in true }
         }
         
         let descriptor = FetchDescriptor<ReadingGoalSD>(predicate: predicate)

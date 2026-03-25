@@ -12,10 +12,10 @@ protocol FetchCurrentReadingGoalUseCaseProtocol {
 }
 
 final class FetchCurrentReadingGoalUseCase: FetchCurrentReadingGoalUseCaseProtocol {
-    private let repository: ReadingGoalRepository
+    private let repository: ReadingGoalRepositoryProtocol
     private let calendar: Calendar
     
-    init(repository: ReadingGoalRepository, calendar: Calendar = .current) {
+    init(repository: ReadingGoalRepositoryProtocol, calendar: Calendar = .current) {
         self.repository = repository
         self.calendar = calendar
     }
@@ -23,6 +23,6 @@ final class FetchCurrentReadingGoalUseCase: FetchCurrentReadingGoalUseCaseProtoc
     func execute(forYear year: Int? = nil) async throws -> ReadingGoal? {
         let targetYear = year ?? calendar.component(.year, from: Date())
         
-        return try await repository.fetchReadingGoal(for: ReadingGoalSearchField(year: targetYear))
+        return try await repository.fetchReadingGoals(criteria: ReadingGoalSearchField(year: targetYear)).first
     }
 }

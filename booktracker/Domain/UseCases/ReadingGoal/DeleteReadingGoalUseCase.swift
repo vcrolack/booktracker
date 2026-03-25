@@ -12,17 +12,17 @@ protocol DeleteReadingGoalUseCaseProtocol {
 }
 
 final class DeleteReadingGoalUseCase: DeleteReadingGoalUseCaseProtocol {
-    private let repository: ReadingGoalRepository
+    private let repository: ReadingGoalRepositoryProtocol
     
-    init(repository: ReadingGoalRepository) {
+    init(repository: ReadingGoalRepositoryProtocol) {
         self.repository = repository
     }
     
     func execute(readingGoalId: UUID) async throws {
-        guard let _ = try await repository.fetchReadingGoal(for: ReadingGoalSearchField(id: readingGoalId)) else {
+        guard !(try await repository.fetchReadingGoals(criteria: ReadingGoalSearchField(id: readingGoalId))).isEmpty else {
             throw RepositoryError.notFound
         }
         
-        try await repository.delete(readingGoalId: readingGoalId)
+        try await repository.delete(by: readingGoalId)
     }
 }

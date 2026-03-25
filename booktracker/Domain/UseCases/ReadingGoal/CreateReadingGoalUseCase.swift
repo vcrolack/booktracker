@@ -16,14 +16,15 @@ protocol CreateReadingGoalUseCaseProtocol {
 }
 
 final class CreateReadingGoalUseCase: CreateReadingGoalUseCaseProtocol {
-    private let repository: ReadingGoalRepository
+    private let repository: ReadingGoalRepositoryProtocol
     
-    init(repository: ReadingGoalRepository) {
+    init(repository: ReadingGoalRepositoryProtocol) {
         self.repository = repository
     }
     
     func execute(command: CreateReadingGoalCommand) async throws -> UUID {
-        guard let _ = try await repository.fetchReadingGoal(for: ReadingGoalSearchField(year: command.year)) else {
+        let existingGoals = try await repository.fetchReadingGoals(criteria: ReadingGoalSearchField(year: command.year))
+        guard existingGoals.isEmpty else {
             throw CreateReadingGoalError.goalAlreadyExistsForYear
         }
         
@@ -33,7 +34,7 @@ final class CreateReadingGoalUseCase: CreateReadingGoalUseCaseProtocol {
             targetMinutesPerDay: command.targetMinutesPerDay
         )
         
-        try await repository.save(readingGoal: newGoal)
+        try await repository.save(goal: newGoal)
     
         return newGoal.id
     }

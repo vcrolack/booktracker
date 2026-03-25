@@ -104,10 +104,8 @@ final class BookSDDataSource: BookLocalDataSourceProtocol {
                 
                 var descriptor = FetchDescriptor<BookSD>(sortBy: sortDescriptors)
                 
-                // 2. 🔍 FILTRO PESADO EN SQLITE (#Predicate simple para que el compilador no sufra)
                 if let searchItem = filter?.searchItem, !searchItem.isEmpty {
                     descriptor.predicate = #Predicate<BookSD> { book in
-                        // Solo le dejamos a SQLite la búsqueda de texto, que es lo más costoso
                         book.title.contains(searchItem) || book.author.contains(searchItem)
                     }
                 }
@@ -137,6 +135,14 @@ final class BookSDDataSource: BookLocalDataSourceProtocol {
                         print("📚 Libros disponibles en DB: \(booksSD.map { $0.id })")
                         booksSD = booksSD.filter { ids.contains($0.id) }
                         print("✅ Encontrados: \(booksSD.count)")
+                    }
+                    
+                    if let finishYear = activeFilter.finishYear {
+                        booksSD = booksSD.filter { book in
+                            guard let endDate = book.endDate else { return false}
+                            let yearOfCompletion = Calendar.current.component(.year, from: endDate)
+                            return yearOfCompletion == finishYear
+                        }
                     }
                 }
                 

@@ -10,6 +10,7 @@ import Foundation
 struct BookFilter {
     var searchItem: String?
     var status: BookStatus?
+    var finishYear: Int?
     var ownership: Ownership?
     var author: String?
     var genre: String?

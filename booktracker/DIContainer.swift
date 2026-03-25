@@ -80,6 +80,10 @@ final class DIContainer {
         return imageProcessor
     }
     
+    func makeReadingProgressService() -> ReadingProgressService {
+        return ReadingProgressService()
+    }
+    
     // MARK: - 🚀 Use Cases (La Lógica de Negocio)
         
         // Aquí es donde instanciarás tus Casos de Uso pasándoles el Repositorio.
@@ -196,6 +200,23 @@ final class DIContainer {
             repository: makeBookCollectionRepository(),
             fetchBookCollectionUseCase: makeFetchBookCollectionUseCase(),
             imageProcessor: makeImageProcessor())
+    }
+    
+    // MARK: - READING GOALS USE CASES
+
+    
+    // MARK: - STATS USE CASES
+    func makeGetDashboardTodayStatsUseCase() -> GetDashboardTodayStatsUseCaseProtocol {
+        return GetDashboardTodayStatsUseCase(
+            readingGoalRepository: makeReadingGoalRepository(),
+            progressService: makeReadingProgressService(),
+            fetchBooksUseCase: makeFetchBooksUseCase(),
+            fetchReadingSessionsUseCase: makeFetchReadingSessionsUseCase()
+        )
+    }
+    
+    func makeGetReadingHeatmapUseCase() -> GetReadingHeatmapUseCaseProtocol {
+        return GetReadingHeatmapUseCase(fetchSessionsUseCase: makeFetchReadingSessionsUseCase())
     }
     
     // MARK: - 🌐 Providers (Capa de Datos Externa)
