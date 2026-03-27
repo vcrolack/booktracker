@@ -16,8 +16,11 @@ struct RootView: View {
                 SplashView()
                     .transition(.opacity)
             } else {
-                MainTabView()
-                    .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.95)), removal: .opacity))
+                ContentView()
+                    .transition(.asymmetric(
+                        insertion: .opacity.combined(with: .scale(scale: 0.98)),
+                        removal: .opacity
+                    ))
             }
         }
         .onAppear {

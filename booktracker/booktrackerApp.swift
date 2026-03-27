@@ -13,20 +13,15 @@ import SwiftData
 @main
 struct booktrackerApp: App {
     
-    // 1. Despertamos al Gerente General (Singleton) al iniciar la app.
-    // Esto ejecuta el 'init()' secreto que conecta la base de datos.
     let container = DIContainer.shared
     @State private var sessionManager = DIContainer.shared.globalSessionManager
 
     var body: some Scene {
         WindowGroup {
-            // 2. Aquí es donde pronto pasaremos los ViewModels
-            ContentView()
-                .environment(sessionManager)
-        }.modelContainer(container.modelContainer)
-        // 3. Opcional pero recomendado: Le inyectamos a SwiftUI el contenedor
-        // que nuestro DIContainer ya configuró, por si alguna vista "tonta"
-        // necesita el environment nativo de @Query en el futuro.
-        
+            // 🐈 El RootView ahora es el portero oficial
+            RootView()
+                .environment(sessionManager) // Inyectamos el manager para toda la app
+        }
+        .modelContainer(container.modelContainer) // SwiftData disponible globalmente
     }
 }
