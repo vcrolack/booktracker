@@ -36,12 +36,13 @@ struct CoverPickerView: View {
                 }
             }
             
+            let currentImageData = imageData
             PhotosPicker(
                 selection: $selection,
                 matching: .images,
                 photoLibrary: .shared()
             ) {
-                Label(imageData == nil ? "Añadir portada" : "Cambiar portada", systemImage: "photo.badge.plus")
+                Label(currentImageData == nil ? "Añadir portada" : "Cambiar portada", systemImage: "photo.badge.plus")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(.blue)

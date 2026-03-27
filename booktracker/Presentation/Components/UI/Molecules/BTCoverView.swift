@@ -44,11 +44,14 @@ struct BTCoverView: View {
                 .stroke(Color.primary.opacity(0.1), lineWidth: 1)
         )
         .onAppear {
-            if uiImage == nil, let urlString, !urlString.isEmpty {
-               uiImage = ImageCacheManager.shared.getCachedImage(from: urlString)
-           }
+            
         }
         .task(id: urlString) { await loadImage() }
+        .task {
+            if uiImage == nil, let urlString, !urlString.isEmpty {
+               uiImage = await ImageCacheManager.shared.getCachedImage(from: urlString)
+           }
+        }
     }
     
     private func loadImage() async {

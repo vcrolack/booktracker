@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import CoreGraphics
 
-protocol ImageProcessorService {
+protocol ImageProcessorService: Sendable {
     func resizeAndCompress(data: Data, targetSize: CGSize) -> Data?
     func saveImage(data: Data, fileName: String, folderName: String) -> String?
     func loadImage(fileName: String, folderName: String) -> UIImage?

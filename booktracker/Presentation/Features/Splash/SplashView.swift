@@ -21,9 +21,10 @@ struct SplashView: View {
                 LottieView {
                     try await DotLottieFile.named(animationName)
                 }
-                    .playing(loopMode: .playOnce)
-                    .animationSpeed(1.2)
-                    .frame(width: 280, height: 280)
+                .configuration(LottieConfiguration(renderingEngine: .mainThread))
+                .playing(loopMode: .playOnce)
+                .animationSpeed(1.2)
+                .frame(width: 280, height: 280)
                 
                 Text("BookTracker")
                     .font(.system(.title2, design: .rounded))

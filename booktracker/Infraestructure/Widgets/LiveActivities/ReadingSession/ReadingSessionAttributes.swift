@@ -8,8 +8,8 @@
 import Foundation
 import ActivityKit
 
-struct ReadingSessionAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
+struct ReadingSessionAttributes: ActivityAttributes, Sendable {
+    public struct ContentState: Codable, Hashable, Sendable {
         var isReading: Bool
         var currentSprintStartTime: Date?
         var accumulatedTime: TimeInterval

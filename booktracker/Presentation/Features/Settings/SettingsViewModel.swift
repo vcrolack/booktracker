@@ -48,16 +48,19 @@ final class SettingsViewModel {
     
     func calculateStorage() {
         let processor = self.imageProcessor
-        Task.detached(priority: .background) {
+        
+        Task {
             let folders = ["CollectionCovers", "BookCovers"]
-            let bytes = await processor.getStorageUsage(folders: folders)
+            
+            let bytes = await Task.detached(priority: .background) {
+                return await processor.getStorageUsage(folders: folders)
+            }.value
             
             let formatter = ByteCountFormatter()
             formatter.allowedUnits = [.useMB, .useKB, .useGB]
             formatter.countStyle = .file
-            let formattedString = formatter.string(fromByteCount: bytes)
-            
-            await MainActor.run { self.storageUsage = formattedString}
+                
+            self.storageUsage = formatter.string(fromByteCount: bytes)
         }
     }
 }

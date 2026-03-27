@@ -24,7 +24,7 @@ struct DailyContribution: Identifiable {
 }
 
 
-protocol GetReadingHeatmapUseCaseProtocol {
+protocol GetReadingHeatmapUseCaseProtocol: Sendable {
     func execute(year: Int) async throws -> [DailyContribution]
 }
 

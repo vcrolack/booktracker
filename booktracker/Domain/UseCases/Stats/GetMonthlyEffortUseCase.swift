@@ -17,7 +17,7 @@ struct MonthlyEffort: Identifiable {
     }
 }
 
-protocol GetMonthlyEffortUseCaseProtocol {
+protocol GetMonthlyEffortUseCaseProtocol: Sendable {
     func execute(year: Int) async throws -> [MonthlyEffort]
 }
 

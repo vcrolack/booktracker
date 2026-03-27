@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol FetchReadingSessionsUseCaseProtocol {
+protocol FetchReadingSessionsUseCaseProtocol: Sendable {
     func execute(filter: ReadingSessionFilter?) async throws -> [ReadingSession]
 }
 

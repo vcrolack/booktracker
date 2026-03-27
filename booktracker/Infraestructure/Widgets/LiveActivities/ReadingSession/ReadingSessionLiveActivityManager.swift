@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import ActivityKit
+@preconcurrency import ActivityKit
 
 protocol ReadingSessionLiveActivityManagerProtocol {
     func startActivity(title: String, author: String, bookId: UUID, startTime: Date, accumulatedTime: TimeInterval)

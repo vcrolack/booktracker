@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol GetDashboardTodayStatsUseCaseProtocol {
+protocol GetDashboardTodayStatsUseCaseProtocol: Sendable {
     func execute(year: Int) async throws -> ReadingProgressStats
 }
 

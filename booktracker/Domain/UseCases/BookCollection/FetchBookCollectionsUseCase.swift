@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol FetchBookCollectionsUseCaseProtocol {
+protocol FetchBookCollectionsUseCaseProtocol: Sendable {
     func execute(filter: BookCollectionFilter?) async throws -> [BookCollection]
 }
 
