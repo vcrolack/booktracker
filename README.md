@@ -2,8 +2,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/iOS-17.0+-blue?style=for-the-badge&logo=apple" alt="iOS 17.0+">
-  <img src="https://img.shields.io/badge/Swift-5.9-orange?style=for-the-badge&logo=swift" alt="Swift 5.9">
-  <img src="https://img.shields.io/badge/SwiftUI-4.0-purple?style=for-the-badge&logo=swift" alt="SwiftUI">
+  <img src="https://img.shields.io/badge/Swift-6.3-orange?style=for-the-badge&logo=swift" alt="Swift 6.3">
+  <img src="https://img.shields.io/badge/SwiftUI-6.0-purple?style=for-the-badge&logo=swift" alt="SwiftUI">
   <img src="https://img.shields.io/badge/SwiftData-1.0-green?style=for-the-badge&logo=apple" alt="SwiftData">
 </p>
 
@@ -18,6 +18,7 @@
 ## ✨ Características Principales
 
 ### 📚 Gestión de Biblioteca
+
 - **Agregar libros** manualmente o buscar en Google Books
 - **Estados de lectura**: Lista de deseos → Por leer → Leyendo → Finalizado/Abandonado
 - **Seguimiento de propiedad**: Propio, Prestado, No lo tengo
@@ -25,12 +26,14 @@
 - **Portadas automáticas** desde Google Books API
 
 ### 📂 Colecciones de Libros
+
 - **Crear colecciones** personalizadas con portada
 - **Agregar/quitar libros** de colecciones
 - **Vista en grid** adaptativo con búsqueda
 - **Detalle de colección** con resumen de estados
 
 ### ⏱️ Sesiones de Lectura
+
 - **Timer en tiempo real** para tus sesiones
 - **Pausar y reanudar** sin perder el progreso
 - **Registro de páginas** leídas por sesión
@@ -38,12 +41,14 @@
 - **Cálculo automático** de duración
 
 ### 🏝️ Live Activities & Dynamic Island
+
 - **Dynamic Island** mostrando tu sesión activa
 - **Lock Screen widget** con timer en vivo
 - **Notificaciones interactivas** para controlar la sesión
 - **Deep linking** - toca para volver directamente a tu sesión
 
 ### 🏠 Dashboard Inteligente
+
 - **Leyendo actualmente**: Tus 3 libros más recientes en progreso
 - **Próximos**: Libros listos para empezar
 - **Terminados recientemente**: Tu historial de logros
@@ -51,6 +56,7 @@
 - **Mensaje de bienvenida** personalizado con nombre de usuario
 
 ### 📊 Estadísticas y Dashboard
+
 - **Heatmap de lectura** estilo GitHub (contribución diaria)
 - **Progreso vs meta anual** de libros
 - **Gráfico de esfuerzo mensual** (minutos por mes)
@@ -59,18 +65,21 @@
 - **Estado de biblioteca** (leídos, pendientes, leyendo, abandonados)
 
 ### 🎯 Metas de Lectura
+
 - **Meta anual de libros** a leer
 - **Meta diaria de minutos** de lectura (opcional)
 - **Seguimiento de progreso** visual
 - **Historial de metas** por año
 
 ### ⚙️ Configuración
+
 - **Modo oscuro/claro/sistema** personalizable
 - **Perfil de usuario** con avatar (emoji) y nombre
 - **Uso de almacenamiento** de portadas
 - **Notificaciones** de lectura
 
 ### 🔍 Búsqueda Inteligente
+
 - **Integración con Google Books API**
 - **Búsqueda por título, autor o ISBN**
 - **Importación directa** con metadatos completos
@@ -233,18 +242,18 @@ ReadingSessionWidget/                   # 📦 Widget Extension
 
 ## 🛠️ Stack Tecnológico
 
-| Categoría | Tecnología |
-|-----------|------------|
-| 🎨 **UI Framework** | SwiftUI 4.0 |
-| 💾 **Persistencia** | SwiftData |
-| ⚡ **Concurrencia** | Swift Concurrency (async/await) |
-| 🏝️ **Live Activities** | ActivityKit |
-| 📱 **Widgets** | WidgetKit |
-| 🔄 **Estado** | @Observable, @State |
-| 🌐 **Networking** | URLSession nativo |
-| 📖 **API Externa** | Google Books API |
-| 🏗️ **Arquitectura** | Clean Architecture + DDD |
-| 💉 **DI** | Contenedor de dependencias manual |
+| Categoría              | Tecnología                        |
+| ---------------------- | --------------------------------- |
+| 🎨 **UI Framework**    | SwiftUI 4.0                       |
+| 💾 **Persistencia**    | SwiftData                         |
+| ⚡ **Concurrencia**    | Swift Concurrency (async/await)   |
+| 🏝️ **Live Activities** | ActivityKit                       |
+| 📱 **Widgets**         | WidgetKit                         |
+| 🔄 **Estado**          | @Observable, @State               |
+| 🌐 **Networking**      | URLSession nativo                 |
+| 📖 **API Externa**     | Google Books API                  |
+| 🏗️ **Arquitectura**    | Clean Architecture + DDD          |
+| 💉 **DI**              | Contenedor de dependencias manual |
 
 ---
 
@@ -338,6 +347,7 @@ ReadingGoal {
 ### Instalación
 
 1. **Clona el repositorio**
+
    ```bash
    git clone https://github.com/tu-usuario/booktracker.git
    cd booktracker
@@ -346,11 +356,13 @@ ReadingGoal {
 2. **Configura la API Key de Google Books** (opcional)
 
    Crea un archivo `Secrets.xcconfig` en la raíz del proyecto:
+
    ```
    GOOGLE_BOOKS_API_KEY = tu_api_key_aquí
    ```
 
 3. **Abre el proyecto en Xcode**
+
    ```bash
    open booktracker.xcodeproj
    ```
@@ -362,6 +374,7 @@ ReadingGoal {
 ## 🗺️ Roadmap
 
 ### ✅ Completado
+
 - [x] Gestión completa de libros (CRUD)
 - [x] Sistema de estados de lectura
 - [x] Sesiones de lectura con timer
@@ -379,6 +392,7 @@ ReadingGoal {
 - [x] Widget de estadísticas en Home
 
 ### 🔮 Futuro
+
 - [ ] Sincronización con iCloud
 - [ ] Widget de estadísticas para pantalla de inicio
 - [ ] Exportar/importar biblioteca
@@ -390,15 +404,15 @@ ReadingGoal {
 
 ## 📈 Métricas del Proyecto
 
-| Métrica | Valor |
-|---------|-------|
-| 📁 **Archivos Swift** | 152+ |
-| 🧠 **Use Cases** | 40+ |
-| 📱 **ViewModels** | 15+ |
-| 🎨 **Componentes UI** | 25+ |
-| 🔌 **Data Sources** | 5 (4 locales + 1 remoto) |
-| 📦 **Repositorios** | 4 |
-| 📊 **Entidades** | 4 |
+| Métrica               | Valor                    |
+| --------------------- | ------------------------ |
+| 📁 **Archivos Swift** | 152+                     |
+| 🧠 **Use Cases**      | 40+                      |
+| 📱 **ViewModels**     | 15+                      |
+| 🎨 **Componentes UI** | 25+                      |
+| 🔌 **Data Sources**   | 5 (4 locales + 1 remoto) |
+| 📦 **Repositorios**   | 4                        |
+| 📊 **Entidades**      | 4                        |
 
 ---
 
