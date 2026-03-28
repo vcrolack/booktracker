@@ -30,7 +30,6 @@ final class GetCurrentStreakUseCase: GetCurrentStreakUseCaseProtocol {
         
         let filter = ReadingSessionFilter(fromDate: startOfYear, toDate: .now, sortBy: .endTimeDescending)
         let sessions = try await fetchReadingSessionsUseCase.execute(filter: filter)
-        print("[GET CURRENT STREAK USE CASE] sessions: \(sessions)\n")
         
         let currentStreak = readingStatisticsService.calculateCurrentStreak(from: sessions)
         return currentStreak

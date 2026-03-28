@@ -34,7 +34,7 @@ struct WeeklyCalendarView: View {
                         ZStack {
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .fill(hasRead ? Color.orange : Color.gray.opacity((0.15)))
-                                .frame(width: 35, height: 35)
+                                .frame(width: 25, height: 25)
                             
                             if hasRead {
                                 Image(systemName: "checkmark")
