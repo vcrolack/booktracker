@@ -36,6 +36,12 @@ struct DashboardView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         BTHeaderView(title: "Consistencia", icon: "calendar.day.timeline.left")
                         ReadingHeatmapWidget(contributions: viewModel.heatmapContribution)
+                        
+                        HStack(spacing: 4) {
+                            CurrentStreakView(currentStreak: viewModel)
+                            WeeklyCalendarView(sessions: viewModel.weeklySessions)
+                        }
+                        
                     }
                     
                     VStack(alignment: .leading, spacing: 12) {

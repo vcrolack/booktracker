@@ -15,6 +15,7 @@ struct ReadingStats {
 
 protocol ReadingStatisticsServiceProtocol {
     func calculateStats(from sessions: [ReadingSession]) -> ReadingStats
+    func calculateCurrentStreak(from sessions: [ReadingSession]) -> Int
 }
 
 struct ReadingStatisticsService: ReadingStatisticsServiceProtocol {
@@ -31,7 +32,7 @@ struct ReadingStatisticsService: ReadingStatisticsServiceProtocol {
         
         let totalPages = calculateTotalPages(sessions)
         let avgSpeed = calculateAverageSpeed(sessions, totalPages: totalPages)
-        let streak = calculateCurrentStreak(sessions)
+        let streak = calculateCurrentStreak(from: sessions)
         
         return ReadingStats(
             totalPagesRead: totalPages,
@@ -63,7 +64,7 @@ struct ReadingStatisticsService: ReadingStatisticsServiceProtocol {
         return Double(totalPages) / totalHours
     }
     
-    private func calculateCurrentStreak(_ sessions: [ReadingSession]) -> Int {
+    func calculateCurrentStreak(from sessions: [ReadingSession]) -> Int {
         let completedSessions = sessions.compactMap { session -> Date? in
             session.endTime
         }

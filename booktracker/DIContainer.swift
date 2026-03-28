@@ -168,6 +168,10 @@ final class DIContainer {
         return DeleteAllReadingSessionsUseCase(repository: makeReadingSessionRepository())
     }
     
+    func makeGetWeeklyReadingSessionsUseCase() -> GetWeeklyReadingSessionsUseCaseProtocol {
+        return GetWeeklyReadingSessionsUseCase(fetchReadingSessionsUseCase: makeFetchReadingSessionsUseCase())
+    }
+    
     // MARK: BOOK COLLECTIONS USE CASES
     func makeRemoveBooksFromCollectionUseCase() -> RemoveBooksFromCollectionUseCaseProtocol {
         return RemoveBooksFromCollectionUseCase(
@@ -359,7 +363,8 @@ final class DIContainer {
         return DashboardViewModel(
             getTodayStats: makeGetDashboardTodayStatsUseCase(),
             getMonthlyEffort: makeGetMonthlyEffortUseCase(),
-            getReadingHeatmap: makeGetReadingHeatmapUseCase()
+            getReadingHeatmap: makeGetReadingHeatmapUseCase(),
+            getWeeklyReadingSessions: makeGetWeeklyReadingSessionsUseCase()
         )
     }
     
