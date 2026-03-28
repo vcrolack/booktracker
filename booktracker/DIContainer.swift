@@ -84,6 +84,10 @@ final class DIContainer {
         return ReadingProgressService()
     }
     
+    func makeReadingStatisticsService() -> ReadingStatisticsService {
+        return ReadingStatisticsService()
+    }
+    
     // MARK: - 🚀 Use Cases (La Lógica de Negocio)
         
         // Aquí es donde instanciarás tus Casos de Uso pasándoles el Repositorio.
@@ -229,6 +233,9 @@ final class DIContainer {
         return GetMonthlyEffortUseCase(fetchSessionsUseCase: makeFetchReadingSessionsUseCase())
     }
     
+    func makeGetCurrentStreakUseCase() -> GetCurrentStreakUseCaseProtocol {
+        return GetCurrentStreakUseCase(readingStatisticsService: makeReadingStatisticsService(), fetchReadingSessionsUseCase: makeFetchReadingSessionsUseCase())
+    }
     // MARK: - 🌐 Providers (Capa de Datos Externa)
     func makeExternalBookProvider() -> ExternalBookProviderProtocol {
         return GoogleBooksProvider()
@@ -364,7 +371,8 @@ final class DIContainer {
             getTodayStats: makeGetDashboardTodayStatsUseCase(),
             getMonthlyEffort: makeGetMonthlyEffortUseCase(),
             getReadingHeatmap: makeGetReadingHeatmapUseCase(),
-            getWeeklyReadingSessions: makeGetWeeklyReadingSessionsUseCase()
+            getWeeklyReadingSessions: makeGetWeeklyReadingSessionsUseCase(),
+            getCurrentStreak: makeGetCurrentStreakUseCase()
         )
     }
     

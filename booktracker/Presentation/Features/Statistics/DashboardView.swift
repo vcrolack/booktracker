@@ -38,7 +38,7 @@ struct DashboardView: View {
                         ReadingHeatmapWidget(contributions: viewModel.heatmapContribution)
                         
                         HStack(spacing: 4) {
-                            CurrentStreakView(currentStreak: viewModel)
+                            CurrentStreakView(currentStreak: viewModel.currentStreak ?? 0)
                             WeeklyCalendarView(sessions: viewModel.weeklySessions)
                         }
                         

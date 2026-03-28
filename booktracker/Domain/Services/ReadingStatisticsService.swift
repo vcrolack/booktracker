@@ -65,36 +65,40 @@ struct ReadingStatisticsService: ReadingStatisticsServiceProtocol {
     }
     
     func calculateCurrentStreak(from sessions: [ReadingSession]) -> Int {
-        let completedSessions = sessions.compactMap { session -> Date? in
-            session.endTime
-        }
-        let sortedEndTimes = completedSessions.sorted(by: >)
-        
-        let uniqueDays = Set(sortedEndTimes.map { calendar.startOfDay(for: $0) })
-        let sortedDays = Array(uniqueDays).sorted(by: >)
-        
-        guard let lastReadDay = sortedDays.first else { return 0 }
-        
-        let today = calendar.startOfDay(for: Date())
+    // 1. Si no hay sesiones, no hay racha. 🛡️
+        guard let firstSession = sessions.first,
+              let firstEndTime = firstSession.endTime else { return 0 }
+
+        let today = calendar.startOfDay(for: .now)
         let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
-        
-        if lastReadDay != today && lastReadDay != yesterday {
-            return 0
-        }
-        
-        var streak = 1
-        var previousDay = lastReadDay
-        
-        for day in sortedDays.dropFirst() {
-            let expectedPreviousDay = calendar.date(byAdding: .day, value: -1, to: previousDay)!
-            
-            if day == expectedPreviousDay {
+        let firstDay = calendar.startOfDay(for: firstEndTime)
+
+        // 2. Validación inicial: Si lo último no fue hoy ni ayer, racha es 0. 🛑
+        if firstDay < yesterday { return 0 }
+
+        var streak = 0
+        var nextExpectedDay = firstDay // Empezamos buscando el día más reciente
+        var lastDayCounted: Date? = nil
+
+        // 3. El Bucle Maestro: O(k) con Early Exit ⚡
+        for session in sessions {
+            guard let endTime = session.endTime else { continue }
+            let sessionDay = calendar.startOfDay(for: endTime)
+
+            // Ignoramos sesiones múltiples en el mismo día
+            if sessionDay == lastDayCounted { continue }
+
+            if sessionDay == nextExpectedDay {
+                // ¡Match! Aumentamos racha y buscamos el día anterior
                 streak += 1
-                previousDay = day
-            } else {
+                lastDayCounted = sessionDay
+                nextExpectedDay = calendar.date(byAdding: .day, value: -1, to: sessionDay)!
+            } else if sessionDay < nextExpectedDay {
+                // ¡Hueco encontrado! No hay necesidad de seguir iterando. 🏛️
                 break
             }
         }
+
         return streak
     }
 }

@@ -21,6 +21,18 @@ final class GetCurrentStreakUseCase: GetCurrentStreakUseCaseProtocol {
     }
     
     func execute() async throws -> Int {
-        let stats = readingStatisticsService.calculateStats(from: <#T##[ReadingSession]#>)
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year], from: .now)
+        
+        guard let startOfYear = calendar.date(from: components) else {
+            throw ReadingSessionDomainError.invalidDateRange
+        }
+        
+        let filter = ReadingSessionFilter(fromDate: startOfYear, toDate: .now, sortBy: .endTimeDescending)
+        let sessions = try await fetchReadingSessionsUseCase.execute(filter: filter)
+        print("[GET CURRENT STREAK USE CASE] sessions: \(sessions)\n")
+        
+        let currentStreak = readingStatisticsService.calculateCurrentStreak(from: sessions)
+        return currentStreak
     }
 }
