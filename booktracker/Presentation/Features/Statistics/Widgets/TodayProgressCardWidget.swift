@@ -36,8 +36,9 @@ struct TodayProgressCardWidget: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                if let target = stats.targetMinutesPerDay {
-                    ProgressView(value: Double(stats.minutesReadToday), total: Double(target))
+                if let target = stats.targetMinutesPerDay, target > 0 {
+                    let safeProgress = min(max(Double(stats.minutesReadToday), 0.0), Double(target))
+                    ProgressView(value: safeProgress, total: Double(target))
                         .tint(stats.isDailyGoalMet ? .green : .orange)
                 }
             }

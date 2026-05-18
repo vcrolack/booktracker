@@ -150,25 +150,22 @@ struct StartReadingSessionView: View {
             .cornerRadius(12)
             
             VStack(alignment: .leading) {
-                Text("¿En qué página quedaste?")
-                    .font(.headline)
-                
-                TextField("Página final", value: $viewModel.endPage, format: .number)
-                    .keyboardType(.numberPad)
-                    .textFieldStyle(.roundedBorder)
-                    .font(.title2)
+                BTInputView(endPage: $viewModel.endPage, lastSavedPage: viewModel.book.currentPage, label: "¿En qué página quedaste?")
             }
             .padding(.horizontal, 40)
             
-            let percentage = (Double(viewModel.endPage) / Double(viewModel.book.pages)) * 100
-            VStack {
-                Text("\(percentage, specifier: "%.1f")%")
-                    .font(.system(size: 80, weight: .bold, design: .rounded))
-                    .foregroundColor(.blue)
-                Text("Completado")
-                    .font(.headline)
-                    .foregroundColor(.secondary)
-            }
+
+            let percentage = (Double(viewModel.endPage ?? viewModel.book.currentPage) / Double(viewModel.book.pages)) * 100
+                VStack {
+                    Text("\(percentage, specifier: "%.1f")%")
+                        .font(.system(size: 80, weight: .bold, design: .rounded))
+                        .foregroundColor(.blue)
+                    Text("Completado")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                }
+            
+            
             
             Spacer()
             
@@ -186,17 +183,20 @@ struct StartReadingSessionView: View {
             } label: {
                 Text(viewModel.isLoading ? "Guardando..." : "Guardar progreso")
                     .font(.headline)
-                    .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.blue)
                     .cornerRadius(16)
             }
-            .disabled(viewModel.isLoading)
+            .buttonStyle(.borderedProminent)
+            .tint(.blue)
+            .disabled(viewModel.isSaveButtonDisabled)
             .padding(.horizontal, 40)
             .padding(.bottom, 20)
         }
         .padding(.top, 20)
+        .onTapGesture {
+            hideKeyboard()
+        }
     }
     
     private func timeString(from interval: TimeInterval) -> String {

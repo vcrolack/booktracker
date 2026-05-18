@@ -13,7 +13,7 @@ import Observation
 final class StartReadingSessionViewModel {
     var book: Book
     
-    var endPage: Int
+    var endPage: Int? = nil
     var currentSessionId: UUID?
     
     var isReading: Bool = false
@@ -57,6 +57,20 @@ final class StartReadingSessionViewModel {
         }
     }
     
+    var isSaveButtonDisabled: Bool {
+        if isLoading { return true }
+        
+        guard let finalPage = endPage else { return true }
+        
+        if finalPage == book.currentPage { return true }
+        
+        if finalPage < book.currentPage { return true }
+        
+        if finalPage > book.pages { return true }
+        
+        return false
+    }
+    
     func onAppear() {
         if isReading && timerTask == nil {
             if currentSprintStartTime  == nil {
@@ -88,7 +102,9 @@ final class StartReadingSessionViewModel {
         isLoading = true
         
         do {
-            try await finishSessionUseCase.execute(id: sessionId, endPage: endPage, endTime: Date())
+            if endPage != nil {
+                try await finishSessionUseCase.execute(id: sessionId, endPage: endPage!, endTime: Date())
+            }
         } catch {
             self.errorMessage = error.localizedDescription
         }
