@@ -18,10 +18,9 @@ struct booktrackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            // 🐈 El RootView ahora es el portero oficial
             RootView()
-                .environment(sessionManager) // Inyectamos el manager para toda la app
+                .environment(sessionManager)
         }
-        .modelContainer(container.modelContainer) // SwiftData disponible globalmente
+        .modelContainer(container.modelContainer)
     }
 }

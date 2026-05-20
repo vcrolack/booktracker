@@ -14,16 +14,13 @@ struct BTActiveSessionBannerView: View {
     
     var body: some View {
         Button(action: onTap) {
-            // 🚀 1. HStack puro, sin fondo ni sombra
             HStack(spacing: 16) {
-                // 📚 Mini Portada con altura controlada
                 BTCoverView(urlString: book.coverUrl, width: 20, height: 30)
-                    .shadow(radius: 2, y: 1) // Sombra más sutil
+                    .shadow(radius: 2, y: 1)
                 
-                // 📝 Info de la sesión
-                VStack(alignment: .leading, spacing: 2) { // Espaciado más compacto
+                VStack(alignment: .leading, spacing: 2) {
                     Text("Lectura en curso")
-                        .font(.caption2) // Un toque más pequeño
+                        .font(.caption2)
                         .fontWeight(.bold)
                         .foregroundColor(.blue)
                         .textCase(.uppercase)
@@ -37,17 +34,15 @@ struct BTActiveSessionBannerView: View {
                 
                 Spacer()
                 
-                // ⏱️ Animación de ecualizador azul
                 Image(systemName: "waveform")
                     .font(.title2)
                     .foregroundColor(.blue)
                     .symbolEffect(.variableColor.iterative, options: .repeating)
             }
-            // 🚀 2. Padding interno más compacto
             .padding(.horizontal, 16)
-            .padding(.vertical, 8) // Padding vertical mínimo
-            // 🚀 3. Altura fija para el contenido para asegurar que no se corte
+            .padding(.vertical, 8)
             .frame(height: 50)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
