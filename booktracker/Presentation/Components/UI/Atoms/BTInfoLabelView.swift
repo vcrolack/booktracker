@@ -12,15 +12,25 @@ struct BTInfoLabelView: View {
     let label: String
     var color: Color = .primary
     var alignment: HorizontalAlignment = .center
+    var compactNumberformat: Bool = false
+    
+    private var displayValue: String {
+        if compactNumberformat, let intValue = Int(value) {
+            return intValue.formatted(.number.notation(.compactName))
+        }
+        
+        return value
+    }
     
     var body: some View {
         VStack(alignment: alignment, spacing: 2) {
-            Text(value)
+            Text(displayValue)
                 .font(.system(.title, design: .rounded))
                 .fontWeight(.bold)
                 .foregroundColor(color)
                 .minimumScaleFactor(0.8)
                 .lineLimit(1)
+                .contentTransition(.numericText())
             
             Text(label)
                 .font(.caption2)
@@ -32,5 +42,5 @@ struct BTInfoLabelView: View {
 }
 
 #Preview {
-    BTInfoLabelView(value: "Esto es", label: "UN LABEL")
+    BTInfoLabelView(value: "18000", label: "UN LABEL", compactNumberformat: true)
 }
