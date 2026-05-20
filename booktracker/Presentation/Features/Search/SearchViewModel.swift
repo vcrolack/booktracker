@@ -68,6 +68,13 @@ class SearchViewModel {
                 self.isLoading = false
             } catch is CancellationError {
                 print("Search cancelled by user (typing too fast)")
+            } catch let error as ExternalProviderError {
+                if Task.isCancelled { return }
+                
+                self.isLoading = false
+                self.errorMessage = error.localizedDescription
+                self.books = []
+                print("[SEARCH VIEW MODEL] Domain error: \(error)")
             } catch {
                 if Task.isCancelled { return }
                 

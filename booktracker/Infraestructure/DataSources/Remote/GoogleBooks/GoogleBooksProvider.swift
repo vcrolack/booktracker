@@ -63,6 +63,17 @@ class GoogleBooksProvider: ExternalBookProviderProtocol {
             let books = items.compactMap { GoogleBookMapper.toDomain(dto: $0) }
             
             return books
+        } catch let error as URLError {
+            
+            if error.code == .notConnectedToInternet {
+                throw ExternalProviderError.noInternetConnection
+            } else if error.code == .timedOut {
+                throw ExternalProviderError.unexpectedError("La conexión con el servidor tardó demasiado.")
+            } else {
+                throw ExternalProviderError.unexpectedError("Ha ocurrido un error. Inténtalo más tarde.")
+            }
+            
+            
         } catch let error as DecodingError {
             print("[Google Books] Error decoding google books: \(error)")
             throw ExternalProviderError.decodingError
