@@ -50,15 +50,14 @@ class SearchViewModel {
         }
         
         searchTask?.cancel()
+        isLoading = true
+        errorMessage = nil
         
         searchTask = Task {
             do {
                 try await Task.sleep(for: .milliseconds(500))
                 
                 if Task.isCancelled { return }
-                
-                self.isLoading = true
-                self.errorMessage = nil
                 
                 let results = try await searchUseCase.execute(query: query)
                 
