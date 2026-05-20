@@ -19,37 +19,40 @@ struct CurrentReadingWidget: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack(alignment: .top, spacing: 16) {
-                BTCoverView(urlString: book.coverUrl, width: 80, height: 120)
-                    .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(book.title)
-                        .font(.headline)
-                        .lineLimit(2)
+            NavigationLink(destination: BookDetailView(viewModel: DIContainer.shared.makeBookDetailViewModel(book: book))) {
+                HStack(alignment: .top, spacing: 16) {
+                    BTCoverView(urlString: book.coverUrl, width: 80, height: 120)
+                        .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
                     
-                    Text(book.author)
-                        .font(.subheadline)
-                        .lineLimit(2)
-                    
-                    Spacer(minLength: 0)
-                    
-                    VStack(spacing: 6) {
-                        HStack {
-                            Text("\(book.currentPage) / \(book.pages) pág.")
-                                .font(.caption2)
-                                .fontWeight(.medium)
-                            Spacer()
-                            Text("\(Int(progressPercentage * 100))%")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                        }
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(book.title)
+                            .font(.headline)
+                            .lineLimit(2)
                         
-                        ProgressView(value: progressPercentage)
-                            .tint(.blue)
+                        Text(book.author)
+                            .font(.subheadline)
+                            .lineLimit(2)
+                        
+                        Spacer(minLength: 0)
+                        
+                        VStack(spacing: 6) {
+                            HStack {
+                                Text("\(book.currentPage) / \(book.pages) pág.")
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                                Spacer()
+                                Text("\(Int(progressPercentage * 100))%")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            ProgressView(value: progressPercentage)
+                                .tint(.blue)
+                        }
                     }
-                }
-            }.frame(height: 120)
+                }.frame(height: 120)
+            }
+            .buttonStyle(.plain)
             
             Button(action: {
                 onStartReading()
