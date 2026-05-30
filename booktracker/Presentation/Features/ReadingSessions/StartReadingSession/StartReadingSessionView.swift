@@ -151,15 +151,33 @@ struct StartReadingSessionView: View {
             
             VStack(alignment: .leading) {
                 BTInputView(endPage: $viewModel.endPage, lastSavedPage: viewModel.book.currentPage, label: "¿En qué página quedaste?")
+                
+                if let endPage = viewModel.endPage, endPage - viewModel.book.currentPage > 0 {
+                    let pagesRead = endPage - viewModel.book.currentPage
+                    
+                    HStack {
+                        Spacer(minLength: 0)
+                        Text("Has leído \(pagesRead) \(pagesRead == 1 ? "página" : "páginas")")
+                            .bold()
+                        Spacer(minLength: 0)
+                    }
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .bottom).combined(with: .opacity),
+                        removal: .opacity
+                    ))
+                }
             }
             .padding(.horizontal, 40)
             
-
-            let percentage = (Double(viewModel.endPage ?? viewModel.book.currentPage) / Double(viewModel.book.pages)) * 100
                 VStack {
-                    Text("\(percentage, specifier: "%.1f")%")
-                        .font(.system(size: 80, weight: .bold, design: .rounded))
-                        .foregroundColor(.blue)
+                    HStack {
+                        Spacer(minLength: 0)
+                        Text("\(currentPercentage, specifier: "%.1f")%")
+                            .font(.system(size: 80, weight: .bold, design: .rounded))
+                            .foregroundColor(.blue)
+                        Spacer(minLength: 0)
+                    }
+
                     Text("Completado")
                         .font(.headline)
                         .foregroundColor(.secondary)
@@ -194,6 +212,7 @@ struct StartReadingSessionView: View {
             .padding(.bottom, 20)
         }
         .padding(.top, 20)
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.endPage)
         .onTapGesture {
             hideKeyboard()
         }
@@ -206,6 +225,13 @@ struct StartReadingSessionView: View {
         let seconds = totalSeconds % 60
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
+    
+    private var currentPercentage: Double {
+        let targetPage = viewModel.endPage ?? viewModel.book.currentPage
+        guard viewModel.book.pages > 0 else { return 0.0 }
+        let calculatedPercentage = (Double(targetPage) / Double(viewModel.book.pages)) * 100
+        return max(0.0, calculatedPercentage)
+    }
 }
 
 #Preview {
@@ -214,7 +240,7 @@ struct StartReadingSessionView: View {
         title: "Percy Jackson",
         author: "Rick Riordan",
         pages: 321,
-        currentPage: 0,
+        currentPage: 12,
         ownership: .owner,
         status: .reading,
         coverUrl: "https://images.cdn2.buscalibre.com/fit-in/360x360/89/0d/890d2153424a5a2c45496e4c3de98161.jpg",

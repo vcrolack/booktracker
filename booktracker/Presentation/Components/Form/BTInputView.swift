@@ -14,6 +14,11 @@ struct BTInputView: View {
     
     @FocusState private var isFieldFocused: Bool
     
+    private var isValidationError: Bool {
+            guard let currentPage = endPage else { return false }
+            return currentPage < lastSavedPage
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             
@@ -40,7 +45,7 @@ struct BTInputView: View {
                     .contentTransition(.numericText())
                     .toolbar {
                         ToolbarItemGroup(placement: .keyboard) {
-                            Spacer()
+                            Spacer(minLength: 0)
                             Button("Listo") {
                                 isFieldFocused = false
                             }
@@ -82,11 +87,15 @@ struct BTInputView: View {
                 }
                 .font(.caption)
                 .foregroundColor(.red)
-                .transition(.opacity.combined(with: .move(edge: .top)))
+                .transition(.asymmetric(
+                                    insertion: .move(edge: .top).combined(with: .opacity),
+                                    removal: .opacity
+                                ))
                 
             }
         }
         .padding()
+        .animation(.snappy(duration: 0.35, extraBounce: 0.1), value: isValidationError)
     }
 }
 
