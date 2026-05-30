@@ -43,7 +43,7 @@ struct StartReadingSessionView: View {
                                     currentStep = .finishing
                                 }
                             }
-                            .disabled(viewModel.elapsedSeconds == 0)
+                            .disabled(viewModel.elapsedSeconds == 0 || viewModel.isRecalculatingTime)
                         }
                     }
                     

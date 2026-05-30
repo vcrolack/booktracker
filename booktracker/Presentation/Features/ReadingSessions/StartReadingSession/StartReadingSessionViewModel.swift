@@ -21,6 +21,7 @@ final class StartReadingSessionViewModel {
     var sessionStartTime: Date?
     var elapsedSeconds: TimeInterval = 0
     var isLoading: Bool = false
+    var isRecalculatingTime: Bool = false
     var errorMessage: String? = nil
     
     private var currentSprintStartTime: Date?
@@ -138,9 +139,9 @@ final class StartReadingSessionViewModel {
                     startTime: now,
                     startPage: book.currentPage,
                 )
-               let sessionId = try await createSessionUseCase.execute(command: command)
+                let sessionId = try await createSessionUseCase.execute(command: command)
                 self.currentSessionId = sessionId
-            
+                
                 currentSprintStartTime = now
                 
                 readingSessionLiveActivityManager.startActivity(
@@ -168,7 +169,7 @@ final class StartReadingSessionViewModel {
         )
         
         startTimerLoop()
-
+        
     }
     
     private func pauseTimer() {
@@ -198,16 +199,22 @@ final class StartReadingSessionViewModel {
                     try await Task.sleep(for: .seconds(1))
                     if !Task.isCancelled, let sprintStart = self.currentSprintStartTime {
                         self.elapsedSeconds = self.accumulatedTime + Date().timeIntervalSince(sprintStart)
+                        
+                        // 2. 👈 ¡BINGO! Ahora sí es seguro viajar a la otra pantalla. Bajamos el flag.
+                        if self.isRecalculatingTime {
+                            self.isRecalculatingTime = false
+                        }
                     }
                 } catch {
                     break
                 }
-
+                
             }
         }
     }
     
     func appDidEnterBackground() {
+        isRecalculatingTime = true
         timerTask?.cancel()
         timerTask = nil
     }
