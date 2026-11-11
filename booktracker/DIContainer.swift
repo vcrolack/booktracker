@@ -175,6 +175,14 @@ final class DIContainer {
     func makeGetWeeklyReadingSessionsUseCase() -> GetWeeklyReadingSessionsUseCaseProtocol {
         return GetWeeklyReadingSessionsUseCase(fetchReadingSessionsUseCase: makeFetchReadingSessionsUseCase())
     }
+
+    func makePauseReadingSessionUseCase() -> PauseReadingSessionUseCaseProtocol {
+        return PauseReadingSessionUseCase(repository: makeReadingSessionRepository())
+    }
+
+    func makeResumeReadingSessionUseCase() -> ResumeReadingSessionUseCaseProtocol {
+        return ResumeReadingSessionUseCase(repository: makeReadingSessionRepository())
+    }
     
     // MARK: BOOK COLLECTIONS USE CASES
     func makeRemoveBooksFromCollectionUseCase() -> RemoveBooksFromCollectionUseCaseProtocol {
@@ -315,6 +323,8 @@ final class DIContainer {
             finishSessionUseCase: finishSessionUseCase,
             createSessionUseCase: createSessionUseCase,
             deleteSessionUseCase: deleteSessionUseCase,
+            pauseSessionUseCase: makePauseReadingSessionUseCase(),
+            resumeSessionUseCase: makeResumeReadingSessionUseCase(),
             readingSessionLiveActivityManager: readingSessionLiveActivityManager
         )
     }

@@ -35,6 +35,8 @@ final class ReadingSessionSDDataSource: ReadingSessionLocalDataSourceProtocol {
                 existingSession.endTime = session.endTime
                 existingSession.startPage = session.startPage
                 existingSession.endPage = session.endPage
+                existingSession.pausedDuration = session.pausedDuration
+                existingSession.pausedAt = session.pausedAt
             } else {
                 let newSession = ReadingSessionMapper.toDataModel(from: session)
                 context.insert(newSession)
@@ -90,21 +92,36 @@ final class ReadingSessionSDDataSource: ReadingSessionLocalDataSourceProtocol {
             
             let bookId = filter?.bookId
             let isActive = filter?.isActive
-            
+            // Rango [fromDate, toDate) sobre startTime
+            let fromDate = filter?.fromDate ?? .distantPast
+            let toDate = filter?.toDate ?? .distantFuture
+
             if let bookId = bookId, let active = isActive {
                 if active {
-                    descriptor.predicate = #Predicate { $0.bookId == bookId && $0.endTime == nil }
+                    descriptor.predicate = #Predicate {
+                        $0.bookId == bookId && $0.endTime == nil && $0.startTime >= fromDate && $0.startTime < toDate
+                    }
                 } else {
-                    descriptor.predicate = #Predicate { $0.bookId == bookId && $0.endTime != nil }
+                    descriptor.predicate = #Predicate {
+                        $0.bookId == bookId && $0.endTime != nil && $0.startTime >= fromDate && $0.startTime < toDate
+                    }
                 }
             } else if let bookId = bookId {
-                descriptor.predicate = #Predicate { $0.bookId == bookId }
+                descriptor.predicate = #Predicate {
+                    $0.bookId == bookId && $0.startTime >= fromDate && $0.startTime < toDate
+                }
             } else if let active = isActive {
                 if active {
-                    descriptor.predicate = #Predicate { $0.endTime == nil }
+                    descriptor.predicate = #Predicate {
+                        $0.endTime == nil && $0.startTime >= fromDate && $0.startTime < toDate
+                    }
                 } else {
-                    descriptor.predicate = #Predicate { $0.endTime != nil }
+                    descriptor.predicate = #Predicate {
+                        $0.endTime != nil && $0.startTime >= fromDate && $0.startTime < toDate
+                    }
                 }
+            } else {
+                descriptor.predicate = #Predicate { $0.startTime >= fromDate && $0.startTime < toDate }
             }
             
             let fetchedModels = try context.fetch(descriptor)

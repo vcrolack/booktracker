@@ -21,16 +21,29 @@ struct ReadingSession: Identifiable, Codable, Equatable {
     private(set) var endTime: Date?
     private(set) var startPage: Int?
     private(set) var endPage: Int?
-    
+
+    private(set) var pausedDuration: TimeInterval = 0
+    private(set) var pausedAt: Date?
+
     var isActive: Bool {
         endTime == nil
     }
-    
-    var durationInSeconds: TimeInterval {
-        guard let end = endTime else { return Date().timeIntervalSince(startTime) }
-        return end.timeIntervalSince(startTime)
+
+    var isPaused: Bool {
+        pausedAt != nil
     }
-    
+
+    var durationInSeconds: TimeInterval {
+        duration(at: Date())
+    }
+
+    /// Tiempo efectivamente leído hasta `date`, descontando las pausas.
+    func duration(at date: Date) -> TimeInterval {
+        let end = endTime ?? date
+        let currentPause = pausedAt.map { end.timeIntervalSince($0) } ?? 0
+        return max(0, end.timeIntervalSince(startTime) - pausedDuration - currentPause)
+    }
+
     init(
         id: UUID = UUID(),
         bookId: UUID,
@@ -65,7 +78,9 @@ struct ReadingSession: Identifiable, Codable, Equatable {
         startTime: Date,
         endTime: Date?,
         startPage: Int?,
-        endPage: Int?
+        endPage: Int?,
+        pausedDuration: TimeInterval = 0,
+        pausedAt: Date? = nil
     ) {
         self.id = id
         self.bookId = bookId
@@ -73,7 +88,8 @@ struct ReadingSession: Identifiable, Codable, Equatable {
         self.endTime = endTime
         self.startPage = startPage
         self.endPage = endPage
-        
+        self.pausedDuration = pausedDuration
+        self.pausedAt = pausedAt
     }
     
     mutating func updateSession(newStartTime: Date? = nil, newEndTime: Date? = nil, newEndPage: Int? = nil) throws {
@@ -105,9 +121,35 @@ struct ReadingSession: Identifiable, Codable, Equatable {
         guard page >= (startPage ?? 0) else {
             throw ReadingSessionDomainError.invalidPageProgression
         }
-        
+
+        if let pausedAt {
+            self.pausedDuration += max(0, end.timeIntervalSince(pausedAt))
+            self.pausedAt = nil
+        }
+
         self.endTime = end
         self.endPage = page
+    }
+
+    mutating func pause(at date: Date = Date()) throws {
+        guard isActive, pausedAt == nil else { return }
+
+        guard date >= startTime else {
+            throw ReadingSessionDomainError.invalidDateRange
+        }
+
+        self.pausedAt = date
+    }
+
+    mutating func resume(at date: Date = Date()) throws {
+        guard isActive, let pausedAt else { return }
+
+        guard date >= pausedAt else {
+            throw ReadingSessionDomainError.invalidDateRange
+        }
+
+        self.pausedDuration += date.timeIntervalSince(pausedAt)
+        self.pausedAt = nil
     }
 }
 

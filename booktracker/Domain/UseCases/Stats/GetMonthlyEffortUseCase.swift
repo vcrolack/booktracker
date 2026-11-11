@@ -31,11 +31,11 @@ final class GetMonthlyEffortUseCase: GetMonthlyEffortUseCaseProtocol {
     func execute(year: Int) async throws -> [MonthlyEffort] {
         let calendar = Calendar.current
         let startOfYear = calendar.date(from: DateComponents(year: year, month: 1, day: 1))
-        let endOfYear = calendar.date(from: DateComponents(year: year, month: 12, day: 31))
+        let startOfNextYear = calendar.date(from: DateComponents(year: year + 1, month: 1, day: 1))
         
         let filter = ReadingSessionFilter(
             fromDate: startOfYear,
-            toDate: endOfYear,
+            toDate: startOfNextYear,
             sortBy: .startTimeAscending
         )
         
@@ -46,7 +46,7 @@ final class GetMonthlyEffortUseCase: GetMonthlyEffortUseCaseProtocol {
         for session in sessions {
             if let endTime = session.endTime {
                 let month = Calendar.current.component(.month, from: endTime)
-                let durationMinutes = Int(endTime.timeIntervalSince(session.startTime) / 60)
+                let durationMinutes = Int(session.durationInSeconds / 60)
                 monthlyMinutes[month, default: 0] += durationMinutes
             }
         }

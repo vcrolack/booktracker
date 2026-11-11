@@ -50,8 +50,8 @@ struct ReadingProgressService: ReadingProgressServiceProtocol {
         }
         
         let totalSecondsToday = todaySessions.reduce(0.0) { total, session in
-            guard let endTime = session.endTime else { return total }
-            return total + endTime.timeIntervalSince(session.startTime)
+            guard !session.isActive else { return total }
+            return total + session.durationInSeconds
         }
         let minutesReadToday = Int(totalSecondsToday / 60.0)
         

@@ -28,8 +28,8 @@ struct ReadingSessionWidgetLiveActivity: Widget {
                 
                 
                 
-                if context.state.isReading, let startTime = context.state.currentSprintStartTime {
-                    Text(startTime, style: .timer)
+                if context.state.isReading {
+                    sessionTimer(for: context.state)
                         .font(.headline)
                         .fontWeight(.bold)
                         .foregroundColor(.blue)
@@ -37,10 +37,16 @@ struct ReadingSessionWidgetLiveActivity: Widget {
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 50, alignment: .trailing)
                 } else {
-                    Text("Pausado")
-                        .font(.headline)
-                        .foregroundColor(.gray)
-                        .frame(maxWidth: 70, alignment: .trailing)
+                    VStack(alignment: .trailing, spacing: 0) {
+                        sessionTimer(for: context.state)
+                            .font(.headline)
+                            .monospacedDigit()
+                            .multilineTextAlignment(.trailing)
+                        Text("Pausado")
+                            .font(.caption2)
+                    }
+                    .foregroundColor(.gray)
+                    .frame(maxWidth: 70, alignment: .trailing)
                 }
             }
             .padding()
@@ -82,8 +88,8 @@ struct ReadingSessionWidgetLiveActivity: Widget {
                         }
                         
                         // Cronómetro Azul y visible
-                        if context.state.isReading, let startTime = context.state.currentSprintStartTime {
-                            Text(startTime, style: .timer)
+                        if context.state.isReading {
+                            sessionTimer(for: context.state)
                                 .font(.title2)
                                 .fontWeight(.black)
                                 .foregroundColor(.blue)
@@ -91,10 +97,17 @@ struct ReadingSessionWidgetLiveActivity: Widget {
                                 .multilineTextAlignment(.center)
                                 .frame(maxWidth: .infinity, alignment: .center)
                         } else {
-                            Text("Pausado")
-                                .font(.title3)
-                                .fontWeight(.bold)
-                                .foregroundColor(.gray)
+                            VStack(spacing: 0) {
+                                sessionTimer(for: context.state)
+                                    .font(.title3)
+                                    .monospacedDigit()
+                                    .multilineTextAlignment(.center)
+                                Text("Pausado")
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                            }
+                            .foregroundColor(.gray)
+                            .frame(maxWidth: .infinity, alignment: .center)
                         }
                     }
                     .padding(.top, 16)
@@ -105,8 +118,8 @@ struct ReadingSessionWidgetLiveActivity: Widget {
                     .foregroundColor(.blue)
             } compactTrailing: {
                 // 2C. COMPACTA DERECHA (El tiempo corriendo)
-                if context.state.isReading, let startTime = context.state.currentSprintStartTime {
-                    Text(startTime, style: .timer)
+                if context.state.isReading {
+                    sessionTimer(for: context.state)
                         .font(.caption2)
                         .monospacedDigit()
                         .foregroundColor(.blue)
@@ -123,11 +136,19 @@ struct ReadingSessionWidgetLiveActivity: Widget {
             .widgetURL(URL(string: "booktracker://activeSession"))
         }
     }
+    
+    private func sessionTimer(for state: ReadingSessionAttributes.ContentState) -> Text {
+        Text(
+            timerInterval: state.timerStartDate...Date.distantFuture,
+            pauseTime: state.timerPauseDate,
+            countsDown: false
+        )
+    }
 }
 
 #Preview("Notification", as: .content, using: ReadingSessionAttributes(bookTitle: "Sample Book", author: "Author", bookId: UUID())) {
    ReadingSessionWidgetLiveActivity()
 } contentStates: {
-    ReadingSessionAttributes.ContentState(isReading: true, currentSprintStartTime: .now, accumulatedTime: 0)
+    ReadingSessionAttributes.ContentState(isReading: true, currentSprintStartTime: .now, accumulatedTime: 754)
     ReadingSessionAttributes.ContentState(isReading: false, currentSprintStartTime: nil, accumulatedTime: 300)
 }

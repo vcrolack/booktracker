@@ -13,7 +13,9 @@ enum ReadingSessionMapper {
             startTime: domain.startTime,
             endTime: domain.endTime,
             startPage: domain.startPage,
-            endPage: domain.endPage
+            endPage: domain.endPage,
+            pausedDuration: domain.pausedDuration,
+            pausedAt: domain.pausedAt
         )
     }
     
@@ -24,7 +26,9 @@ enum ReadingSessionMapper {
             startTime: sdModel.startTime,
             endTime: sdModel.endTime,
             startPage: sdModel.startPage,
-            endPage: sdModel.endPage
+            endPage: sdModel.endPage,
+            pausedDuration: sdModel.pausedDuration,
+            pausedAt: sdModel.pausedAt
         )
     }
 }

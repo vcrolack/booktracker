@@ -41,7 +41,7 @@ final class GetDashboardTodayStatsUseCase: GetDashboardTodayStatsUseCaseProtocol
         let bookFilter = BookFilter(status: .finalized, finishYear: year)
         let finalizedBooks = try await fetchBooksUseCase.execute(filter: bookFilter)
         
-        let sessionFilter = ReadingSessionFilter(fromDate: .now)
+        let sessionFilter = ReadingSessionFilter(fromDate: Calendar.current.startOfDay(for: .now))
         let todaySessions = try await fetchReadingSessionsUseCase.execute(filter: sessionFilter)
         
         return progressService.calculateProgress(

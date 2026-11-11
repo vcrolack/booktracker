@@ -40,13 +40,15 @@ final class GetReadingHeatmapUseCase: GetReadingHeatmapUseCaseProtocol {
         let startOfYear = calendar.date(from: DateComponents(year: year, month: 1, day: 1))!
         let endOfYear = calendar.date(from: DateComponents(year: year, month: 12, day: 31))!
         
-        let filter = ReadingSessionFilter(fromDate: startOfYear, toDate: endOfYear)
+        let startOfNextYear = calendar.date(from: DateComponents(year: year + 1, month: 1, day: 1))!
+        
+        let filter = ReadingSessionFilter(fromDate: startOfYear, toDate: startOfNextYear)
         let sessions = try await fetchSessionsUseCase.execute(filter: filter)
         
         var minutesByDate: [Date: Int] = [:]
         for session in sessions {
             let day = calendar.startOfDay(for: session.startTime)
-            let duration = Int(session.endTime?.timeIntervalSince(session.startTime) ?? 0) / 60
+            let duration = session.isActive ? 0 : Int(session.durationInSeconds) / 60
             minutesByDate[day, default: 0] += duration
         }
         

@@ -65,9 +65,8 @@ struct BTSessionRowView: View {
     }
     
     private var sessionDuration: String {
-        guard let endTime = session.endTime else { return "En curso" }
-        let duration = endTime.timeIntervalSince(session.startTime)
-        let minutes = Int(duration) / 60
+        guard !session.isActive else { return "En curso" }
+        let minutes = Int(session.durationInSeconds) / 60
         
         if minutes < 60 {
             return "\(minutes) min"

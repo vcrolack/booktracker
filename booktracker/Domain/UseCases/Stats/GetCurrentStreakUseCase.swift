@@ -21,14 +21,9 @@ final class GetCurrentStreakUseCase: GetCurrentStreakUseCaseProtocol {
     }
     
     func execute() async throws -> Int {
-        let calendar = Calendar.current
-        let components = calendar.dateComponents([.year], from: .now)
-        
-        guard let startOfYear = calendar.date(from: components) else {
-            throw ReadingSessionDomainError.invalidDateRange
-        }
-        
-        let filter = ReadingSessionFilter(fromDate: startOfYear, toDate: .now, sortBy: .endTimeDescending)
+        // Sin límite de fecha: una racha puede cruzar el cambio de año.
+        // Solo sesiones terminadas, la racha se calcula sobre endTime.
+        let filter = ReadingSessionFilter(sortBy: .endTimeDescending, isActive: false)
         let sessions = try await fetchReadingSessionsUseCase.execute(filter: filter)
         
         let currentStreak = readingStatisticsService.calculateCurrentStreak(from: sessions)

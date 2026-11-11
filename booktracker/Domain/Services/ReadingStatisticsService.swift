@@ -53,9 +53,8 @@ struct ReadingStatisticsService: ReadingStatisticsServiceProtocol {
         guard totalPages > 0 else { return 0.0 }
         
         let totalSeconds = sessions.reduce(0.0) { total, session in
-            guard let endTime = session.endTime else { return total }
-            let duration = endTime.timeIntervalSince(session.startTime)
-            return total + duration
+            guard !session.isActive else { return total }
+            return total + session.durationInSeconds
         }
         
         let totalHours = totalSeconds / 3600.0

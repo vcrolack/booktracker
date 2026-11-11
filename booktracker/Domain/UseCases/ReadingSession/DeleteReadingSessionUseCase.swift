@@ -29,11 +29,17 @@ final class DeleteReadingSessionUseCase: DeleteReadingSessionUseCaseProtocol {
         let bookId = sessionToDelete.bookId
         
         try await repository.delete(sessionId: readingSessionId)
-        
+
+        // Una sesión en curso todavía no movió el progreso del libro: borrarla (cancelar) no debe tocarlo.
+        guard !sessionToDelete.isActive else { return }
+
         let remainingSessions = try await repository.fetchSessions(matching: ReadingSessionFilter(bookId: bookId))
-        
-        let recalculatedCurrentPage = remainingSessions.compactMap { $0.endPage }.max() ?? 0
-        
+
+        // La página donde empezó la sesión borrada es el piso: conserva el progreso previo
+        // aunque no haya otras sesiones (libro creado con página inicial o editado a mano).
+        let candidatePages = remainingSessions.compactMap { $0.endPage } + [sessionToDelete.startPage].compactMap { $0 }
+        let recalculatedCurrentPage = candidatePages.max() ?? 0
+
         try await updateBookProgressUseCase.execute(bookId: bookId, newProgress: recalculatedCurrentPage)
         
     }
