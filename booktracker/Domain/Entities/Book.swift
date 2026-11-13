@@ -70,6 +70,7 @@ struct Book: Identifiable, Equatable, Codable {
         editorial: String? = nil,
         genre: String? = nil,
         overview: String? = nil,
+        createdAt: Date = Date()
     ) throws {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedAuthor = author.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -95,8 +96,8 @@ struct Book: Identifiable, Equatable, Codable {
         self.ownership = ownership
         self.status = status
         self.coverUrl = coverUrl
-        self.createdAt = Date()
-        self.updatedAt = Date()
+        self.createdAt = createdAt
+        self.updatedAt = createdAt
         self.isbn = isbn
         self.editorial = editorial
         self.genre = genre
@@ -198,6 +199,7 @@ struct Book: Identifiable, Equatable, Codable {
         coverUrl: String? = nil,
         genre: String? = nil,
         overview: String? = nil,
+        at date: Date = Date()
     ) throws {
         if let newTitle = title {
             let trimmed = newTitle.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -230,16 +232,16 @@ struct Book: Identifiable, Equatable, Codable {
         if let newGenre = genre { self.genre = newGenre }
         if let newOverview = overview { self.overview = newOverview }
         
-        self.updatedAt = Date()
+        self.updatedAt = date
     }
     
-    mutating func acquireForReading(newOwnership: Ownership) throws {
+    mutating func acquireForReading(newOwnership: Ownership, at date: Date = Date()) throws {
         guard status == .wishlist else {
-            throw BookDomainError.invalidStateTransition(from: status, to: .reading)
+            throw BookDomainError.invalidStateTransition(from: status, to: .toRead)
         }
         
         self.status = .toRead
         self.ownership = newOwnership
-        self.updatedAt = Date()
+        self.updatedAt = date
     }
 }
