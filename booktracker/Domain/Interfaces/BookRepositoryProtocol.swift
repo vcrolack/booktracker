@@ -26,7 +26,7 @@ struct BookFilter {
     }
 }
 
-protocol BookRepositoryProtocol {
+protocol BookRepositoryProtocol: Sendable {
     func fetchBooks(matching filter: BookFilter?) async throws -> [Book]
     func fetchBook(by id: UUID) async throws -> Book?
     

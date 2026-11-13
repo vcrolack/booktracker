@@ -8,12 +8,14 @@
 import Foundation
 @preconcurrency import ActivityKit
 
+@MainActor
 protocol ReadingSessionLiveActivityManagerProtocol {
     func startActivity(title: String, author: String, bookId: UUID, startTime: Date, accumulatedTime: TimeInterval)
     func updateActivity(isReading: Bool, startTime: Date?, accumulatedTime: TimeInterval) async
     func endActivity() async
 }
 
+@MainActor
 final class ReadingLiveActivityManager: ReadingSessionLiveActivityManagerProtocol {
     private var currentActivity: Activity<ReadingSessionAttributes>?
     

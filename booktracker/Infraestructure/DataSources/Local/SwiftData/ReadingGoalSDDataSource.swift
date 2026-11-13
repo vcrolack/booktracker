@@ -8,20 +8,15 @@
 import Foundation
 import SwiftData
 
-protocol ReadingGoalLocalDataSourceProtocol {
-    func save(goal: ReadingGoal) throws
-    func fetchReadingGoal(by id: UUID) throws -> ReadingGoal?
-    func fetchReadingGoals(criteria: ReadingGoalSearchField) throws -> [ReadingGoal]
-    func deleteReadingGoal(by id: UUID) throws
+protocol ReadingGoalLocalDataSourceProtocol: Sendable {
+    func save(goal: ReadingGoal) async throws
+    func fetchReadingGoal(by id: UUID) async throws -> ReadingGoal?
+    func fetchReadingGoals(criteria: ReadingGoalSearchField) async throws -> [ReadingGoal]
+    func deleteReadingGoal(by id: UUID) async throws
 }
 
-final class ReadingGoalSDDataSource: ReadingGoalLocalDataSourceProtocol {
-    private let context: ModelContext
-    
-    init(context: ModelContext) {
-        self.context = context
-    }
-    
+@ModelActor
+actor ReadingGoalSDDataSource: ReadingGoalLocalDataSourceProtocol {
     func save(goal: ReadingGoal) throws {
         do {
             let readingGoalId = goal.id
@@ -29,16 +24,16 @@ final class ReadingGoalSDDataSource: ReadingGoalLocalDataSourceProtocol {
             var descriptor = FetchDescriptor<ReadingGoalSD>(predicate: #Predicate { $0.id == readingGoalId })
             descriptor.fetchLimit = 1
             
-            if let existingGoal = try context.fetch(descriptor).first {
+            if let existingGoal = try modelContext.fetch(descriptor).first {
                 existingGoal.year = goal.year
                 existingGoal.targetBooks = goal.targetBooks
                 existingGoal.targetMinutesPerDay = goal.targetMinutesPerDay
             } else {
                 let newGoal = ReadingGoalMapper.toDataModel(from: goal)
-                context.insert(newGoal)
+                modelContext.insert(newGoal)
             }
             
-            try context.save()
+            try modelContext.save()
         } catch {
             throw DataSourceError.saveFailed(error.localizedDescription)
         }
@@ -53,7 +48,7 @@ final class ReadingGoalSDDataSource: ReadingGoalLocalDataSourceProtocol {
             
             descriptor.fetchLimit = 1
             
-            guard let goalSD = try context.fetch(descriptor).first else {
+            guard let goalSD = try modelContext.fetch(descriptor).first else {
                 return nil
             }
             
@@ -86,7 +81,7 @@ final class ReadingGoalSDDataSource: ReadingGoalLocalDataSourceProtocol {
         let descriptor = FetchDescriptor<ReadingGoalSD>(predicate: predicate)
         
         do {
-            let fetchedModels = try context.fetch(descriptor)
+            let fetchedModels = try modelContext.fetch(descriptor)
             return fetchedModels.map { ReadingGoalMapper.toDomain(from: $0) }
         } catch {
             throw DataSourceError.fetchFailed("[Reading Goal SD] Goals not found")
@@ -98,9 +93,9 @@ final class ReadingGoalSDDataSource: ReadingGoalLocalDataSourceProtocol {
             let readingGoalId = id
             let descriptor = FetchDescriptor<ReadingGoalSD>(predicate: #Predicate { $0.id == readingGoalId} )
             
-            if let readingGoal = try context.fetch(descriptor).first {
-                context.delete(readingGoal)
-                try context.save()
+            if let readingGoal = try modelContext.fetch(descriptor).first {
+                modelContext.delete(readingGoal)
+                try modelContext.save()
             }
         } catch {
             throw DataSourceError.deleteFailed("[Reading Goal SD] Goal \(id) could not delete")

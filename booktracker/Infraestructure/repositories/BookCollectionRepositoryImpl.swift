@@ -15,22 +15,22 @@ final class BookCollectionRepositoryImpl: BookCollectionRepositoryProtocol {
     }
     
     func save(bookCollection: BookCollection) async throws {
-        try localDataSource.save(bookCollection: bookCollection)
+        try await localDataSource.save(bookCollection: bookCollection)
     }
     
     func fetchCollection(by id: UUID) async throws -> BookCollection? {
-        return try localDataSource.fetchBookCollection(by: id)
+        return try await localDataSource.fetchBookCollection(by: id)
     }
     
     func fetchCollections(matching filter: BookCollectionFilter?) async throws -> [BookCollection] {
-        return try localDataSource.fetchBookCollections()
+        return try await localDataSource.fetchBookCollections()
     }
     
     func delete(by id: UUID) async throws {
-        try localDataSource.deleteBookCollection(by: id)
+        try await localDataSource.deleteBookCollection(by: id)
     }
     
     func removeBookReferenceFromAllCollections(bookId: UUID) async throws {
-        try localDataSource.removeBookReferenceFromAllCollections(bookId: bookId)
+        try await localDataSource.removeBookReferenceFromAllCollections(bookId: bookId)
     }
 }

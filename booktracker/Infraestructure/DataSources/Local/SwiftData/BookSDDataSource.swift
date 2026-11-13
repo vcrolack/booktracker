@@ -8,20 +8,15 @@
 import Foundation
 import SwiftData
 
-protocol BookLocalDataSourceProtocol {
-    func save(book: Book) throws
-    func fetchBook(by id: UUID) throws -> Book?
-    func fetchBooks(matching filter: BookFilter?) throws -> [Book]
-    func deleteBook(by id: UUID) throws
+protocol BookLocalDataSourceProtocol: Sendable {
+    func save(book: Book) async throws
+    func fetchBook(by id: UUID) async throws -> Book?
+    func fetchBooks(matching filter: BookFilter?) async throws -> [Book]
+    func deleteBook(by id: UUID) async throws
 }
 
-final class BookSDDataSource: BookLocalDataSourceProtocol {
-    private let context: ModelContext
-    
-    init(context: ModelContext) {
-        self.context = context
-    }
-    
+@ModelActor
+actor BookSDDataSource: BookLocalDataSourceProtocol {
     func save(book: Book) throws {
         do {
             let bookId = book.id
@@ -30,7 +25,7 @@ final class BookSDDataSource: BookLocalDataSourceProtocol {
             var descriptor = FetchDescriptor<BookSD>(predicate: #Predicate { $0.id == bookId })
             descriptor.fetchLimit = 1
             
-            if let existingBookSD = try context.fetch(descriptor).first {
+            if let existingBookSD = try modelContext.fetch(descriptor).first {
                 // 🔄 2A. MODO EDICIÓN: Mutamos el objeto que SwiftData ya está rastreando
                 existingBookSD.title = book.title
                 existingBookSD.author = book.author
@@ -55,11 +50,11 @@ final class BookSDDataSource: BookLocalDataSourceProtocol {
             } else {
                 // ✨ 2B. MODO CREACIÓN: Es un libro totalmente nuevo, lo insertamos
                 let newBookSD = BookMapper.toDataModel(from: book)
-                context.insert(newBookSD)
+                modelContext.insert(newBookSD)
             }
             
             // 3. 💾 Guardamos los cambios de contexto (SwiftData sabrá si hacer INSERT o UPDATE)
-            try context.save()
+            try modelContext.save()
             
         } catch {
             throw DataSourceError.saveFailed(error.localizedDescription)
@@ -74,7 +69,7 @@ final class BookSDDataSource: BookLocalDataSourceProtocol {
             
             descriptor.fetchLimit = 1
             
-            guard let bookSD = try context.fetch(descriptor).first else {
+            guard let bookSD = try modelContext.fetch(descriptor).first else {
                 return nil
             }
             
@@ -112,7 +107,7 @@ final class BookSDDataSource: BookLocalDataSourceProtocol {
                 
                 // 3. 🚀 Ejecutar la consulta base en la Base de Datos
                 // Lo hacemos 'var' para poder aplicar los filtros restantes en memoria
-                var booksSD = try context.fetch(descriptor)
+                var booksSD = try modelContext.fetch(descriptor)
                 
                 // 4. ⚡️ FILTROS RÁPIDOS EN MEMORIA
                 // Una vez que tenemos los datos, aplicamos los filtros exactos usando Swift puro.
@@ -158,9 +153,9 @@ final class BookSDDataSource: BookLocalDataSourceProtocol {
         do {
             let descriptor = FetchDescriptor<BookSD>(predicate: #Predicate { $0.id == id })
             
-            if let bookSD = try context.fetch(descriptor).first {
-                context.delete(bookSD)
-                try context.save()
+            if let bookSD = try modelContext.fetch(descriptor).first {
+                modelContext.delete(bookSD)
+                try modelContext.save()
             }
         } catch {
             throw DataSourceError.deleteFailed(error.localizedDescription)

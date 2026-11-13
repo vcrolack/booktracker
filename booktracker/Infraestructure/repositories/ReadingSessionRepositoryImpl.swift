@@ -15,22 +15,22 @@ final class ReadingSessionRepositoryImpl: ReadingSessionRepositoryProtocol {
     }
     
     func save(session: ReadingSession) async throws {
-        return try localDataSource.save(session: session)
+        return try await localDataSource.save(session: session)
     }
     
     func fetchSession(by id: UUID) async throws -> ReadingSession? {
-        return try localDataSource.fetchReadingSession(by: id)
+        return try await localDataSource.fetchReadingSession(by: id)
     }
     
     func fetchSessions(matching filter: ReadingSessionFilter?) async throws -> [ReadingSession] {
-        return try localDataSource.fetchReadingSessions(matching: filter)
+        return try await localDataSource.fetchReadingSessions(matching: filter)
     }
     
     func delete(sessionId: UUID) async throws {
-        return try localDataSource.deleteReadingSession(by: sessionId)
+        return try await localDataSource.deleteReadingSession(by: sessionId)
     }
     
     func deleteAll(for bookId: UUID) async throws {
-        return try localDataSource.deleteAllReadingSessions(for: bookId)
+        return try await localDataSource.deleteAllReadingSessions(for: bookId)
     }
 }

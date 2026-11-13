@@ -25,7 +25,7 @@ struct ReadingSessionFilter {
     }
 }
 
-protocol ReadingSessionRepositoryProtocol {
+protocol ReadingSessionRepositoryProtocol: Sendable {
     func fetchSession(by id: UUID) async throws -> ReadingSession?
     func fetchSessions(matching filter: ReadingSessionFilter?) async throws -> [ReadingSession]
     

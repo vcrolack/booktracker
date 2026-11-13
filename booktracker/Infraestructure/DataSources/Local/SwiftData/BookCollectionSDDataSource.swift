@@ -8,21 +8,16 @@
 import Foundation
 import SwiftData
 
-protocol BookCollectionLocalDataSourceProtocol {
-    func save(bookCollection: BookCollection) throws
-    func fetchBookCollection(by id: UUID) throws -> BookCollection?
-    func fetchBookCollections() throws -> [BookCollection]
-    func deleteBookCollection(by id: UUID) throws
-    func removeBookReferenceFromAllCollections(bookId: UUID) throws
+protocol BookCollectionLocalDataSourceProtocol: Sendable {
+    func save(bookCollection: BookCollection) async throws
+    func fetchBookCollection(by id: UUID) async throws -> BookCollection?
+    func fetchBookCollections() async throws -> [BookCollection]
+    func deleteBookCollection(by id: UUID) async throws
+    func removeBookReferenceFromAllCollections(bookId: UUID) async throws
 }
 
-final class BookCollectionSDDataSource: BookCollectionLocalDataSourceProtocol {
-    private let context: ModelContext
-    
-    init(context: ModelContext) {
-        self.context = context
-    }
-    
+@ModelActor
+actor BookCollectionSDDataSource: BookCollectionLocalDataSourceProtocol {
     func save(bookCollection: BookCollection) throws {
         do {
             let collectionId = bookCollection.id
@@ -30,7 +25,7 @@ final class BookCollectionSDDataSource: BookCollectionLocalDataSourceProtocol {
             var descriptor = FetchDescriptor<BookCollectionSD>(predicate: #Predicate { $0.id == collectionId })
             descriptor.fetchLimit = 1
             
-            if let existingBookCollection = try context.fetch(descriptor).first {
+            if let existingBookCollection = try modelContext.fetch(descriptor).first {
                 existingBookCollection.name = bookCollection.name
                 existingBookCollection.collectionDescription = bookCollection.description
                 existingBookCollection.coverFileName = bookCollection.cover
@@ -38,10 +33,10 @@ final class BookCollectionSDDataSource: BookCollectionLocalDataSourceProtocol {
                 existingBookCollection.updatedAt = Date()
             } else {
                 let newBookCollection = BookCollectionMapper.toDataModel(from: bookCollection)
-                context.insert(newBookCollection)
+                modelContext.insert(newBookCollection)
             }
             
-            try context.save()
+            try modelContext.save()
         } catch {
             throw DataSourceError.saveFailed(error.localizedDescription)
         }
@@ -53,7 +48,7 @@ final class BookCollectionSDDataSource: BookCollectionLocalDataSourceProtocol {
             var descriptor = FetchDescriptor<BookCollectionSD>(predicate: #Predicate {$0.id == bookCollectionId })
             descriptor.fetchLimit = 1
             
-            guard let bookCollectionSD = try context.fetch(descriptor).first else {
+            guard let bookCollectionSD = try modelContext.fetch(descriptor).first else {
                 return nil
             }
             
@@ -66,7 +61,7 @@ final class BookCollectionSDDataSource: BookCollectionLocalDataSourceProtocol {
     func fetchBookCollections() throws -> [BookCollection] {
         do {
             let descriptor = FetchDescriptor<BookCollectionSD>()
-            let fetchedModels = try context.fetch(descriptor)
+            let fetchedModels = try modelContext.fetch(descriptor)
             return fetchedModels.map { BookCollectionMapper.toDomain(from: $0) }
         } catch {
             throw DataSourceError.fetchFailed(error.localizedDescription)
@@ -78,9 +73,9 @@ final class BookCollectionSDDataSource: BookCollectionLocalDataSourceProtocol {
             let bookCollectionId = id
             let descriptor = FetchDescriptor<BookCollectionSD>(predicate: #Predicate { $0.id == bookCollectionId })
             
-            if let bookCollectionSD = try context.fetch(descriptor).first {
-                context.delete(bookCollectionSD)
-                try context.save()
+            if let bookCollectionSD = try modelContext.fetch(descriptor).first {
+                modelContext.delete(bookCollectionSD)
+                try modelContext.save()
             }
         } catch {
             throw DataSourceError.deleteFailed(error.localizedDescription)
@@ -90,7 +85,7 @@ final class BookCollectionSDDataSource: BookCollectionLocalDataSourceProtocol {
     func removeBookReferenceFromAllCollections(bookId: UUID) throws {
         do {
             let descriptor = FetchDescriptor<BookCollectionSD>()
-            let allCollections = try context.fetch(descriptor)
+            let allCollections = try modelContext.fetch(descriptor)
             
             let collectionsToUpdate = allCollections.filter { $0.bookIds.contains(bookId) }
             
@@ -101,7 +96,7 @@ final class BookCollectionSDDataSource: BookCollectionLocalDataSourceProtocol {
                 collection.updatedAt = Date()
             }
             
-            try context.save()
+            try modelContext.save()
         } catch {
             throw DataSourceError.deleteFailed("[BookCollectionSDDataSource] - removeBookReferenceFromAllCollections failed")
         }

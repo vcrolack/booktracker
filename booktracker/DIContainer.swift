@@ -35,19 +35,19 @@ final class DIContainer {
     }
     
     private func makeBookDataSource() -> BookLocalDataSourceProtocol {
-        return BookSDDataSource(context: modelContainer.mainContext)
+        return BookSDDataSource(modelContainer: modelContainer)
     }
     
     private func makeReadingSessionDataSource() -> ReadingSessionLocalDataSourceProtocol {
-        return ReadingSessionSDDataSource(context: modelContainer.mainContext)
+        return ReadingSessionSDDataSource(modelContainer: modelContainer)
     }
     
     private func makeBookCollectionDataSource() -> BookCollectionLocalDataSourceProtocol {
-        return BookCollectionSDDataSource(context: modelContainer.mainContext)
+        return BookCollectionSDDataSource(modelContainer: modelContainer)
     }
     
     private func makeReadingGoalDataSource() -> ReadingGoalLocalDataSourceProtocol {
-        return ReadingGoalSDDataSource(context: modelContainer.mainContext)
+        return ReadingGoalSDDataSource(modelContainer: modelContainer)
     }
     
     func makeBookRepository() -> BookRepositoryProtocol {

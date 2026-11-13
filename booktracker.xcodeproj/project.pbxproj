@@ -21,6 +21,20 @@
 			remoteGlobalIDString = 0C8D0D6E2F66269C00C6338C;
 			remoteInfo = ReadingSessionWidgetExtension;
 		};
+		0CE2992B30A41C7B00A42932 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0C2C862D2F44D4AA0096EF49 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0C2C86342F44D4AA0096EF49;
+			remoteInfo = booktracker;
+		};
+		0CE2993830A41C9B00A42932 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0C2C862D2F44D4AA0096EF49 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0C2C86342F44D4AA0096EF49;
+			remoteInfo = booktracker;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,6 +56,8 @@
 		0C8D0D6F2F66269C00C6338C /* ReadingSessionWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ReadingSessionWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C8D0D712F66269C00C6338C /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0C8D0D732F66269C00C6338C /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		0CE2992730A41C7B00A42932 /* booktrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = booktrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0CE2993430A41C9B00A42932 /* booktrackerTestsUI.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = booktrackerTestsUI.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -88,6 +104,16 @@
 			path = ReadingSessionWidget;
 			sourceTree = "<group>";
 		};
+		0CE2992830A41C7B00A42932 /* booktrackerTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = booktrackerTests;
+			sourceTree = "<group>";
+		};
+		0CE2993530A41C9B00A42932 /* booktrackerTestsUI */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = booktrackerTestsUI;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +134,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0CE2992430A41C7B00A42932 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0CE2993130A41C9B00A42932 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -116,6 +156,8 @@
 			children = (
 				0C2C86372F44D4AA0096EF49 /* booktracker */,
 				0C8D0D752F66269C00C6338C /* ReadingSessionWidget */,
+				0CE2992830A41C7B00A42932 /* booktrackerTests */,
+				0CE2993530A41C9B00A42932 /* booktrackerTestsUI */,
 				0C8D0D702F66269C00C6338C /* Frameworks */,
 				0C2C86362F44D4AA0096EF49 /* Products */,
 			);
@@ -126,6 +168,8 @@
 			children = (
 				0C2C86352F44D4AA0096EF49 /* booktracker.app */,
 				0C8D0D6F2F66269C00C6338C /* ReadingSessionWidgetExtension.appex */,
+				0CE2992730A41C7B00A42932 /* booktrackerTests.xctest */,
+				0CE2993430A41C9B00A42932 /* booktrackerTestsUI.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -189,6 +233,52 @@
 			productReference = 0C8D0D6F2F66269C00C6338C /* ReadingSessionWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		0CE2992630A41C7B00A42932 /* booktrackerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0CE2992D30A41C7B00A42932 /* Build configuration list for PBXNativeTarget "booktrackerTests" */;
+			buildPhases = (
+				0CE2992330A41C7B00A42932 /* Sources */,
+				0CE2992430A41C7B00A42932 /* Frameworks */,
+				0CE2992530A41C7B00A42932 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0CE2992C30A41C7B00A42932 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				0CE2992830A41C7B00A42932 /* booktrackerTests */,
+			);
+			name = booktrackerTests;
+			packageProductDependencies = (
+			);
+			productName = booktrackerTests;
+			productReference = 0CE2992730A41C7B00A42932 /* booktrackerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		0CE2993330A41C9B00A42932 /* booktrackerTestsUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0CE2993A30A41C9B00A42932 /* Build configuration list for PBXNativeTarget "booktrackerTestsUI" */;
+			buildPhases = (
+				0CE2993030A41C9B00A42932 /* Sources */,
+				0CE2993130A41C9B00A42932 /* Frameworks */,
+				0CE2993230A41C9B00A42932 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0CE2993930A41C9B00A42932 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				0CE2993530A41C9B00A42932 /* booktrackerTestsUI */,
+			);
+			name = booktrackerTestsUI;
+			packageProductDependencies = (
+			);
+			productName = booktrackerTestsUI;
+			productReference = 0CE2993430A41C9B00A42932 /* booktrackerTestsUI.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -196,7 +286,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2630;
+				LastSwiftUpdateCheck = 2720;
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					0C2C86342F44D4AA0096EF49 = {
@@ -204,6 +294,14 @@
 					};
 					0C8D0D6E2F66269C00C6338C = {
 						CreatedOnToolsVersion = 26.3;
+					};
+					0CE2992630A41C7B00A42932 = {
+						CreatedOnToolsVersion = 27.2;
+						TestTargetID = 0C2C86342F44D4AA0096EF49;
+					};
+					0CE2993330A41C9B00A42932 = {
+						CreatedOnToolsVersion = 27.2;
+						TestTargetID = 0C2C86342F44D4AA0096EF49;
 					};
 				};
 			};
@@ -226,6 +324,8 @@
 			targets = (
 				0C2C86342F44D4AA0096EF49 /* booktracker */,
 				0C8D0D6E2F66269C00C6338C /* ReadingSessionWidgetExtension */,
+				0CE2992630A41C7B00A42932 /* booktrackerTests */,
+				0CE2993330A41C9B00A42932 /* booktrackerTestsUI */,
 			);
 		};
 /* End PBXProject section */
@@ -239,6 +339,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		0C8D0D6D2F66269C00C6338C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0CE2992530A41C7B00A42932 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0CE2993230A41C9B00A42932 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -262,6 +376,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0CE2992330A41C7B00A42932 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0CE2993030A41C9B00A42932 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -269,6 +397,16 @@
 			isa = PBXTargetDependency;
 			target = 0C8D0D6E2F66269C00C6338C /* ReadingSessionWidgetExtension */;
 			targetProxy = 0C8D0D812F66269D00C6338C /* PBXContainerItemProxy */;
+		};
+		0CE2992C30A41C7B00A42932 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0C2C86342F44D4AA0096EF49 /* booktracker */;
+			targetProxy = 0CE2992B30A41C7B00A42932 /* PBXContainerItemProxy */;
+		};
+		0CE2993930A41C9B00A42932 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0C2C86342F44D4AA0096EF49 /* booktracker */;
+			targetProxy = 0CE2993830A41C9B00A42932 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -302,7 +440,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 6.0;
@@ -339,7 +477,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 6.0;
@@ -534,6 +672,92 @@
 			};
 			name = Release;
 		};
+		0CE2992E30A41C7B00A42932 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CLSNA833N8;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = rolackdev.booktrackerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/booktracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/booktracker";
+			};
+			name = Debug;
+		};
+		0CE2992F30A41C7B00A42932 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CLSNA833N8;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = rolackdev.booktrackerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/booktracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/booktracker";
+			};
+			name = Release;
+		};
+		0CE2993B30A41C9B00A42932 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CLSNA833N8;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = rolackdev.booktrackerTestsUI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = booktracker;
+			};
+			name = Debug;
+		};
+		0CE2993C30A41C9B00A42932 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CLSNA833N8;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = rolackdev.booktrackerTestsUI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = booktracker;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -560,6 +784,24 @@
 			buildConfigurations = (
 				0C8D0D852F66269D00C6338C /* Debug */,
 				0C8D0D862F66269D00C6338C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0CE2992D30A41C7B00A42932 /* Build configuration list for PBXNativeTarget "booktrackerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0CE2992E30A41C7B00A42932 /* Debug */,
+				0CE2992F30A41C7B00A42932 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0CE2993A30A41C9B00A42932 /* Build configuration list for PBXNativeTarget "booktrackerTestsUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0CE2993B30A41C9B00A42932 /* Debug */,
+				0CE2993C30A41C9B00A42932 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

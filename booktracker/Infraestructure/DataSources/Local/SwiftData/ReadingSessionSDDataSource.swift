@@ -8,21 +8,16 @@
 import Foundation
 import SwiftData
 
-protocol ReadingSessionLocalDataSourceProtocol {
-    func save(session: ReadingSession) throws
-    func fetchReadingSession(by id: UUID) throws -> ReadingSession?
-    func fetchReadingSessions(matching filter: ReadingSessionFilter?) throws -> [ReadingSession]
-    func deleteReadingSession(by id: UUID) throws
-    func deleteAllReadingSessions(for bookId: UUID) throws
+protocol ReadingSessionLocalDataSourceProtocol: Sendable {
+    func save(session: ReadingSession) async throws
+    func fetchReadingSession(by id: UUID) async throws -> ReadingSession?
+    func fetchReadingSessions(matching filter: ReadingSessionFilter?) async throws -> [ReadingSession]
+    func deleteReadingSession(by id: UUID) async throws
+    func deleteAllReadingSessions(for bookId: UUID) async throws
 }
 
-final class ReadingSessionSDDataSource: ReadingSessionLocalDataSourceProtocol {
-    private let context: ModelContext
-    
-    init(context: ModelContext) {
-        self.context = context
-    }
-    
+@ModelActor
+actor ReadingSessionSDDataSource: ReadingSessionLocalDataSourceProtocol {
     func save(session: ReadingSession) throws {
         do {
             let sessionId = session.id
@@ -30,7 +25,7 @@ final class ReadingSessionSDDataSource: ReadingSessionLocalDataSourceProtocol {
             var descriptor = FetchDescriptor<ReadingSessionSD>(predicate: #Predicate {$0.id == sessionId })
             descriptor.fetchLimit = 1
             
-            if let existingSession = try context.fetch(descriptor).first {
+            if let existingSession = try modelContext.fetch(descriptor).first {
                 existingSession.startTime = session.startTime
                 existingSession.endTime = session.endTime
                 existingSession.startPage = session.startPage
@@ -39,10 +34,10 @@ final class ReadingSessionSDDataSource: ReadingSessionLocalDataSourceProtocol {
                 existingSession.pausedAt = session.pausedAt
             } else {
                 let newSession = ReadingSessionMapper.toDataModel(from: session)
-                context.insert(newSession)
+                modelContext.insert(newSession)
             }
             
-            try context.save()
+            try modelContext.save()
             
         } catch {
             throw DataSourceError.saveFailed(error.localizedDescription)
@@ -58,7 +53,7 @@ final class ReadingSessionSDDataSource: ReadingSessionLocalDataSourceProtocol {
             
             descriptor.fetchLimit = 1
             
-            guard let sessionSD = try context.fetch(descriptor).first else {
+            guard let sessionSD = try modelContext.fetch(descriptor).first else {
                 return nil
             }
             
@@ -124,7 +119,7 @@ final class ReadingSessionSDDataSource: ReadingSessionLocalDataSourceProtocol {
                 descriptor.predicate = #Predicate { $0.startTime >= fromDate && $0.startTime < toDate }
             }
             
-            let fetchedModels = try context.fetch(descriptor)
+            let fetchedModels = try modelContext.fetch(descriptor)
             
             return fetchedModels.map { ReadingSessionMapper.toDomain(from: $0) }
         } catch {
@@ -137,9 +132,9 @@ final class ReadingSessionSDDataSource: ReadingSessionLocalDataSourceProtocol {
             let sessionId = id
             let descriptor = FetchDescriptor<ReadingSessionSD>(predicate: #Predicate { $0.id == sessionId })
             
-            if let session = try context.fetch(descriptor).first {
-                context.delete(session)
-                try context.save()
+            if let session = try modelContext.fetch(descriptor).first {
+                modelContext.delete(session)
+                try modelContext.save()
             }
         } catch {
             throw DataSourceError.deleteFailed(error.localizedDescription)
@@ -150,12 +145,12 @@ final class ReadingSessionSDDataSource: ReadingSessionLocalDataSourceProtocol {
         do {
             let targetBookId = bookId
             
-            try context.delete(model: ReadingSessionSD.self, where: #Predicate {
+            try modelContext.delete(model: ReadingSessionSD.self, where: #Predicate {
                 $0.bookId == targetBookId
             })
             
             // Guardamos para asegurar que el cambio se persista inmediatamente
-            try context.save()
+            try modelContext.save()
         } catch {
             throw DataSourceError.deleteFailed(error.localizedDescription)
         }

@@ -15,18 +15,18 @@ final class BookRepositoryImpl: BookRepositoryProtocol {
     }
     
     func save(book: Book) async throws {
-        try localDataSource.save(book: book)
+        try await localDataSource.save(book: book)
     }
     
     func fetchBook(by id: UUID) async throws -> Book? {
-        return try localDataSource.fetchBook(by: id)
+        return try await localDataSource.fetchBook(by: id)
     }
     
     func fetchBooks(matching filter: BookFilter?) async throws -> [Book] {
-       return try localDataSource.fetchBooks(matching: filter)
+       return try await localDataSource.fetchBooks(matching: filter)
     }
     
     func delete(bookId: UUID) async throws {
-        try localDataSource.deleteBook(by: bookId)
+        try await localDataSource.deleteBook(by: bookId)
     }
 }

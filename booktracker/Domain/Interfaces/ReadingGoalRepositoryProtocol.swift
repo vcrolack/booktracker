@@ -12,7 +12,7 @@ struct ReadingGoalSearchField {
     var id: UUID?
 }
 
-protocol ReadingGoalRepositoryProtocol {
+protocol ReadingGoalRepositoryProtocol: Sendable {
     func fetchReadingGoals(criteria: ReadingGoalSearchField) async throws -> [ReadingGoal]
     func fetchReadingGoal(by id: UUID) async throws -> ReadingGoal?
     

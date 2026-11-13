@@ -15,18 +15,18 @@ final class ReadingGoalRepositoryImpl: ReadingGoalRepositoryProtocol {
     }
     
     func save(goal: ReadingGoal) async throws {
-        return try localDataSource.save(goal: goal)
+        return try await localDataSource.save(goal: goal)
     }
     
     func fetchReadingGoal(by id: UUID) async throws -> ReadingGoal? {
-        return try localDataSource.fetchReadingGoal(by: id)
+        return try await localDataSource.fetchReadingGoal(by: id)
     }
     
     func fetchReadingGoals(criteria: ReadingGoalSearchField) async throws -> [ReadingGoal] {
-        return try localDataSource.fetchReadingGoals(criteria: criteria)
+        return try await localDataSource.fetchReadingGoals(criteria: criteria)
     }
     
     func delete(by id: UUID) async throws {
-        return try localDataSource.deleteReadingGoal(by: id)
+        return try await localDataSource.deleteReadingGoal(by: id)
     }
 }
