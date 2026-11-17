@@ -235,3 +235,42 @@ struct BookAcquireForReading {
         #expect(book.ownership == .notOwner)
     }
 }
+
+@Suite("Book - pdateMetadata")
+struct BookUpdateMetadata {
+    let fixedDate = Date(timeIntervalSince1970: 1_700_000)
+    
+    @Test("If fails a validation, none field will be updated")
+    func failedUpdateLeavesBookUntouched() throws {
+        var book = try Book.fixture(title: "Dune", author: "Frank Herbert")
+        
+        #expect(throws: BookDomainError.emptyTitleOrAuthor) {
+            try book.updateMetadata(title: "Nuevo título", author: "     ")
+        }
+        
+        #expect(book.title == "Dune")
+        #expect(book.author == "Frank Herbert")
+    }
+    
+    @Test("Decrease pages below currentPage throw an error and not modifies the book")
+    func reducingPagesBelowCurrentPageThrows() throws {
+        var book = try Book.fixture(pages: 300, currentPage: 250)
+        
+        #expect(throws: BookDomainError.invalidCurrentPage(currentPage: 250, totalPages: 200)) {
+            try book.updateMetadata(pages: 200)
+        }
+        
+        #expect(book.pages == 300)
+        #expect(book.currentPage == 250)
+    }
+    
+    @Test("Reducing pages with a valid currentPage works")
+    func reducingPagesWithValidCurrentPageSucceeds() throws {
+        var book = try Book.fixture(pages: 300, currentPage: 250)
+        
+        try book.updateMetadata(pages: 200,  currentPage: 150)
+        
+        #expect(book.pages == 200)
+        #expect(book.currentPage == 150)
+    }
+}

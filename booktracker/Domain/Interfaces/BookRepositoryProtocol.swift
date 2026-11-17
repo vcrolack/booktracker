@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct BookFilter {
+struct BookFilter: Equatable {
     var searchItem: String?
     var status: BookStatus?
     var finishYear: Int?

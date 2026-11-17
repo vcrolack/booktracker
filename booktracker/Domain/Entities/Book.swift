@@ -72,27 +72,11 @@ struct Book: Identifiable, Equatable, Codable {
         overview: String? = nil,
         createdAt: Date = Date()
     ) throws {
-        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        let trimmedAuthor = author.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        guard !trimmedTitle.isEmpty, !trimmedAuthor.isEmpty else {
-            throw BookDomainError.emptyTitleOrAuthor
-        }
-        
-        guard pages > 0 else {
-            throw BookDomainError.invalidPageCount
-        }
-        
-        let initialPage = currentPage ?? 0
-        guard initialPage >= 0 && initialPage <= pages else {
-            throw BookDomainError.invalidCurrentPage(currentPage: initialPage, totalPages: pages)
-        }
-        
         self.id = id
-        self.title = trimmedTitle
-        self.author = trimmedAuthor
+        self.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.author = author.trimmingCharacters(in: .whitespacesAndNewlines)
         self.pages = pages
-        self.currentPage = initialPage
+        self.currentPage = currentPage ?? 0
         self.ownership = ownership
         self.status = status
         self.coverUrl = coverUrl
@@ -102,6 +86,8 @@ struct Book: Identifiable, Equatable, Codable {
         self.editorial = editorial
         self.genre = genre
         self.overview = overview
+        
+        try validateInvariants()
     }
     
     init(
@@ -201,38 +187,23 @@ struct Book: Identifiable, Equatable, Codable {
         overview: String? = nil,
         at date: Date = Date()
     ) throws {
-        if let newTitle = title {
-            let trimmed = newTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !trimmed.isEmpty else { throw BookDomainError.emptyTitleOrAuthor }
-            self.title = trimmed
-        }
+        var draft = self
+
+        if let title { draft.title = title.trimmingCharacters(in: .whitespacesAndNewlines)}
+        if let author { draft.author = author.trimmingCharacters(in: .whitespacesAndNewlines)}
+        if let pages { draft.pages = pages }
+        if let currentPage { draft.currentPage = currentPage }
+        if let editorial { draft.editorial = editorial }
+        if let isbn { draft.isbn = isbn }
+        if let ownership { draft.ownership = ownership }
+        if let coverUrl { draft.coverUrl = coverUrl }
+        if let genre { draft.genre = genre }
+        if let overview { draft.overview = overview }
         
-        if let newAuthor = author {
-            let trimmed = newAuthor.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !trimmed.isEmpty else { throw BookDomainError.emptyTitleOrAuthor }
-            self.author = trimmed
-        }
+        try draft.validateInvariants()
         
-        if let newPages = pages {
-            guard newPages > 0 else { throw BookDomainError.invalidPageCount }
-            self.pages = newPages
-        }
-        
-        if let newCurrentPage = currentPage {
-            guard newCurrentPage >= 0 && newCurrentPage <= self.pages else {
-                throw BookDomainError.invalidCurrentPage(currentPage: newCurrentPage, totalPages: self.pages)
-            }
-            self.currentPage = newCurrentPage
-        }
-        
-        if let newEditorial = editorial { self.editorial = newEditorial }
-        if let newIsbn = isbn { self.isbn = newIsbn }
-        if let newOwnership = ownership { self.ownership = newOwnership }
-        if let newCoverUrl = coverUrl { self.coverUrl = newCoverUrl }
-        if let newGenre = genre { self.genre = newGenre }
-        if let newOverview = overview { self.overview = newOverview }
-        
-        self.updatedAt = date
+        draft.updatedAt = date
+        self = draft
     }
     
     mutating func acquireForReading(newOwnership: Ownership, at date: Date = Date()) throws {
@@ -243,5 +214,15 @@ struct Book: Identifiable, Equatable, Codable {
         self.status = .toRead
         self.ownership = newOwnership
         self.updatedAt = date
+    }
+    
+    private func validateInvariants() throws {
+        guard !title.isEmpty, !author.isEmpty else { throw BookDomainError.emptyTitleOrAuthor }
+        guard pages > 0 else {
+            throw BookDomainError.invalidPageCount
+        }
+        guard (0...pages).contains(currentPage) else {
+            throw BookDomainError.invalidCurrentPage(currentPage: currentPage, totalPages: pages)
+        }
     }
 }
