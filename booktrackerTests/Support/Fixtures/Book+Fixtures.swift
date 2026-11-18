@@ -10,6 +10,7 @@ import Foundation
 
 extension Book {
     static func fixture(
+        id: UUID = UUID(),
         title: String = "Dune",
         author: String = "Frank Herbert",
         pages: Int = 600,
@@ -19,6 +20,7 @@ extension Book {
         createdAt: Date = Date(timeIntervalSince1970: 1_700_000_000)
     ) throws -> Book {
         try Book(
+            id: id,
             title: title,
             author: author,
             pages: pages,

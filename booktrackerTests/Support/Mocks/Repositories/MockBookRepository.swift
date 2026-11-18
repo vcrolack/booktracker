@@ -10,28 +10,43 @@ import Testing
 @testable import booktracker
 
 actor MockBookRepository: BookRepositoryProtocol {
-    private let booksToReturn: [Book]
-    private let errorToThrow: (any Error)?
+    private let books: [Book]
+    private let fetchError: (any Error)?
+    private let deleteError: (any Error)?
+    private let recorder: CallRecorder?
+    private let error: (any Error)?
     
     private(set) var fetchBooksCallCount = 0
     private(set) var receivedFilters: [BookFilter?] = []
     
-    init(books: [Book] = [], error: (any Error)? = nil) {
-        self.booksToReturn = books
-        self.errorToThrow = error
+    init(
+        books: [Book] = [],
+        fetchError: (any Error)? = nil,
+        deleteError: (any Error)? = nil,
+        recorder: CallRecorder? = nil,
+        error: (any Error)? = nil
+    ) {
+        self.books = books
+        self.fetchError = fetchError
+        self.deleteError = deleteError
+        self.recorder = recorder
+        self.error = error
     }
     
     func fetchBooks(matching filter: BookFilter?) async throws -> [Book] {
         fetchBooksCallCount += 1
         receivedFilters.append(filter)
         
-        if let errorToThrow { throw errorToThrow }
-        return booksToReturn
+        if let fetchError { throw fetchError }
+        if let error { throw error }
+        return books
     }
     
-    func fetchBook(by id: UUID) async throws -> booktracker.Book? {
-        Issue.record("fetchBook no should call in this test")
-        return nil
+    func fetchBook(by id: UUID) async throws -> Book? {
+        await recorder?.record(.fetchBook(id))
+        if let fetchError { throw fetchError }
+        if let error { throw error }
+        return books.first { $0.id == id }
     }
     
     func save(book: booktracker.Book) async throws {
@@ -39,7 +54,8 @@ actor MockBookRepository: BookRepositoryProtocol {
     }
     
     func delete(bookId: UUID) async throws {
-        Issue.record("delete no should call in this test")
+        await recorder?.record(.deleteBook(bookId))
+        if let deleteError { throw deleteError }
+        if let error { throw error }
     }
-    
 }
